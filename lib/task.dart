@@ -1,3 +1,4 @@
+// Dennis Skoy
 class MyClass {
   // This is the data of a task/slice. This must be able to be stored in .json
     String name;
