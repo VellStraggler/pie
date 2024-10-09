@@ -1,11 +1,10 @@
 class MyClass {
-    String name;
-    int age;
+  String name;
+  int age;
 
-    MyClass(this.name, this.age);
+  MyClass(this.name, this.age);
 
-
-    void displayInfo() {
-      print('Name: $name, Age: $age');
-    }
+  void displayInfo() {
+    print('Name: $name, Age: $age');
+  }
 }
