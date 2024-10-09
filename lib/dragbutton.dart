@@ -1,11 +1,15 @@
-class MyClass {
-    String name;
-    int age;
+//linden jensen
 
-    MyClass(this.name, this.age);
+class DragButton {
+  Point point;           
+  Polygon outerCircle;    
+  Polygon innerCircle;    
+  int time;              
+  bool shown;       
+    
+  // constructor
+  DragButton(this.point, this.outerCircle, this.innerCircle, this.time, this.shown);
 
-
-    void displayInfo() {
-      print('Name: $name, Age: $age');
-    }
-}
+  void dragTo(Point newPoint) {
+    this.point = newPoint;
+  }
