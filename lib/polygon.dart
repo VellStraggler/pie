@@ -1,9 +1,9 @@
-class MyClass {
+class Polygon {
   // THIS IS for making classes with GRAPHICS
     String name;
     int age;
 
-    MyClass(this.name, this.age);
+    Polygon(this.name, this.age);
 
 
     void displayInfo() {

@@ -6,7 +6,7 @@ class MyClass {
 
     String name;
     int age;
-=======
+//=======
 //linden jensen
 >>>>>>> e09481706d681936c83085987d32d3986f100f62
 
