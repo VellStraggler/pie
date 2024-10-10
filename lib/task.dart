@@ -1,26 +1,51 @@
 // Dennis Skoy
 class Task {
   // This is the data of a task/slice. This must be able to be stored in .json
-  String name; //
+  String taskName; //
   int duration;
   int startTime;
   int endTime;
 
   // Constructor
-  Task(this.name, this.duration, this.startTime, this.endTime);
+  Task(this.taskName, this.duration, this.startTime, this.endTime);
 
+  // Changes taskName.
+  void changeTaskName(String taskName) {
+    this.taskName = taskName;
+  }
+
+  // Changes the tasks's duration.
   void changeDuration(int duration) {
-    // Changes the tasks's duration.
     this.duration = duration;
   }
 
+  // Changes the task's startTime.
   void changeStartTime(int startTime) {
-    //Changes the task's startTime.
     this.startTime = startTime;
   }
 
+  // Changes the task's endTime.
   void changeEndTime(int endTime) {
-    // Changes the task's endTime.
     this.endTime = endTime;
+  }
+
+  // Convert Task object to JSON.
+  Map<String, dynamic> toJson() {
+    return {
+      'taskName': taskName,
+      'duration': duration,
+      'startTime': startTime,
+      'endTime': endTime,
+    };
+  }
+
+  // Convert JSON to Task object.
+  factory Task.fromJson(Map<String, dynamic> json) {
+    return Task(
+      json['taskName'] as String,
+      json['duration'] as int,
+      json['startTime'] as int,
+      json['endTime'] as int,
+    );
   }
 }
