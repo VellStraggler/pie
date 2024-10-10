@@ -1,4 +1,5 @@
 class MyClass {
+  // THIS IS for making classes with GRAPHICS
     String name;
     int age;
 
