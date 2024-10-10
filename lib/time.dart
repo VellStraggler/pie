@@ -1,13 +1,14 @@
 // Tafara Marava is working on this
-class MyClass {
+class Time {
   // This is a visual of each half hour of the pie chart. Some will be invisible some of the time
-    String name;
-    int age;
+    int time;
+    Point point;
+    bool shown; 
 
-    MyClass(this.name, this.age);
+    MyClass(this.time, this.point, this.shown);
 
-
+    
     void displayInfo() {
-      print('Name: $name, Age: $age');
+      print('Time: $time, point: $point');
     }
 }
