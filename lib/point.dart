@@ -15,4 +15,5 @@ class Point {
   void setPoint(int newX, int newY) {
     x = newX;
     y = newY;
+  }
 }
