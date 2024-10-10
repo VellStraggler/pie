@@ -1,4 +1,3 @@
-import MyClass;
 // Josh Zobrist is working on this
 class Polygon {
   // THIS IS for making classes with GRAPHICS
