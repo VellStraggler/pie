@@ -1,3 +1,5 @@
+import MyClass;
+
 class Polygon {
   // THIS IS for making classes with GRAPHICS
   String name;
