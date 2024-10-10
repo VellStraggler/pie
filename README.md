@@ -1,53 +1,46 @@
-# Pie Chart Agenda
+## Overview
 
-## Team Members
-- William
-- David
-- Dennis
-- Tafara
-- Eli
-- Josh
-- Linden
-- Emory
+**Project Title**:
+Pie Chart Agenda
 
-## Software Description
-This mobile app, which will be compatible on IOS and Android, displays an agenda in a pie-chart format, following the 15-minute segments on a clock.
-It will allow you to write tasks and whole days that can auto-repeat, and it allows for easy task-editing and multiple views of the clock.
+**Project Description**:
 
-## Architecture
-Language: Dart
-Framework: Flutter SDK
-Data Storage: JSON files
-Development Tools: Visual Studio Code, GitHub, Android Studio
+**Project Goals**:
 
-## Software Features
-* [ ] Display a pie chart of the tasks for the day in AM or PM
-* [ ] Ability to add tasks to pie chart
-* [ ] Store the day's tasks in .json
-* [ ] Pinch to zoom out to see AM and PM
-* [ ] Hold and drag task edges to adjust times
-* [ ] Double-tap to edit a task
-* [ ] Give options to repeat tasks or entire days
-* [ ] Date is shown in the corner
-* [ ] Theme customization
-* [ ] Planet theme! different biomes instead of colors, and trees to drag instead of dots
-* [ ] Pinch to zoom to see tasks closer
-* [ ] sound effects! (including squelchy noises)
-* [ ] animations between zoom levels
-* [ ] Notifications
+## Instructions for Build and Use
 
-## Team Communication
-Discord! 
+Steps to build and/or run the software:
 
-## Team Responsibility
+1. First step here
+2.
+3.
 
-|Responsibility                                |Team Member(s)              |
-|-------------------------------------|----------------------------|
-|Conducting Meetings                    |        Tafara                      |
-|Maintaining Team Assignment List|      William                      |
-|Ensuring GitHub is Working          |        Linden                      |
-|Maintaining Documentation         |         Eli, Emory                |
-|Create & Display Presentations     |          Dennis, Josh          |
-|Submit Team Assignments            |             David                  |
+Instructions for using the software:
 
-## Reflections
+1. First step here
+2.
+3.
+
+## Development Environment 
+
+To recreate the development environment, you need the following software and/or libraries with the specified versions:
+
+* First thing here
+*
+*
+
+## Useful Websites to Learn More
+
+I found these websites useful in developing this software:
+
+* [Website Title](Link)
+*
+*
+
+## Future Work
+
+The following items I plan to fix, improve, and/or add to this project in the future:
+
+* [ ] First thing here
+* [ ]
+* [ ]
