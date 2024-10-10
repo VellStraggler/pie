@@ -1,6 +1,6 @@
 
 //linden jensen
->>>>>>> e09481706d681936c83085987d32d3986f100f62
+
 
 class DragButton {
   Point point;           
@@ -16,4 +16,3 @@ class DragButton {
   void dragTo(Point newPoint) {
     this.point = newPoint;
   }
-}
