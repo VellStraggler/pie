@@ -9,12 +9,17 @@ class Task {
   // Constructor
   Task(this.taskName, this.duration, this.startTime, this.endTime);
 
+  // Changes taskName.
+  void changeTaskName(String taskName) {
+    this.taskName = taskName;
+  }
+
   // Changes the tasks's duration.
   void changeDuration(int duration) {
     this.duration = duration;
   }
 
-  //Changes the task's startTime.
+  // Changes the task's startTime.
   void changeStartTime(int startTime) {
     this.startTime = startTime;
   }
