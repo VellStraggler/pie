@@ -21,19 +21,20 @@ class Slice {
 
     }
 
+    //detects change
     void _onDragButtonChanged() {
       _updatePolygon();
     }
 
-
+    //updates the polygon to the new shape
     void _updatePolygon() {
       Point start = dragButtonBefore.position();
       Point end = dragButtonAfter.position();
 
       //slicePolygon = Polygon(this.corner, start, end)
-
     }
 
+    //called when getting rid of slice
     void dispose() {
       dragButtonBefore.removeListener(_onDragButtonChanged);
       dragButtonAfter.removeListener(_onDragButtonChanged);
