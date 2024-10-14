@@ -4,8 +4,10 @@
 Pie Chart Agenda
 
 **Project Description**:
+A mobile app, which will be compatible on IOS and Android, displays an agenda in a pie-chart format, following the 15-minute segments on a clock. It will allows you to write tasks and whole days that can auto-repeat, and it allows for easy task-editing and multiple views of the clock.
 
 **Project Goals**:
+To learn how to code an app that helps keep a daily agenda.
 
 ## Instructions for Build and Use
 
@@ -25,7 +27,7 @@ Instructions for using the software:
 
 To recreate the development environment, you need the following software and/or libraries with the specified versions:
 
-* First thing here
+* Download your IDE of choice (XCode, Visual Studio Code, )
 *
 *
 
