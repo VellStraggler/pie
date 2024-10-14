@@ -3,13 +3,13 @@ import 'package:pie_agenda/pie.dart';
 import 'package:pie_agenda/polygon.dart';
 import 'package:pie_agenda/slice.dart';
 import 'package:pie_agenda/task.dart';
-import 'Point.dart';
+import 'point.dart';
 
 void main() {
   // Initialize PM Pie, AM Pie is for later
   List<Slice> slices = [];
   Point center = Point(800,800);
-  Polygon circle = Polygon()
+  Polygon circle = Polygon(age:300,name:"circle");
   Pie pie = Pie(slices: slices, center: center, circle: circle);
 
   int zoom = 1; //zoom range from 1 to 3
@@ -46,15 +46,16 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Pie Agenda Home Page'),
+      home: const MyHomePage(title: 'Pie Agenda Home Page', pie: pie),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
+  const MyHomePage({super.key, required this.title, required this.pie});
   final String title;
+  final Pie pie;
+  final int zoom = 1;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -65,11 +66,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _toggleEditMode() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
       _editModeOn != _editModeOn;
     });
   }
