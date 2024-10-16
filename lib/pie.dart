@@ -1,21 +1,85 @@
-import 'dart:math';
 import 'slice.dart';
-import 'polygon.dart';
-import 'task.dart';
 import 'point.dart';
+import 'polygon.dart';
+import 'dragbutton.dart';
+import 'task.dart';
 
 class Pie {
+  List<Slice> slices;  // A list of slices in the pie chart
 
-  // This contains all the parts of a pie chart agenda. We will start with using just one
+  // Constructor initializes with a single slice covering the whole circle
+  Pie() {
+    // Initialize with one full-circle slice
+    slices = [
+      Slice(
+        corner: Point(0, 0),  // Assuming a placeholder corner point
+        task: null,  // No task for the default slice
+        dragButtonBefore: DragButton(
+          Point(0, 0),  // Position point
+          Polygon(),    // Outer circle
+          Polygon(),    // Inner circle
+          0,            // Time (initial time)
+          true          // Shown flag
+        ),   
+        dragButtonAfter: DragButton(
+          Point(360, 0), // Position at 360 degrees
+          Polygon(),     // Outer circle
+          Polygon(),     // Inner circle
+          360,           // End time
+          true           // Shown flag
+        )
+      )
+    ];
+  }
 
-    List<Slice> slices; // List of slices that make up the pie chart
-    Point center; // Center point of the pie chart
-    Polygon circle; // Circle boundary of the pie chart (can represent the pie's shape)
+  // Method to add a slice to the pie chart
+  void addSlice(double start, double end, Task task) {
+    // Create drag buttons based on the provided start and end positions
+    DragButton dragButtonBefore = DragButton(
+      Point(start, 0), 
+      Polygon(), 
+      Polygon(), 
+      start.toInt(), 
+      true
+    );
+    DragButton dragButtonAfter = DragButton(
+      Point(end, 0), 
+      Polygon(), 
+      Polygon(), 
+      end.toInt(), 
+      true
+    );
 
-    Pie({
-    required this.slices,
-    required this.center,
-    required this.circle,
-  });
+    // Create a new slice, with a corner and task (can be null or provided)
+    Slice newSlice = Slice(
+      corner: Point(0, 0),  // Placeholder corner
+      task: task,           // You can assign a task if needed
+      dragButtonBefore: dragButtonBefore,
+      dragButtonAfter: dragButtonAfter,
+    );
 
+    // Add the new slice to the list
+    slices.add(newSlice);
+    _updatePieChart();
+  }
+
+  // Method to remove a slice from the pie chart
+  void removeSlice(Slice sliceToRemove) {
+    slices.remove(sliceToRemove);
+    _updatePieChart();
+  }
+
+  // Method to display the current pie chart
+  void display() {
+    print("Displaying the pie chart with ${slices.length} slices.");
+    for (Slice slice in slices) {
+      print("Slice from ${slice.dragButtonBefore.position().x} to ${slice.dragButtonAfter.position().x} degrees.");
+    }
+  }
+
+  // Method to update and redraw the pie chart after changes
+  void _updatePieChart() {
+    print("Pie chart updated. Total slices: ${slices.length}");
+  }
 }
+
