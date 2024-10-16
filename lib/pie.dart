@@ -8,44 +8,43 @@ class Pie {
   List<Slice> slices;  // A list of slices in the pie chart
 
   // Constructor initializes with a single slice covering the whole circle
-  Pie() {
+  Pie() :
     // Initialize with one full-circle slice
     slices = [
-      Slice(
-        corner: Point(0, 0),  // Assuming a placeholder corner point
-        task: null,  // No task for the default slice
+      Slice(corner: Point(0, 0),  // Assuming a placeholder corner point
+        task: Task("blank", 48, 0, 48),  // No task for the default slice
         dragButtonBefore: DragButton(
           Point(0, 0),  // Position point
-          Polygon(),    // Outer circle
-          Polygon(),    // Inner circle
+          Polygon("circle", 10),    // Outer circle
+          Polygon("circle", 14),    // Inner circle
           0,            // Time (initial time)
           true          // Shown flag
         ),   
         dragButtonAfter: DragButton(
           Point(360, 0), // Position at 360 degrees
-          Polygon(),     // Outer circle
-          Polygon(),     // Inner circle
+          Polygon("circle", 400),     // Outer circle
+          Polygon("circle", 396),     // Inner circle
           360,           // End time
           true           // Shown flag
         )
       )
     ];
-  }
+  
 
   // Method to add a slice to the pie chart
-  void addSlice(double start, double end, Task task) {
+  void addSlice(int start, int end, Task task) {
     // Create drag buttons based on the provided start and end positions
     DragButton dragButtonBefore = DragButton(
       Point(start, 0), 
-      Polygon(), 
-      Polygon(), 
+      Polygon("circle", 10), 
+      Polygon("circle", 12), 
       start.toInt(), 
       true
     );
     DragButton dragButtonAfter = DragButton(
       Point(end, 0), 
-      Polygon(), 
-      Polygon(), 
+      Polygon("circle", 10), 
+      Polygon("circle", 12), 
       end.toInt(), 
       true
     );

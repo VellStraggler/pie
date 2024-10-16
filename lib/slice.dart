@@ -15,7 +15,7 @@ class Slice {
 
     //Polygon slicePolygon;
 
-    Slice(this.corner, this.task, this.dragButtonBefore, this.dragButtonAfter)
+    Slice({ required this.corner, required this.task, required this.dragButtonBefore, required this.dragButtonAfter})
       : start = dragButtonBefore.point,
         end = dragButtonAfter.point {
       _updatePolygon();
