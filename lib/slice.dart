@@ -1,6 +1,6 @@
 // Emory Smith
 import 'dragbutton.dart';
-import 'task.dart'; 
+import 'task.dart';
 import 'point.dart';
 
 class Slice {

@@ -23,6 +23,10 @@ class Polygon {
   }
 }
 
+void main() {
+  Polygon polygon1 = Polygon("Workout", 4, shape: "Square", sides: 4);
+  polygon1.displayInfo();
+}
 // import 'package:flutter/material.dart';
 
 // class Polygon {
