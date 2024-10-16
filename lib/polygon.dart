@@ -6,7 +6,7 @@ class Polygon {
   String name;
   int age;
 
-  Polygon(this.name, this.age);
+  Polygon(this.name, this.age, {required String name, required int age});
 
   void displayInfo() {
     print('Name: $name, Age: $age');
