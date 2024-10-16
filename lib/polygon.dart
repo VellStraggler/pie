@@ -6,7 +6,7 @@ class Polygon {
   String name;
   int age;
 
-  Polygon(this.name, this.age, {required String name, required int age});
+  Polygon(this.name, this.age, {required String shape, required int sides});
 
   void displayInfo() {
     print('Name: $name, Age: $age');
@@ -23,6 +23,10 @@ class Polygon {
   }
 }
 
+void main() {
+  Polygon polygon1 = Polygon("Workout", 4, shape: "Square", sides: 4);
+  polygon1.displayInfo();
+}
 // import 'package:flutter/material.dart';
 
 // class Polygon {
