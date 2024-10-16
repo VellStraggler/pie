@@ -1,20 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:pie_agenda/pie.dart';
-import 'package:pie_agenda/polygon.dart';
-import 'package:pie_agenda/slice.dart';
 import 'package:pie_agenda/task.dart';
-import 'point.dart';
 
+int zoomLevel = 1;//zoom range from 1 to 3
+// Initialize PM Pie, AM Pie is for later
+Pie pie = Pie();
 void main() {
-  // Initialize PM Pie, AM Pie is for later
-  List<Slice> slices = [];
-  Point center = Point(800,800);
-  Polygon circle = Polygon(age:300,name:"circle");
-  Pie pie = Pie(slices: slices, center: center, circle: circle);
-
-  int zoom = 1; //zoom range from 1 to 3
-
-
   runApp(const MyApp());
 }
 void addTask(Task task) {
@@ -24,11 +15,15 @@ void removeTask(Task task) {
 
 }
 void zoom(bool up) {
+  if (up && zoomLevel < 3) {
+    zoomLevel += 1;
+  } else if (!up && zoomLevel > 1) {
+    zoomLevel -= 1;
+  }
   //maintain range of 1 to 3
 }
 
 class MyApp extends StatelessWidget {
-
   const MyApp({super.key});
 
   // This widget is the root of your application.
@@ -38,24 +33,18 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'pie-agenda',
       theme: ThemeData(
-        // This is the theme of your application.
-        // press "r" in console to reload
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
+        // press "r" in console to reload while running
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Pie Agenda Home Page', pie: pie),
+      home: const MyHomePage(title: 'Pie Agenda Home Page'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title, required this.pie});
+  const MyHomePage({super.key, required this.title});
   final String title;
-  final Pie pie;
-  final int zoom = 1;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();

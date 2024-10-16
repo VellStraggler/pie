@@ -6,7 +6,7 @@ class Polygon {
   String name;
   int age;
 
-  Polygon(this.name, this.age, {required String shape, required int sides});
+  Polygon(this.name, this.age);
 
   void displayInfo() {
     print('Name: $name, Age: $age');
@@ -17,8 +17,8 @@ class Polygon {
       width: 50,
       height: 100,
       color: Colors.amber,
-      child: Center(
-          child: Text(name, style: const TextStyle(color: Colors.white))),
+      child:
+          Center(child: Text(name, style: const TextStyle(color: Colors.white))),
     );
   }
 }

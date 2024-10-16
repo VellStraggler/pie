@@ -5,36 +5,42 @@ import 'point.dart';
 
 class Slice {
   // This is the visuals of a single task. It shows up as a slice on the pie chart
-  DragButton dragButtonBefore;
-  DragButton dragButtonAfter;
-  Task task;
-  Point corner;
-  bool showText = false;
+    DragButton dragButtonBefore;
+    DragButton dragButtonAfter;
+    Task task;
+    Point corner;
+    bool showText = true;
+    Point start;
+    Point end;
 
-  //Polygon slicePolygon;
+    //Polygon slicePolygon;
 
-  Slice(this.corner, this.task, this.dragButtonBefore, this.dragButtonAfter) {
-    _updatePolygon();
-    dragButtonBefore.addListener(_onDragButtonChanged);
-    dragButtonAfter.addListener(_onDragButtonChanged);
-  }
+    Slice({ required this.corner, required this.task, required this.dragButtonBefore, required this.dragButtonAfter})
+      : start = dragButtonBefore.point,
+        end = dragButtonAfter.point {
+      _updatePolygon();
+      dragButtonBefore.addListener(_onDragButtonChanged);
+      dragButtonAfter.addListener(_onDragButtonChanged);
 
-  //detects change
-  void _onDragButtonChanged() {
-    _updatePolygon();
-  }
+    }
 
-  //updates the polygon to the new shape
-  void _updatePolygon() {
-    Point start = dragButtonBefore.position();
-    Point end = dragButtonAfter.position();
+    //detects change
+    void _onDragButtonChanged() {
+      _updatePolygon();
+    }
 
-    //slicePolygon = Polygon(this.corner, start, end)
-  }
+    //updates the polygon to the new shape
+    void _updatePolygon() {
+      start = dragButtonBefore.position();
+      end = dragButtonAfter.position();
 
-  //called when getting rid of slice
-  void dispose() {
-    dragButtonBefore.removeListener(_onDragButtonChanged);
-    dragButtonAfter.removeListener(_onDragButtonChanged);
-  }
+      //slicePolygon = Polygon(this.corner, start, end)
+    }
+
+    //called when getting rid of slice
+    void dispose() {
+      dragButtonBefore.removeListener(_onDragButtonChanged);
+      dragButtonAfter.removeListener(_onDragButtonChanged);
+    }
+
 }
