@@ -17,8 +17,8 @@ class Polygon {
       width: 50,
       height: 100,
       color: Colors.amber,
-      child:
-          Center(child: Text('$name', style: TextStyle(color: Colors.white))),
+      child: Center(
+          child: Text(name, style: const TextStyle(color: Colors.white))),
     );
   }
 }
