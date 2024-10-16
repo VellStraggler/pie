@@ -2,7 +2,6 @@
 import 'dragbutton.dart';
 import 'task.dart'; 
 import 'point.dart';
-import 'polygon.dart';
 
 class Slice {
   // This is the visuals of a single task. It shows up as a slice on the pie chart
@@ -10,11 +9,15 @@ class Slice {
     DragButton dragButtonAfter;
     Task task;
     Point corner;
-    bool showText = false;
+    bool showText = true;
+    Point start;
+    Point end;
 
     //Polygon slicePolygon;
 
-    Slice(this.corner, this.task, this.dragButtonBefore, this.dragButtonAfter){
+    Slice(this.corner, this.task, this.dragButtonBefore, this.dragButtonAfter)
+      : start = dragButtonBefore.point,
+        end = dragButtonAfter.point {
       _updatePolygon();
       dragButtonBefore.addListener(_onDragButtonChanged);
       dragButtonAfter.addListener(_onDragButtonChanged);
@@ -28,8 +31,8 @@ class Slice {
 
     //updates the polygon to the new shape
     void _updatePolygon() {
-      Point start = dragButtonBefore.position();
-      Point end = dragButtonAfter.position();
+      start = dragButtonBefore.position();
+      end = dragButtonAfter.position();
 
       //slicePolygon = Polygon(this.corner, start, end)
     }
