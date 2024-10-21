@@ -64,6 +64,7 @@ class Pie {
 
   // Method to remove a slice from the pie chart
   void removeSlice(Slice sliceToRemove) {
+    sliceToRemove.dispose();
     slices.remove(sliceToRemove);
     _updatePieChart();
   }
