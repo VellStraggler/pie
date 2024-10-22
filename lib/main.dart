@@ -1,4 +1,7 @@
+// ignore_for_file: avoid_print, prefer_final_fields
+
 import 'package:flutter/material.dart';
+import 'package:flutter_polygon_clipper/flutter_polygon_clipper.dart';
 import 'package:pie_agenda/pie.dart';
 import 'package:pie_agenda/task.dart';
 
@@ -14,6 +17,10 @@ void addTask(Task task) {
 void removeTask(Task task) {
 
 }
+void interpretInput() {
+
+}
+
 void zoom(bool up) {
   if (up && zoomLevel < 3) {
     zoomLevel += 1;
@@ -43,48 +50,53 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
   final String title;
+  const MyHomePage({super.key, required this.title});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final bool _editModeOn = false;
+  bool _editModeOn = false; // State variable to track edit mode
 
   void _toggleEditMode() {
     setState(() {
-      _editModeOn != _editModeOn;
+      _editModeOn = !_editModeOn; // Toggle the edit mode
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _toggleEditMode method above.
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: const Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-              Text('You have turned on edit mode'),
-          ],
+      body: Center(
+        child: Container(
+          width: 300,
+          height: 300,
+          decoration: const BoxDecoration(
+            color: Colors.amber,
+            shape: BoxShape.circle,
+          ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _toggleEditMode,
-        tooltip: 'Toggle',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Text(
+              _editModeOn ? "Edit Mode is ON " : "Edit Mode is OFF ",
+              style: const TextStyle(fontSize: 24),
+            ),
+          FloatingActionButton(
+            onPressed: _toggleEditMode, // Toggle edit mode on button press
+            tooltip: 'Toggle Edit Mode',
+            child: const Icon(Icons.edit),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -70,6 +70,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.0"
+  flutter_polygon_clipper:
+    dependency: "direct main"
+    description:
+      name: flutter_polygon_clipper
+      sha256: "18834977e499cd426a99872ee0f1bdf45e662584f6cc47803d2d6ffe1d4e3241"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.4"
   flutter_test:
     dependency: "direct dev"
     description: flutter

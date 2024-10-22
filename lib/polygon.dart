@@ -1,15 +1,15 @@
-// Josh Zobrist is working on this
+// Josh Zobrist and David Wells working on this
 import 'package:flutter/material.dart';
 
 class Polygon {
   // THIS IS for making classes with GRAPHICS
   String name;
-  int age;
+  int width;
 
-  Polygon(this.name, this.age);
+  Polygon(this.name, this.width);
 
   void displayInfo() {
-    print('Name: $name, Age: $age');
+    print('Name: $name, Age: $width');
   }
 
   Widget draw() {
