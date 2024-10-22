@@ -6,9 +6,13 @@ import 'task.dart';
 
 class Pie {
   List<Slice> slices;  // A list of slices in the pie chart
+  Point center;        // Center point of the pie chart
+  Polygon boundary;    // Polygon representing the boundary of the pie chart
 
   // Constructor initializes with a single slice covering the whole circle
   Pie() :
+    center = Point(0, 0),  // Default center point at (0,0)
+    boundary = Polygon("circle", 500),  // A circular boundary with radius 500
     // Initialize with one full-circle slice
     slices = [
       Slice(corner: Point(0, 0),  // Assuming a placeholder corner point

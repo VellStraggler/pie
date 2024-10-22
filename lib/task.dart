@@ -30,6 +30,7 @@ class Task {
   }
 
   // Convert Task object to JSON.
+  // String jsonString = jsonEncode(task.toJson());
   Map<String, dynamic> toJson() {
     return {
       'taskName': taskName,
@@ -40,6 +41,7 @@ class Task {
   }
 
   // Convert JSON to Task object.
+  // Task taskFromJson = Task.fromJson(jsonDecode(jsonString));
   factory Task.fromJson(Map<String, dynamic> json) {
     return Task(
       json['taskName'] as String,
