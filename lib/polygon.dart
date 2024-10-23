@@ -35,8 +35,8 @@ class Polygon {
         rotate: 100.0,
         borderRadiusAngle: 0.0)),
       child: Container(
-        width:500,
-        height: 500,
+        width:width/2,
+        height:width/2,
         color: Colors.blue,
       ),
     );
