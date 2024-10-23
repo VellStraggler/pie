@@ -32,11 +32,11 @@ class Polygon {
     return ClipPath(
       clipper: PolygonClipper(PolygonPathSpecs(
         sides: 3,
-        rotate: 100.0,
+        rotate: 0.0,
         borderRadiusAngle: 0.0)),
       child: Container(
-        width:width/2,
-        height:width/2,
+        width:width,
+        height:width*2,
         color: Colors.blue,
       ),
     );
