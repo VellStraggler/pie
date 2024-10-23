@@ -1,3 +1,5 @@
+import 'package:flutter/widgets.dart';
+
 import 'slice.dart';
 import 'point.dart';
 import 'polygon.dart';
@@ -34,6 +36,17 @@ class Pie {
       )
     ];
   
+  // Takes the list of slices and returns their polygon counterparts
+  List<Widget> drawSlices() {
+    List<Widget> widgetList = List.empty(growable: true);
+    widgetList.add(boundary.drawCircle());
+    for(Slice slice in slices) {
+      widgetList.add(
+        slice.polygon.drawSlice(boundary.width /2)
+      );
+    }
+    return widgetList;
+  }
 
   // Method to add a slice to the pie chart
   void addSlice(int start, int end, Task task) {

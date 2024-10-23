@@ -1,4 +1,6 @@
 // Emory Smith
+import 'package:pie_agenda/polygon.dart';
+
 import 'dragbutton.dart';
 import 'task.dart';
 import 'point.dart';
@@ -13,11 +15,13 @@ class Slice {
     Point start;
     Point end;
 
-    //Polygon slicePolygon;
+    Polygon polygon;
 
+    //polygon instantiation is a PLACEHOLDER
     Slice({ required this.corner, required this.task, required this.dragButtonBefore, required this.dragButtonAfter})
       : start = dragButtonBefore.point,
-        end = dragButtonAfter.point {
+        end = dragButtonAfter.point,
+        polygon = Polygon("Slice", 250) {
       _updatePolygon();
       dragButtonBefore.addListener(_onDragButtonChanged);
       dragButtonAfter.addListener(_onDragButtonChanged);
@@ -33,8 +37,7 @@ class Slice {
     void _updatePolygon() {
       start = dragButtonBefore.position();
       end = dragButtonAfter.position();
-
-      //slicePolygon = Polygon(this.corner, start, end)
+      polygon.center = corner;
     }
 
     //called when getting rid of slice
