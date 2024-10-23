@@ -5,21 +5,16 @@ import 'package:flutter_polygon_clipper/flutter_polygon_clipper.dart';
 import 'package:pie_agenda/pie.dart';
 import 'package:pie_agenda/task.dart';
 
-int zoomLevel = 1;//zoom range from 1 to 3
+int zoomLevel = 1; //zoom range from 1 to 3
 // Initialize PM Pie, AM Pie is for later
 Pie pie = Pie();
 void main() {
   runApp(const MyApp());
 }
-void addTask(Task task) {
 
-}
-void removeTask(Task task) {
-
-}
-void interpretInput() {
-
-}
+void addTask(Task task) {}
+void removeTask(Task task) {}
+void interpretInput() {}
 
 void zoom(bool up) {
   if (up && zoomLevel < 3) {
@@ -78,14 +73,13 @@ class _MyHomePageState extends State<MyHomePage> {
           children: pie.drawSlices()
         )
       ),
-      
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           Text(
-              _editModeOn ? "Edit Mode is ON " : "Edit Mode is OFF ",
-              style: const TextStyle(fontSize: 24),
-            ),
+            _editModeOn ? "Edit Mode is ON " : "Edit Mode is OFF ",
+            style: const TextStyle(fontSize: 24),
+          ),
           FloatingActionButton(
             onPressed: _toggleEditMode, // Toggle edit mode on button press
             tooltip: 'Toggle Edit Mode',
