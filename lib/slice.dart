@@ -46,4 +46,11 @@ class Slice {
       dragButtonAfter.removeListener(_onDragButtonChanged);
     }
 
+    double timeToRadians(double time) {
+      int hour = time.toInt();
+      int minute = ((time % 1) * 60).toInt();
+      double ans = (hour % 12 + minute / 60) * (2 * 3.14159265 / 12);
+      return ans;
+  }
+
 }

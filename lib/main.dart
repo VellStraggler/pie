@@ -1,13 +1,14 @@
 // ignore_for_file: avoid_print, prefer_final_fields
 
 import 'package:flutter/material.dart';
-import 'package:flutter_polygon_clipper/flutter_polygon_clipper.dart';
 import 'package:pie_agenda/pie.dart';
+import 'package:pie_agenda/piepainter.dart';
 import 'package:pie_agenda/task.dart';
 
 int zoomLevel = 1; //zoom range from 1 to 3
 // Initialize PM Pie, AM Pie is for later
 Pie pie = Pie();
+Piepainter painter = Piepainter(pie: pie);
 void main() {
   runApp(const MyApp());
 }
@@ -68,9 +69,9 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Stack(
-          alignment: Alignment.center,
-          children: pie.drawSlices()
+        child: CustomPaint(
+          size: Size(pie.boundary.width, pie.boundary.width),
+          painter: painter
         )
       ),
       floatingActionButton: Row(

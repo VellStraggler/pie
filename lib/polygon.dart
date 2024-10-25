@@ -28,16 +28,23 @@ class Polygon {
   }
   // Length should be half the width of the pie circle
   Widget drawSlice(double length) {
-    List<Offset> points = List.empty(growable: true);
-    return ClipPath(
-      clipper: PolygonClipper(PolygonPathSpecs(
-        sides: 3,
-        rotate: 0.0,
-        borderRadiusAngle: 0.0)),
-      child: Container(
-        width:width,
-        height:width*2,
-        color: Colors.blue,
+    
+    return Positioned(
+      left:0,
+      top:0,
+      child: ClipPath(
+        clipper: PolygonClipper(PolygonPathSpecs(
+          sides: 3,
+          rotate: 210.0,
+          borderRadiusAngle: 45.0)),
+        child: Container(
+          width:width*2,
+          height:width*2,
+          decoration: BoxDecoration(
+            color: Colors.blue,
+            shape: BoxShape.circle 
+          ),
+        ),
       ),
     );
   }

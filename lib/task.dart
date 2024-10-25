@@ -2,12 +2,14 @@
 class Task {
   // This is the data of a task/slice. This must be able to be stored in .json
   String taskName; //
-  int duration;
-  int startTime;
-  int endTime;
+  double duration;
+  double startTime;
+  double endTime;
 
   // Constructor
-  Task(this.taskName, this.duration, this.startTime, this.endTime);
+  // Time Syntax is as such: 1.25 = 1:30, 0.5 = 12:30
+  Task(this.taskName, this.startTime, this.endTime)
+    : duration = endTime - startTime;
 
   // Changes taskName.
   void changeTaskName(String taskName) {
@@ -15,17 +17,17 @@ class Task {
   }
 
   // Changes the tasks's duration.
-  void changeDuration(int duration) {
+  void changeDuration(double duration) {
     this.duration = duration;
   }
 
   // Changes the task's startTime.
-  void changeStartTime(int startTime) {
+  void changeStartTime(double startTime) {
     this.startTime = startTime;
   }
 
   // Changes the task's endTime.
-  void changeEndTime(int endTime) {
+  void changeEndTime(double endTime) {
     this.endTime = endTime;
   }
 
@@ -45,9 +47,8 @@ class Task {
   factory Task.fromJson(Map<String, dynamic> json) {
     return Task(
       json['taskName'] as String,
-      json['duration'] as int,
-      json['startTime'] as int,
-      json['endTime'] as int,
+      json['startTime'] as double,
+      json['endTime'] as double,
     );
   }
 }

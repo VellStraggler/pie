@@ -18,7 +18,7 @@ class Pie {
     // Initialize with one full-circle slice
     slices = [
       Slice(corner: Point(0, 0),  // Assuming a placeholder corner point
-        task: Task("blank", 48, 0, 48),  // No task for the default slice
+        task: Task("blank", 0.0, 11.5),  // No task for the default slice
         dragButtonBefore: DragButton(
           Point(0, 0),  // Position point
           Polygon("circle", 10),    // Outer circle
@@ -97,6 +97,11 @@ class Pie {
   // Method to update and redraw the pie chart after changes
   void _updatePieChart() {
     print("Pie chart updated. Total slices: ${slices.length}");
+  }
+
+  @override
+  String toString() {
+    return slices[0].toString();
   }
 }
 
