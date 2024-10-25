@@ -1,20 +1,17 @@
 import 'point.dart';
-import 'polygon.dart';
 import 'dart:async';
 
 //linden jensen
 
 class DragButton {
   Point point;
-  Polygon outerCircle;
-  Polygon innerCircle;
   int time;
   bool shown;
   final _dragController = StreamController<void>();
 
   // constructor
   DragButton(
-      this.point, this.outerCircle, this.innerCircle, this.time, this.shown);
+      this.point, this.time, this.shown);
 
   Point position() {
     return point;

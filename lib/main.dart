@@ -70,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: CustomPaint(
-          size: Size(pie.boundary.width, pie.boundary.width),
+          size: Size(pie.width, pie.width),
           painter: painter
         )
       ),
