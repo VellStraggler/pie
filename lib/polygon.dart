@@ -11,7 +11,7 @@ class Polygon {
   double width;
   Point center;
 
-  Polygon(this.name, this.width) : center = Point(500,500);
+  Polygon(this.name, this.width) : center = Point(500, 500);
 
   void displayInfo() {
     print('Name: $name, Age: $width');
@@ -22,32 +22,28 @@ class Polygon {
       width: 50,
       height: 100,
       color: Colors.amber,
-      child:
-          Center(child: Text(name, style: const TextStyle(color: Colors.white))),
+      child: Center(
+          child: Text(name, style: const TextStyle(color: Colors.white))),
     );
   }
+
   // Length should be half the width of the pie circle
   Widget drawSlice(double length) {
-    
     return Positioned(
-      left:0,
-      top:0,
+      left: 0,
+      top: 0,
       child: ClipPath(
-        clipper: PolygonClipper(PolygonPathSpecs(
-          sides: 3,
-          rotate: 210.0,
-          borderRadiusAngle: 45.0)),
+        clipper: PolygonClipper(
+            PolygonPathSpecs(sides: 3, rotate: 210.0, borderRadiusAngle: 45.0)),
         child: Container(
-          width:width*2,
-          height:width*2,
-          decoration: BoxDecoration(
-            color: Colors.blue,
-            shape: BoxShape.circle 
-          ),
+          width: width * 2,
+          height: width * 2,
+          decoration: BoxDecoration(color: Colors.blue, shape: BoxShape.circle),
         ),
       ),
     );
   }
+
   Widget drawCircle() {
     return Container(
       width: width,
@@ -59,56 +55,3 @@ class Polygon {
     );
   }
 }
-
-// void main() {
-//   Polygon polygon1 = Polygon("Workout", 4, Shape: "Square", sides: 4);
-//   polygon1.displayInfo();
-// }
-// import 'package:flutter/material.dart';
-
-// class Polygon {
-//   String name;
-//   int sides;
-
-//   Polygon(this.name, this.sides);
-
-//   void displayInfo() {
-//     print('Polygon Name: $name, Sides: $sides');
-//   }
-
-//   // This method will return a widget to draw the polygon (simplified as a colored square)
-//   Widget draw() {
-//     return Container(
-//       width: 100.0,
-//       height: 100.0,
-//       color: Colors.blue,
-//       child: Center(
-//         child: Text(
-//           '$name ($sides sides)',
-//           style: TextStyle(color: Colors.white),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-// void main() {
-//   runApp(MyApp());
-// }
-
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     Polygon polygon = Polygon('Triangle', 3);
-//     polygon.displayInfo(); // Just for console output
-
-//     return MaterialApp(
-//       home: Scaffold(
-//         appBar: AppBar(title: Text('Polygon Example')),
-//         body: Center(
-//           child: polygon.draw(), // Draw the polygon on screen
-//         ),
-//       ),
-//     );
-//   }
-// }

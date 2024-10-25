@@ -5,7 +5,6 @@ import 'package:pie_agenda/pie.dart';
 import 'package:pie_agenda/slice.dart';
 
 class Piepainter extends CustomPainter {
-
   final Pie pie;
 
   Piepainter({super.repaint, required this.pie});
@@ -19,19 +18,23 @@ class Piepainter extends CustomPainter {
     painter.strokeWidth = 3.0;
 
     // draw the pie chart
-    Offset centerOffset = Offset(size.width/2, size.width/2);
-    double pieRadius = size.width/2;
+    Offset centerOffset = Offset(size.width / 2, size.width / 2);
+    double pieRadius = size.width / 2;
     canvas.drawCircle(centerOffset, pieRadius, painter);
-    
+
     // draw the slices
     painter.color = Colors.yellow;
-    Rect rectArea = Rect.fromCenter(center: centerOffset, width: pieRadius*2 - 10, height: pieRadius*2 - 10);
+    Rect rectArea = Rect.fromCenter(
+        center: centerOffset,
+        width: pieRadius * 2 - 10,
+        height: pieRadius * 2 - 10);
     print('$pie.toString()');
-    for(Slice slice in pie.slices) {
-      double start = slice.timeToRadians(slice.task.startTime - 3);
-      double end = slice.timeToRadians(slice.task.duration);
+    for (Slice slice in pie.slices) {
+      double start = slice.getStartTimeToRadians();
+      double end = slice.getEndTimeToRadians();
       print('$start $end');
-      canvas.drawArc(rectArea, start, end, true, painter); //Angles are in radians
+      canvas.drawArc(
+          rectArea, start, end, true, painter); //Angles are in radians
     }
   }
 

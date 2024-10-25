@@ -1,5 +1,4 @@
 class Point {
-
   int x;
   int y;
 
@@ -8,10 +7,12 @@ class Point {
     x += addToX;
     return x;
   }
+
   int moveYAmount(int addToY) {
     y += addToY;
     return y;
   }
+
   void setPoint(int newX, int newY) {
     x = newX;
     y = newY;
