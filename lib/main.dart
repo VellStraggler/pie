@@ -8,7 +8,7 @@ import 'package:pie_agenda/task.dart';
 int zoomLevel = 1; //zoom range from 1 to 3
 // Initialize PM Pie, AM Pie is for later
 Pie pie = Pie();
-Piepainter painter = Piepainter(pie: pie);
+PiePainter painter = PiePainter(pie: pie);
 void main() {
   runApp(const MyApp());
 }

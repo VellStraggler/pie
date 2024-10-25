@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:pie_agenda/pie.dart';
 import 'package:pie_agenda/slice.dart';
 
-class Piepainter extends CustomPainter {
+class PiePainter extends CustomPainter {
   final Pie pie;
 
-  Piepainter({super.repaint, required this.pie});
+  PiePainter({super.repaint, required this.pie});
 
   // This is called EVERY time the setState trigger goes off.
   @override
