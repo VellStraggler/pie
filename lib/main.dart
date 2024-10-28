@@ -13,6 +13,8 @@ void main() {
   runApp(const MyApp());
 }
 
+void loadDay(String fileName) {}
+void saveDay(String fileName) {}
 void addTask(Task task) {}
 void removeTask(Task task) {}
 void interpretInput() {}
