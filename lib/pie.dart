@@ -29,7 +29,7 @@ class Pie {
                   ))
         ];
 
-  void addSlice(double start) {
+  void addSlice() {
     // What Josh is doing:::
     // This is the default method for creating a new task
     // it will default to a duration of 30 minutes or 0.5
