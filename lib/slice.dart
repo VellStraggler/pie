@@ -21,11 +21,12 @@ class Slice {
       required this.dragButtonAfter})
       : start = dragButtonBefore.point,
         end = dragButtonAfter.point {
-    _updatePolygon();
+    _updateSlice();
     dragButtonBefore.addListener(_onDragButtonChanged);
     dragButtonAfter.addListener(_onDragButtonChanged);
   }
 
+// Return Times to Radians
   double getStartTimeToRadians() {
     return timeToRadians(task.getStartTime() - 3);
   }
@@ -38,13 +39,13 @@ class Slice {
     return task.getEndTime();
   }
 
-  //detects change
+// Detects change
   void _onDragButtonChanged() {
-    _updatePolygon();
+    _updateSlice();
   }
 
   //updates the polygon to the new shape
-  void _updatePolygon() {
+  void _updateSlice() {
     start = dragButtonBefore.position();
     end = dragButtonAfter.position();
   }

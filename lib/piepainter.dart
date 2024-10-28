@@ -34,7 +34,7 @@ class PiePainter extends CustomPainter {
       double end = slice.getEndTimeToRadians();
       print('$start $end');
       canvas.drawArc(
-          rectArea, start, end, true, painter); //Angles are in radians
+          rectArea, start, end, true, painter); //Angles are in radians.
     }
   }
 
