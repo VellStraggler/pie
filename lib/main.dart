@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:pie_agenda/pie.dart';
 import 'package:pie_agenda/piepainter.dart';
-import 'package:pie_agenda/task.dart';
 
 int zoomLevel = 1; //zoom range from 1 to 3
 // Initialize PM Pie, AM Pie is for later
@@ -12,13 +11,6 @@ PiePainter painter = PiePainter(pie: pie);
 void main() {
   runApp(const MyApp());
 }
-
-void loadDay(String fileName) {}
-void saveDay(String fileName) {}
-void addTask(Task task) {}
-void removeTask(Task task) {}
-void interpretInput() {}
-
 void zoom(bool up) {
   if (up && zoomLevel < 3) {
     zoomLevel += 1;
