@@ -62,4 +62,10 @@ class Slice {
     double ans = (hour % 12 + minute / 60) * (2 * 3.14159265 / 12);
     return ans;
   }
+
+  // for Tafara
+  // We need a final, randomized color variable
+  // We need it to not clash with the text color
+  // You can do this by randomizing RGB values or randomizing a list of colors like Colors.blue
+  // update the painter class to reflect this change
 }
