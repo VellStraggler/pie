@@ -87,6 +87,10 @@ class _MyHomePageState extends State<MyHomePage> {
             _editModeOn ? "Edit Mode is ON " : "Edit Mode is OFF ",
             style: const TextStyle(fontSize: 24),
           ),
+          // For Eli
+          // Just make another floatingactionbutton
+          // also make the function it calls, whose syntax is very similar to _toggleEditMode
+          // call the addSlice method from pie.
           FloatingActionButton(
             onPressed: _toggleEditMode, // Toggle edit mode on button press
             tooltip: 'Toggle Edit Mode',
