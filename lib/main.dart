@@ -65,6 +65,10 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Put a widget in scaffold that can hold a "children" attribute
+      // fill that attribute with a list of button widgets to be functional dragbuttons
+      // Place the widgets on the screen with Position Widgets
+      // Implement math function to position widget on the edge of the circle based on a time input (time syntax: 0.5 = 12:30)
       appBar: AppBar(
         title: Text(widget.title),
       ),
