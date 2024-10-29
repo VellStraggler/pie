@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:pie_agenda/pie.dart';
 import 'package:pie_agenda/slice.dart';
+import 'dart:math';
 
 class PiePainter extends CustomPainter {
   final Pie pie;
@@ -35,7 +36,21 @@ class PiePainter extends CustomPainter {
       print('$start $end');
       canvas.drawArc(
           rectArea, start, end, true, painter); //Angles are in radians.
+
+      final double textAngle = start + end / 2;
+      final double textX = centerOffset.dx + pieRadius * 0.6 * cos(textAngle);
+      final double textY = centerOffset.dy + pieRadius * 0.6 * sin(textAngle);
+
+      _drawText(canvas, "Slice", Offset(textX, textY));
     }
+  }
+
+  void _drawText(Canvas canvas, String text, Offset offset) {
+    TextStyle textStyle = TextStyle(color: Colors.black, fontSize: 14);
+    TextSpan textSpan = TextSpan(text: text, style: textStyle);
+    TextPainter textPainter = TextPainter(text: textSpan, textDirection: TextDirection.ltr);
+    textPainter.layout();
+    textPainter.paint(canvas, offset - Offset(textPainter.width / 2, textPainter.height / 2));
   }
 
   @override
