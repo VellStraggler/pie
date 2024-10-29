@@ -29,11 +29,25 @@ class Pie {
                   ))
         ];
 
+  void addSlice() {
+    // What Josh is doing:::
+    // This is the default method for creating a new task
+    // it will default to a duration of 30 minutes or 0.5
+    // it will be added to the task right before the "blank" task, which should always be the last task in the list
+    // just to be clear, adding at index of length - 1.
+    // create this task with default text of "New Task"
+    // save it to the slice list in a slice
+    print("go josh");
+  }
   // Method to add a slice to the pie chart
-  void addSlice(int start, int end, Task task) {
+  void addSpecificSlice(int start, int end, Task task) {
+    // also need an addSlice method that takes only a starting point
+    // 
+
     // Create drag buttons based on the provided start and end positions
     DragButton dragButtonBefore = DragButton(Point(start, 0), start.toInt(), true);
     DragButton dragButtonAfter = DragButton(Point(end, 0), end.toInt(), true);
+
 
     // Create a new slice, with a corner and task (can be null or provided)
     Slice newSlice = Slice(
