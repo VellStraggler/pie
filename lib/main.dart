@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pie_agenda/pie.dart';
 import 'package:pie_agenda/piepainter.dart';
+import 'package:pie_agenda/task.dart';
 
 int zoomLevel = 1; // zoom range from 1 to 3
 Pie pie = Pie();
@@ -97,11 +98,12 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () {
                 final startTime = int.tryParse(startTimeController.text) ?? 0;
                 final endTime = int.tryParse(endTimeController.text) ?? 0;
-                final task = taskController.text;
+                final taskText = taskController.text;
+                Task task = Task(taskText, startTime.toDouble(), endTime.toDouble() );
 
-                if (startTime >= 0 && endTime >= 0 && task.isNotEmpty) {
+                if (startTime >= 0 && endTime >= 0 && taskText.isNotEmpty) {
                   setState(() {
-                    pie.addSlice();
+                    pie.addSpecificSlice(startTime, endTime, task);
                   });
                   Navigator.of(context).pop();
                 } else {
