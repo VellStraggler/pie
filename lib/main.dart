@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print, prefer_final_fields
+
 import 'package:flutter/material.dart';
 import 'package:pie_agenda/pie.dart';
 import 'package:pie_agenda/piepainter.dart';
@@ -17,16 +19,20 @@ void zoom(bool up) {
   } else if (!up && zoomLevel > 1) {
     zoomLevel -= 1;
   }
+  //maintain range of 1 to 3
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
+  // This widget is the root of your application.
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Pie Agenda',
       theme: ThemeData(
+        // press "r" in console to reload while running
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
@@ -48,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _toggleEditMode() {
     setState(() {
-      _editModeOn = !_editModeOn;
+      _editModeOn = !_editModeOn; // Toggle the edit mode
     });
   }
 
@@ -121,6 +127,10 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Put a widget in scaffold that can hold a "children" attribute
+      // fill that attribute with a list of button widgets to be functional dragbuttons
+      // Place the widgets on the screen with Position Widgets
+      // Implement math function to position widget on the edge of the circle based on a time input (time syntax: 0.5 = 12:30)
       appBar: AppBar(
         title: Text(widget.title),
       ),
