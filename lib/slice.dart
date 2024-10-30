@@ -26,20 +26,29 @@ class Slice {
     dragButtonAfter.addListener(_onDragButtonChanged);
   }
 
-// Return Times to Radians
+// Getters and Setters
+  /// Converts the start Time to Radians
   double getStartTimeToRadians() {
-    return timeToRadians(task.getStartTime() - 3);
+    return timeToRadians(getStartTime() - 3);
   }
 
+  /// Converts the tasks's endTime to Radians
   double getEndTimeToRadians() {
-    return timeToRadians(task.getEndTime());
+    return timeToRadians(getEndTime());
   }
 
+  /// Gets the task's startTime.
+  double getStartTime() {
+    return task.getStartTime();
+  }
+
+  /// Gets the task's endTime.
   double getEndTime() {
     return task.getEndTime();
   }
 
-// Detects change
+// Methods
+  // Detects change
   void _onDragButtonChanged() {
     _updateSlice();
   }

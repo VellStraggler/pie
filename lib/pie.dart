@@ -39,15 +39,16 @@ class Pie {
     // save it to the slice list in a slice
     print("go josh");
   }
+
   // Method to add a slice to the pie chart
   void addSpecificSlice(int start, int end, Task task) {
     // also need an addSlice method that takes only a starting point
-    // 
+    //
 
     // Create drag buttons based on the provided start and end positions
-    DragButton dragButtonBefore = DragButton(Point(start, 0), start.toInt(), true);
+    DragButton dragButtonBefore =
+        DragButton(Point(start, 0), start.toInt(), true);
     DragButton dragButtonAfter = DragButton(Point(end, 0), end.toInt(), true);
-
 
     // Create a new slice, with a corner and task (can be null or provided)
     Slice newSlice = Slice(
