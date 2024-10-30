@@ -9,9 +9,14 @@ class DragButton {
   bool shown;
   final _dragController = StreamController<void>();
 
-  // constructor
-  DragButton(
-      this.point, this.time, this.shown);
+  /// Default Constructor
+  DragButton()
+      : point = Point(),
+        time = 0,
+        shown = true;
+
+  /// Parameterized constructor
+  DragButton.parameterized(this.point, this.time, this.shown);
 
   Point position() {
     return point;

@@ -105,7 +105,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 final startTime = int.tryParse(startTimeController.text) ?? 0;
                 final endTime = int.tryParse(endTimeController.text) ?? 0;
                 final taskText = taskController.text;
-                Task task = Task(taskText, startTime.toDouble(), endTime.toDouble() );
+                Task task = Task.parameterized(
+                    taskText, startTime.toDouble(), endTime.toDouble());
 
                 if (startTime >= 0 && endTime >= 0 && taskText.isNotEmpty) {
                   setState(() {
@@ -163,4 +164,3 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-

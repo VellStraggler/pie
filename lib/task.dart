@@ -13,11 +13,18 @@ class Task {
   double _startTime;
   double _endTime;
 
-  /// Task Constructor
+  /// Default Constructor for a Task object.
+  Task()
+      : _taskName = "NewTask",
+        _startTime = 0,
+        _endTime = 3,
+        _duration = 3;
+
+  /// Parameterized Task Constructor.
   /// Time Syntax is as such:
   /// * 1.25 = 1:30
   /// * 0.5 = 12:30
-  Task(this._taskName, this._startTime, this._endTime)
+  Task.parameterized(this._taskName, this._startTime, this._endTime)
       : _duration = _endTime - _startTime;
 
 // Getters and Setters
@@ -76,7 +83,7 @@ class Task {
   /// Convert JSON to a Task object.
   /// * Task taskFromJson = Task.fromJson(jsonDecode(jsonString));
   factory Task.fromJson(Map<String, dynamic> json) {
-    return Task(json['_taskName'] as String, json['_startTime'] as double,
-        json['_endTime'] as double);
+    return Task.parameterized(json['_taskName'] as String,
+        json['_startTime'] as double, json['_endTime'] as double);
   }
 }
