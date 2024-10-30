@@ -61,14 +61,17 @@ class Task {
 
   /// Set the task's _startTime.
   void changeStartTime(double _startTime) {
+    assert(_startTime < _endTime, "_startTime must be before _endTime.");
     this._startTime = _startTime;
   }
 
   /// Set the task's _endTime.
   void changeEndTime(double _endTime) {
+    assert(_endTime > _startTime, "endTime must be after _startTime.");
     this._endTime = _endTime;
   }
 
+// Data Conversion
   /// Convert Task object to JSON.
   /// * String jsonString = jsonEncode(task.toJson());
   Map<String, dynamic> toJson() {
