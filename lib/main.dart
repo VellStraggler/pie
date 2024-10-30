@@ -1,8 +1,11 @@
 // ignore_for_file: avoid_print, prefer_final_fields
 
 import 'package:flutter/material.dart';
+import 'package:pie_agenda/dragbutton.dart';
 import 'package:pie_agenda/pie.dart';
 import 'package:pie_agenda/piepainter.dart';
+import 'package:pie_agenda/point.dart';
+
 
 int zoomLevel = 1; //zoom range from 1 to 3
 // Initialize PM Pie, AM Pie is for later
@@ -67,10 +70,20 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: CustomPaint(
-          size: Size(pie.width, pie.width),
-          painter: painter
-        )
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            CustomPaint(
+              size: Size(pie.width, pie.width),
+              painter: painter
+            ),
+            DragButton(
+            point: Point(0,0), 
+            time: 0, 
+            shown: true
+          ),
+          ]
+        ),
       ),
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
