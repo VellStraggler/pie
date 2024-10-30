@@ -6,15 +6,30 @@ import 'point.dart';
 class Slice {
   // This is the visuals of a single task. It shows up as a slice on the pie chart
   DragButton dragButtonBefore;
-  DragButton dragButtonAfter;
-  Task task;
-  Point corner;
-  bool showText = true;
-  Point start;
-  Point end;
+  DragButton dragButtonAfter; //
+  Task task; // Default Task
+  Point corner; // Position Point
+  bool showText = true; //Shown flag
+  Point start; // Start Time
+  Point end; // End time
+
+  /// Default Constructor
+  Slice()
+      : corner = Point(),
+        task = Task(),
+        dragButtonBefore = DragButton(), // default at 0
+        dragButtonAfter = DragButton.parameterized(
+            Point.parameterized(360, 0), 360, true), // default at 360
+        start = Point(),
+        end = Point() {
+    showText = true;
+    start = dragButtonBefore.position();
+    end = dragButtonAfter.position();
+  }
 
   //polygon instantiation is a PLACEHOLDER
-  Slice(
+  /// Parameterized Constructor
+  Slice.parameterized(
       {required this.corner,
       required this.task,
       required this.dragButtonBefore,
@@ -26,20 +41,29 @@ class Slice {
     dragButtonAfter.addListener(_onDragButtonChanged);
   }
 
-// Return Times to Radians
+// Getters and Setters
+  /// Converts the start Time to Radians
   double getStartTimeToRadians() {
-    return timeToRadians(task.getStartTime() - 3);
+    return timeToRadians(getStartTime() - 3);
   }
 
+  /// Converts the tasks's endTime to Radians
   double getEndTimeToRadians() {
-    return timeToRadians(task.getEndTime());
+    return timeToRadians(getEndTime());
   }
 
+  /// Gets the task's startTime.
+  double getStartTime() {
+    return task.getStartTime();
+  }
+
+  /// Gets the task's endTime.
   double getEndTime() {
     return task.getEndTime();
   }
 
-// Detects change
+// Methods
+  // Detects change
   void _onDragButtonChanged() {
     _updateSlice();
   }
@@ -50,12 +74,13 @@ class Slice {
     end = dragButtonAfter.position();
   }
 
-  //called when getting rid of slice
+  /// Called when getting rid of slice
   void dispose() {
     dragButtonBefore.removeListener(_onDragButtonChanged);
     dragButtonAfter.removeListener(_onDragButtonChanged);
   }
 
+  /// Converts a given time to Radians.
   double timeToRadians(double time) {
     int hour = time.toInt();
     int minute = ((time % 1) * 60).toInt();

@@ -1,4 +1,8 @@
 {
   "cmake.sourceDirectory": "C:/Users/joshu/Desktop/Fall 2024/WDD-330 Web Frontend II/pie/windows",
-  "cmake.ignoreCMakeListsMissing": true
+  "cmake.ignoreCMakeListsMissing": true,
+  "cSpell.ignoreWords": [
+    "dragbutton",
+    "piepainter"
+  ]
 }

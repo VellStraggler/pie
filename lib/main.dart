@@ -5,15 +5,16 @@ import 'package:pie_agenda/dragbutton.dart';
 import 'package:pie_agenda/pie.dart';
 import 'package:pie_agenda/piepainter.dart';
 import 'package:pie_agenda/point.dart';
+import 'package:pie_agenda/task.dart';
 
-
-int zoomLevel = 1; //zoom range from 1 to 3
-// Initialize PM Pie, AM Pie is for later
+int zoomLevel = 1; // zoom range from 1 to 3
 Pie pie = Pie();
 PiePainter painter = PiePainter(pie: pie);
+
 void main() {
   runApp(const MyApp());
 }
+
 void zoom(bool up) {
   if (up && zoomLevel < 3) {
     zoomLevel += 1;
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'pie-agenda',
+      title: 'Pie Agenda',
       theme: ThemeData(
         // press "r" in console to reload while running
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
@@ -51,7 +52,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  bool _editModeOn = false; // State variable to track edit mode
+  bool _editModeOn = false;
 
   void _toggleEditMode() {
     setState(() {
@@ -59,11 +60,78 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _showAddSliceDialog() {
+    final startTimeController = TextEditingController();
+    final endTimeController = TextEditingController();
+    final taskController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Add New Slice'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: startTimeController,
+                decoration: const InputDecoration(
+                  labelText: 'Start Time (integer)',
+                ),
+                keyboardType: TextInputType.number,
+              ),
+              TextField(
+                controller: endTimeController,
+                decoration: const InputDecoration(
+                  labelText: 'End Time (integer)',
+                ),
+                keyboardType: TextInputType.number,
+              ),
+              TextField(
+                controller: taskController,
+                decoration: const InputDecoration(
+                  labelText: 'Task Description',
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                final startTime = int.tryParse(startTimeController.text) ?? 0;
+                final endTime = int.tryParse(endTimeController.text) ?? 0;
+                final taskText = taskController.text;
+                Task task = Task.parameterized(
+                    taskText, startTime.toDouble(), endTime.toDouble());
+
+                if (startTime >= 0 && endTime >= 0 && taskText.isNotEmpty) {
+                  setState(() {
+                    pie.addSpecificSlice(startTime, endTime, task);
+                  });
+                  Navigator.of(context).pop();
+                } else {
+                  print("Invalid input for start or end time, or empty task");
+                }
+              },
+              child: const Text('Add Slice'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       // Put a widget in scaffold that can hold a "children" attribute
-      // fill that attribute with a list of button widgets to be functional dragbuttons
+      // fill that attribute with a list of button widgets to be functional dragButtons
       // Place the widgets on the screen with Position Widgets
       // Implement math function to position widget on the edge of the circle based on a time input (time syntax: 0.5 = 12:30)
       appBar: AppBar(
@@ -92,14 +160,16 @@ class _MyHomePageState extends State<MyHomePage> {
             _editModeOn ? "Edit Mode is ON " : "Edit Mode is OFF ",
             style: const TextStyle(fontSize: 24),
           ),
-          // For Eli
-          // Just make another floatingactionbutton
-          // also make the function it calls, whose syntax is very similar to _toggleEditMode
-          // call the addSlice method from pie.
           FloatingActionButton(
-            onPressed: _toggleEditMode, // Toggle edit mode on button press
+            onPressed: _toggleEditMode,
             tooltip: 'Toggle Edit Mode',
             child: const Icon(Icons.edit),
+          ),
+          const SizedBox(width: 10),
+          FloatingActionButton(
+            onPressed: _showAddSliceDialog,
+            tooltip: 'Add Slice',
+            child: const Icon(Icons.add),
           ),
         ],
       ),
