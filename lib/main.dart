@@ -76,14 +76,14 @@ class _MyHomePageState extends State<MyHomePage> {
               TextField(
                 controller: startTimeController,
                 decoration: const InputDecoration(
-                  labelText: 'Start Time (integer)',
+                  labelText: 'Start Time (int)',
                 ),
                 keyboardType: TextInputType.number,
               ),
               TextField(
                 controller: endTimeController,
                 decoration: const InputDecoration(
-                  labelText: 'End Time (integer)',
+                  labelText: 'Duration (int)',
                 ),
                 keyboardType: TextInputType.number,
               ),
