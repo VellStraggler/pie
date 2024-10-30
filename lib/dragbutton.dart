@@ -62,9 +62,9 @@ class _DragButtonState extends State<DragButton> {
       child: GestureDetector(
         onPanUpdate: (details) {
           setState(() {
-            currentPosition = Point();
-            currentPosition.x += details.delta.dx.toInt();
-            currentPosition.y += details.delta.dy.toInt();
+            currentPosition = Point.parameterized(
+            x:(currentPosition.x + details.delta.dx).toInt(),
+            y:(currentPosition.y + details.delta.dy).toInt());
           });
           _notifyListeners();
         },
@@ -74,7 +74,7 @@ class _DragButtonState extends State<DragButton> {
                 height: 24.0,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.blue,
+                  color: Colors.red,
                 ),
               )
             : Container(),

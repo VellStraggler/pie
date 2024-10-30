@@ -3,8 +3,12 @@ class Point {
   int y; // y axis coordinate.
 
   /// Default Constructor
-  Point(this.x, this.y);
+  Point() : x = 0, y = 0;
 
+  Point.parameterized(
+    {required this.x,
+    required this.y}
+  );
   int moveXAmount(int addToX) {
     x += addToX;
     return x;
