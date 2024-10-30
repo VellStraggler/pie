@@ -146,7 +146,7 @@ class _MyHomePageState extends State<MyHomePage> {
               painter: painter
             ),
             DragButton(
-            point: Point(0,0), 
+            point: Point(), 
             time: 0, 
             shown: true
           ),

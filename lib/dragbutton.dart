@@ -14,7 +14,7 @@ class DragButton extends StatefulWidget {
 
   DragButton({super.key, point, required this.time, required this.shown, Function(Point)? onDragUpdate})
     : onDragUpdate = onDragUpdate ?? ((point) {}),
-      point = Point(0,0);
+      point = Point();
 
   @override
   // ignore: library_private_types_in_public_api
@@ -37,10 +37,10 @@ class _DragButtonState extends State<DragButton> {
   @override
   void initState() {
     super.initState();
-    currentPosition = Point(
-      widget.point.x,
-      widget.point.y
-    );
+    Point newPoint = Point();
+    newPoint.x = widget.point.x;
+    newPoint.y = widget.point.y;
+    currentPosition = newPoint;
   }
 
   void _notifyListeners() {
@@ -62,10 +62,9 @@ class _DragButtonState extends State<DragButton> {
       child: GestureDetector(
         onPanUpdate: (details) {
           setState(() {
-            currentPosition = Point(
-              (currentPosition.x + details.delta.dx).toInt(),
-              (currentPosition.y + details.delta.dy).toInt(),
-            );
+            currentPosition = Point();
+            currentPosition.x += details.delta.dx.toInt();
+            currentPosition.y += details.delta.dy.toInt();
           });
           _notifyListeners();
         },

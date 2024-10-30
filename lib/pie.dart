@@ -16,8 +16,8 @@ class Pie {
         // Initialize with one full-circle slice
         slices = [
           Slice(
-              corner: Point(0, 0), // Assuming a placeholder corner point
-              task: Task("blank", 0.0, 11.5), // No task for the default slice
+              corner: Point(), // Assuming a placeholder corner point
+              task: Task(), // No task for the default slice
               dragButtonBefore: DragButton(
                   time: 0, // Time (initial time)
                   shown: true // Shown flag
@@ -49,7 +49,7 @@ class Pie {
     DragButton dragButtonAfter = DragButton(time: end.toDouble(),shown: true);
 
     // Create a new slice, with a corner and task (can be null or provided)
-    Slice newSlice = Slice.parameterized(
+    Slice newSlice = Slice(
       corner: Point(), // Placeholder corner
       task: task, // You can assign a task if needed
       dragButtonBefore: dragButtonBefore,
