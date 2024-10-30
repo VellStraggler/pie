@@ -14,7 +14,19 @@ class Pie {
       : center = Point(), // Default center point at (0,0)
         width = 500, // A circular boundary with radius 500
         // Initialize with one full-circle slice
-        slices = [Slice()];
+        slices = [
+          Slice(
+              corner: Point(0, 0), // Assuming a placeholder corner point
+              task: Task("blank", 0.0, 11.5), // No task for the default slice
+              dragButtonBefore: DragButton(
+                  time: 0, // Time (initial time)
+                  shown: true // Shown flag
+                  ),
+              dragButtonAfter: DragButton(
+                  time: 360, // End time
+                  shown: true // Shown flag
+                  ))
+        ];
 
   void addSlice() {
     // What Josh is doing:::
@@ -33,10 +45,8 @@ class Pie {
     //
 
     // Create drag buttons based on the provided start and end positions
-    DragButton dragButtonBefore = DragButton.parameterized(
-        Point.parameterized(start, 0), start.toInt(), true);
-    DragButton dragButtonAfter = DragButton.parameterized(
-        Point.parameterized(end, 0), end.toInt(), true);
+    DragButton dragButtonBefore = DragButton(time: start.toDouble(), shown:true);
+    DragButton dragButtonAfter = DragButton(time: end.toDouble(),shown: true);
 
     // Create a new slice, with a corner and task (can be null or provided)
     Slice newSlice = Slice.parameterized(
@@ -63,7 +73,7 @@ class Pie {
     print("Displaying the pie chart with ${slices.length} slices.");
     for (Slice slice in slices) {
       print(
-          "Slice from ${slice.dragButtonBefore.position().x} to ${slice.dragButtonAfter.position().x} degrees.");
+          "Slice from ${slice.dragButtonBefore.point.x} to ${slice.dragButtonAfter.point.x} degrees.");
     }
   }
 
