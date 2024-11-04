@@ -41,7 +41,7 @@ class PiePainter extends CustomPainter {
       final double textX = centerOffset.dx + pieRadius * 0.6 * cos(textAngle);
       final double textY = centerOffset.dy + pieRadius * 0.6 * sin(textAngle);
 
-      _drawText(canvas, "Slice", Offset(textX, textY));
+      _drawText(canvas, slice.task.getTaskName(), Offset(textX, textY));
     }
   }
 
