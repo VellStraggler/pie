@@ -113,6 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 if (startTime >= 0 && endTime >= 0 && taskText.isNotEmpty) {
                   setState(() {
                     pie.addSpecificSlice(startTime, endTime, task);
+                    painter = PiePainter(pie: pie);
                   });
                   Navigator.of(context).pop();
                 } else {
