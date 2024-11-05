@@ -13,7 +13,7 @@ To learn how to code an app that helps keep a daily agenda.
 
 Steps to build and/or run the software:
 
-1. First step here
+1. You must use the command "flutter run" to run the project, not the play button
 2.
 3.
 
