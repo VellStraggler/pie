@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:pie_agenda/dragbutton.dart';
 import 'package:pie_agenda/pie.dart';
 import 'package:pie_agenda/piepainter.dart';
-import 'package:pie_agenda/point.dart';
 import 'package:pie_agenda/task.dart';
 
 int zoomLevel = 1; // zoom range from 1 to 3
@@ -147,7 +146,6 @@ class _MyHomePageState extends State<MyHomePage> {
               painter: painter
             ),
             DragButton(
-            point: Point(), 
             time: 0, 
             shown: true
           ),
