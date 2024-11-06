@@ -63,8 +63,8 @@ class _DragButtonState extends State<DragButton> {
         onPanUpdate: (details) {
           setState(() {
             currentPosition = Point.parameterized(
-            x:(currentPosition.x + details.delta.dx).toInt(),
-            y:(currentPosition.y + details.delta.dy).toInt());
+            x:(currentPosition.x + details.delta.dx),
+            y:(currentPosition.y + details.delta.dy));
           });
           _notifyListeners();
         },
