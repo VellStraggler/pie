@@ -36,11 +36,12 @@ class Pie {
     // just to be clear, adding at index of length - 1.
     // create this task with default text of "New Task"
     // save it to the slice list in a slice
-    print("go josh");
+    Task task = Task();
+    addSpecificSlice(0, .5, task);
   }
 
   /// Method to add a slice to the pie chart
-  void addSpecificSlice(int start, int end, Task task) {
+  void addSpecificSlice(int start, double end, Task task) {
     // also need an addSlice method that takes only a starting point
     //
 

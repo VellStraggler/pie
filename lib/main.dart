@@ -105,7 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
             TextButton(
               onPressed: () {
                 final startTime = int.tryParse(startTimeController.text) ?? 0;
-                final endTime = int.tryParse(endTimeController.text) ?? 0;
+                final endTime = double.tryParse(endTimeController.text) ?? 0;
                 final taskText = taskController.text;
                 Task task = Task.parameterized(
                     taskText, startTime.toDouble(), endTime.toDouble());
@@ -138,20 +138,10 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            CustomPaint(
-              size: Size(pie.width, pie.width),
-              painter: painter
-            ),
-            DragButton(
-            point: Point(), 
-            time: 0, 
-            shown: true
-          ),
-          ]
-        ),
+        child: Stack(alignment: Alignment.center, children: [
+          CustomPaint(size: Size(pie.width, pie.width), painter: painter),
+          DragButton(point: Point(), time: 0, shown: true),
+        ]),
       ),
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
