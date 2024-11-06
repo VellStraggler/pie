@@ -14,7 +14,7 @@ class Pie {
       : center = Point(), // Default center point at (0,0)
         width = 500, // A circular boundary with radius 500
         // Initialize with one full-circle slice
-        slices = [Slice.()];
+        slices = [Slice()];
 
   void addSlice() {
     // What Josh is doing:::
