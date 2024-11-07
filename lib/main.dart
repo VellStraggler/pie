@@ -61,6 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _showAddSliceDialog() {
+    pie.addSlice();
     final startTimeController = TextEditingController();
     final endTimeController = TextEditingController();
     final taskController = TextEditingController();

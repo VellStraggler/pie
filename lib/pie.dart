@@ -29,9 +29,6 @@ class Pie {
         ];
 
   void addSlice() {
-    // What Josh is doing:::
-    // This is the default method for creating a new task
-    // it will default to a duration of 30 minutes or 0.5
     // it will be added to the task right before the "blank" task, which should always be the last task in the list
     // just to be clear, adding at index of length - 1.
     // create this task with default text of "New Task"
