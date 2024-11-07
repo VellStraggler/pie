@@ -103,11 +103,11 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             TextButton(
               onPressed: () {
-                final startTime = int.tryParse(startTimeController.text) ?? 0;
-                final endTime = int.tryParse(endTimeController.text) ?? 0;
+                final startTime = double.tryParse(startTimeController.text) ?? 0;
+                final endTime = double.tryParse(endTimeController.text) ?? 0;
                 final taskText = taskController.text;
                 Task task = Task.parameterized(
-                    taskText, startTime.toDouble(), endTime.toDouble());
+                    taskText, startTime, endTime);
 
                 if (startTime >= 0 && endTime >= 0 && taskText.isNotEmpty) {
                   setState(() {
