@@ -48,9 +48,11 @@ class PiePainter extends CustomPainter {
   void _drawText(Canvas canvas, String text, Offset offset) {
     TextStyle textStyle = TextStyle(color: Colors.black, fontSize: 14);
     TextSpan textSpan = TextSpan(text: text, style: textStyle);
-    TextPainter textPainter = TextPainter(text: textSpan, textDirection: TextDirection.ltr);
+    TextPainter textPainter =
+        TextPainter(text: textSpan, textDirection: TextDirection.ltr);
     textPainter.layout();
-    textPainter.paint(canvas, offset - Offset(textPainter.width / 2, textPainter.height / 2));
+    textPainter.paint(
+        canvas, offset - Offset(textPainter.width / 2, textPainter.height / 2));
   }
 
   @override

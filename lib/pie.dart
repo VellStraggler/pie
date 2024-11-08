@@ -34,7 +34,7 @@ class Pie {
     // create this task with default text of "New Task"
     // save it to the slice list in a slice
     Task task = Task();
-    addSpecificSlice(0, .5, task);
+    addSpecificSlice(6, .5, task);
   }
 
   /// Method to add a slice to the pie chart
