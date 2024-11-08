@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:pie_agenda/dragbutton.dart';
 import 'package:pie_agenda/pie.dart';
 import 'package:pie_agenda/piepainter.dart';
-import 'package:pie_agenda/point.dart';
 import 'package:pie_agenda/task.dart';
 
 int zoomLevel = 1; // zoom range from 1 to 3
@@ -77,14 +76,14 @@ class _MyHomePageState extends State<MyHomePage> {
               TextField(
                 controller: startTimeController,
                 decoration: const InputDecoration(
-                  labelText: 'Start Time (int)',
+                  labelText: 'Start Time (double)',
                 ),
                 keyboardType: TextInputType.number,
               ),
               TextField(
                 controller: endTimeController,
                 decoration: const InputDecoration(
-                  labelText: 'Duration (int)',
+                  labelText: 'Duration (double)',
                 ),
                 keyboardType: TextInputType.number,
               ),
@@ -105,15 +104,16 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             TextButton(
               onPressed: () {
-                final startTime = int.tryParse(startTimeController.text) ?? 0;
+                final startTime =
+                    double.tryParse(startTimeController.text) ?? 0;
                 final endTime = double.tryParse(endTimeController.text) ?? 0;
                 final taskText = taskController.text;
-                Task task = Task.parameterized(
-                    taskText, startTime.toDouble(), endTime.toDouble());
+                Task task = Task.parameterized(taskText, startTime, endTime);
 
                 if (startTime >= 0 && endTime >= 0 && taskText.isNotEmpty) {
                   setState(() {
                     pie.addSpecificSlice(startTime, endTime, task);
+                    painter = PiePainter(pie: pie);
                   });
                   Navigator.of(context).pop();
                 } else {
@@ -139,10 +139,14 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Stack(alignment: Alignment.center, children: [
-          CustomPaint(size: Size(pie.width, pie.width), painter: painter),
-          DragButton(point: Point(), time: 0, shown: true),
-        ]),
+        child: Positioned(
+          left: 0,
+          top: 0,
+          child: Stack(alignment: Alignment.center, children: [
+            CustomPaint(size: Size(pie.width, pie.width), painter: painter),
+            DragButton(time: 0, shown: true),
+          ]),
+        ),
       ),
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,

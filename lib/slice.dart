@@ -17,10 +17,8 @@ class Slice {
   Slice()
       : corner = Point(),
         task = Task(),
-        dragButtonBefore =
-            DragButton(point: Point(), time: 0, shown: true), // default at 360
-        dragButtonAfter =
-            DragButton(point: Point(), time: 0, shown: true), // default at 360
+        dragButtonBefore = DragButton(time: 0, shown: true), // default at 360
+        dragButtonAfter = DragButton(time: 0, shown: true), // default at 360
         start = Point(),
         end = Point() {
     showText = true;
