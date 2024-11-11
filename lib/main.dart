@@ -133,11 +133,16 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Stack(alignment: Alignment.center, children: [
-          CustomPaint(size: Size(pie.width, pie.width), painter: painter),
-          DragButton(time: 0, shown: true),
-        ]),
+      body: GestureDetector(
+        onTapDown: (details) {
+          print("Screen tapped at ${details.localPosition} within widget.");
+        },
+        child: Center(
+          child: Stack(alignment: Alignment.center, children: [
+            CustomPaint(size: Size(pie.width, pie.width), painter: painter),
+            DragButton(time: 0, shown: true),
+          ]),
+        ),
       ),
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
