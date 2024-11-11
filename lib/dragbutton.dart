@@ -13,13 +13,13 @@ class DragButton extends StatefulWidget {
   final Function(Point) onDragUpdate;
 
   DragButton({super.key, double time = 0, bool shown = true})
-      : point = Point(),
-        time = 0,
+      : time = 0,
+        point = setPointOnTime(time),
         shown = true,
         onDragUpdate = ((point) {});
 
   void setOnDragUpdate(Function(Point) onDragUpdate) {
-    this.onDragUpdate = onDragUpdate;
+    // this.onDragUpdate = onDragUpdate;
   }
 
   @override
@@ -32,6 +32,11 @@ class DragButton extends StatefulWidget {
 
   Point position() {
     return point;
+  }
+
+  static setPointOnTime(double time) {
+    // Determine where on the edge of the circle the button should be positioned
+    return Point.parameterized(x: (time * 100).toInt(), y: 0);
   }
 }
 
@@ -68,21 +73,36 @@ class _DragButtonState extends State<DragButton> {
         onPanUpdate: (details) {
           setState(() {
             currentPosition = Point.parameterized(
-                x: (details.localPosition.dx).toInt(),
-                y: (details.localPosition.dy).toInt());
+                // x: (details.localPosition.dx).toInt(),
+                // y: (details.localPosition.dy).toInt());
+                x: (currentPosition.x + details.delta.dx).toInt(),
+                y: (currentPosition.y + details.delta.dy).toInt());
           });
           _notifyListeners();
         },
         child: widget.shown
-            ? Container(
-                width: 24.0,
-                height: 24.0,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.red,
-                ),
+            ? Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: 24.0,
+                    height: 24.0,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Container(
+                    width: 12.0,
+                    height: 12.0,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               )
-            : Container(),
+            : Stack(),
       ),
     );
   }

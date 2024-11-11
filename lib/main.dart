@@ -5,7 +5,6 @@ import 'package:pie_agenda/dragbutton.dart';
 import 'package:pie_agenda/pie.dart';
 import 'package:pie_agenda/piepainter.dart';
 import 'package:pie_agenda/task.dart';
-import 'package:pie_agenda/point.dart';
 
 int zoomLevel = 1; // zoom range from 1 to 3
 Pie pie = Pie();
@@ -64,30 +63,14 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _initializeDragButtons() {
-    List<Point> points = [
-      Point.parameterized(x: 50, y: 100),
-      Point.parameterized(x: 150, y: 200),
-      Point.parameterized(x: 250, y: 300),
-    ];
-
     setState(() {
       // create the dragbutton here
-      DragButton newButton = DragButton(time: 0, shown: true);
-      newButton.onDragUpdate = (updatedPoint);
-      
+      // DragButton newButton = DragButton(time: 0, shown: true);
+      // newButton.onDragUpdate = (updatedPoint);
+
       //modify the point and onDragUpdate here
-      dragButtons = points
-          .map((point) => DragButton(
-                time: 0,
-                shown: true,
-                onDragUpdate: (updatedPoint) {
-                  setState(() {
-                    point.x = updatedPoint.x;
-                    point.y = updatedPoint.y;
-                  });
-                },
-              ))
-          .toList();
+      dragButtons.add(DragButton(time: 0, shown: true));
+      dragButtons.add(DragButton(time: 4, shown: true));
     });
   }
 
