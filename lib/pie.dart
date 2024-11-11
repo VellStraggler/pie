@@ -14,26 +14,16 @@ class Pie {
       : center = Point(), // Default center point at (0,0)
         width = 500, // A circular boundary with radius 500
         // Initialize with one full-circle slice
-        slices = [
-          Slice.parameterized(
-              corner: Point(), // Assuming a placeholder corner point
-              task: Task(), // No task for the default slice
-              dragButtonBefore: DragButton(
-                  time: 0, // Time (initial time)
-                  shown: true // Shown flag
-                  ),
-              dragButtonAfter: DragButton(
-                  time: 360, // End time
-                  shown: true // Shown flag
-                  ))
-        ];
+        slices = [] {
+    addSlice();
+  }
 
   void addSlice() {
     // it will be added to the task right before the "blank" task, which should always be the last task in the list
     // just to be clear, adding at index of length - 1.
     // create this task with default text of "New Task"
     // save it to the slice list in a slice
-    Task task = Task();
+    Task task = Task.parameterized("Example Task", 0, 0.5);
     addSpecificSlice(0, .5, task);
   }
 
