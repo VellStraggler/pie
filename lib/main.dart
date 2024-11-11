@@ -5,6 +5,7 @@ import 'package:pie_agenda/dragbutton.dart';
 import 'package:pie_agenda/pie.dart';
 import 'package:pie_agenda/piepainter.dart';
 import 'package:pie_agenda/task.dart';
+import 'package:pie_agenda/point.dart';
 
 int zoomLevel = 1; // zoom range from 1 to 3
 Pie pie = Pie();
@@ -52,6 +53,43 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   bool _editModeOn = false;
+
+  // List to hold multiple drag buttons
+  List<DragButton> dragButtons = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeDragButtons();
+  }
+
+  void _initializeDragButtons() {
+    List<Point> points = [
+      Point.parameterized(x: 50, y: 100),
+      Point.parameterized(x: 150, y: 200),
+      Point.parameterized(x: 250, y: 300),
+    ];
+
+    setState(() {
+      // create the dragbutton here
+      DragButton newButton = DragButton(time: 0, shown: true);
+      newButton.onDragUpdate = (updatedPoint);
+      
+      //modify the point and onDragUpdate here
+      dragButtons = points
+          .map((point) => DragButton(
+                time: 0,
+                shown: true,
+                onDragUpdate: (updatedPoint) {
+                  setState(() {
+                    point.x = updatedPoint.x;
+                    point.y = updatedPoint.y;
+                  });
+                },
+              ))
+          .toList();
+    });
+  }
 
   void _toggleEditMode() {
     setState(() {
@@ -103,11 +141,11 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             TextButton(
               onPressed: () {
-                final startTime = double.tryParse(startTimeController.text) ?? 0;
+                final startTime =
+                    double.tryParse(startTimeController.text) ?? 0;
                 final endTime = double.tryParse(endTimeController.text) ?? 0;
                 final taskText = taskController.text;
-                Task task = Task.parameterized(
-                    taskText, startTime, endTime);
+                Task task = Task.parameterized(taskText, startTime, endTime);
 
                 if (startTime >= 0 && endTime >= 0 && taskText.isNotEmpty) {
                   setState(() {
@@ -143,15 +181,13 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             CustomPaint(
               size: Size(pie.width, pie.width),
-              painter: painter
+              painter: painter,
             ),
-            DragButton(
-            time: 0, 
-            shown: true
-          ),
-          ]
+            ...dragButtons, // Spread operator to add each DragButton
+          ],
         ),
       ),
+
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[

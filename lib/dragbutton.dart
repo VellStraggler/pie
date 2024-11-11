@@ -13,10 +13,14 @@ class DragButton extends StatefulWidget {
   final Function(Point) onDragUpdate;
 
   DragButton({super.key, double time = 0, bool shown = true})
-   : point = Point(),
-     time = 0,
-     shown = true,
-     onDragUpdate = ((point) {});
+      : point = Point(),
+        time = 0,
+        shown = true,
+        onDragUpdate = ((point) {});
+
+  void setOnDragUpdate(Function(Point) onDragUpdate) {
+    this.onDragUpdate = onDragUpdate;
+  }
 
   @override
   // ignore: library_private_types_in_public_api
@@ -29,7 +33,6 @@ class DragButton extends StatefulWidget {
   Point position() {
     return point;
   }
-  
 }
 
 class _DragButtonState extends State<DragButton> {
@@ -65,8 +68,8 @@ class _DragButtonState extends State<DragButton> {
         onPanUpdate: (details) {
           setState(() {
             currentPosition = Point.parameterized(
-            x:(details.localPosition.dx).toInt(),
-            y:(details.localPosition.dy).toInt());
+                x: (details.localPosition.dx).toInt(),
+                y: (details.localPosition.dy).toInt());
           });
           _notifyListeners();
         },
