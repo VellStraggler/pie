@@ -96,14 +96,14 @@ class _MyHomePageState extends State<MyHomePage> {
               TextField(
                 controller: startTimeController,
                 decoration: const InputDecoration(
-                  labelText: 'Start Time (int)',
+                  labelText: 'Start Time (double)',
                 ),
                 keyboardType: TextInputType.number,
               ),
               TextField(
                 controller: endTimeController,
                 decoration: const InputDecoration(
-                  labelText: 'Duration (int)',
+                  labelText: 'Duration (double)',
                 ),
                 keyboardType: TextInputType.number,
               ),
@@ -159,15 +159,22 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            CustomPaint(
-              size: Size(pie.width, pie.width),
-              painter: painter,
-            ),
-            ...dragButtons, // Spread operator to add each DragButton
-          ],
+        child: Positioned (
+          left: 0,
+          top: 0,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              CustomPaint(
+                size: Size(pie.width, pie.width),
+                painter: painter
+              ),
+              DragButton(
+              time: 0, 
+              shown: true
+              ),
+            ]
+          ),
         ),
       ),
 
