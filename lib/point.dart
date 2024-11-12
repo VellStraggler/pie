@@ -1,6 +1,6 @@
 class Point {
-  int x; // X axis coordinate.
-  int y; // y axis coordinate.
+  double x; // X axis coordinate.
+  double y; // y axis coordinate.
 
   /// Default Constructor
   Point()
@@ -11,19 +11,19 @@ class Point {
   Point.parameterized({required this.x, required this.y});
 
   /// Set the Point values
-  void setPoint(int newX, int newY) {
+  void setPoint(double newX, double newY) {
     x = newX;
     y = newY;
   }
 
   /// Move X axis
-  int moveXAmount(int addToX) {
+  double moveXAmount(double addToX) {
     x += addToX;
     return x;
   }
 
   /// Move Y axis
-  int moveYAmount(int addToY) {
+  double moveYAmount(double addToY) {
     y += addToY;
     return y;
   }
