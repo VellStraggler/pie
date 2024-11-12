@@ -1,4 +1,6 @@
 // Emory Smith
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import 'dragbutton.dart';
@@ -15,6 +17,7 @@ class Slice {
   Point start; // Start Time
   Point end; // End time
   final VoidCallback? onTap;
+  final Color color;
 
   /// Default Constructor
   Slice({this.onTap})
@@ -23,7 +26,8 @@ class Slice {
         dragButtonBefore = DragButton(time: 0, shown: true), // default at 360
         dragButtonAfter = DragButton(time: 0, shown: true), // default at 360
         start = Point(),
-        end = Point() {
+        end = Point(),
+        color = _generateRandomColor() {
     showText = true;
     start = dragButtonBefore.position();
     end = dragButtonAfter.position();
@@ -38,7 +42,8 @@ class Slice {
     required this.dragButtonAfter,
     this.onTap,
   })  : start = dragButtonBefore.point,
-        end = dragButtonAfter.point {
+        end = dragButtonAfter.point,
+        color = _generateRandomColor() {
     _updateSlice();
     dragButtonBefore.addListener(_onDragButtonChanged);
     dragButtonAfter.addListener(_onDragButtonChanged);
@@ -103,4 +108,16 @@ class Slice {
   // We need it to not clash with the text color
   // You can do this by randomizing RGB values or randomizing a list of colors like Colors.blue
   // update the painter class to reflect this change
+  static Color _generateRandomColor() {
+    Random random = Random();
+    List<int> rgb = [
+    127 + random.nextInt(128), // Ensures a brighter color
+    127 + random.nextInt(128),
+    127 + random.nextInt(128)];
+
+    int numDrop = random.nextInt(3);
+    rgb[numDrop] = 0; //this demuddles the color to more saturated
+
+    return Color.fromARGB(255, rgb[0], rgb[1], rgb[2]);
+  }
 }
