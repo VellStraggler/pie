@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:pie_agenda/dragbutton.dart';
 import 'package:pie_agenda/pie.dart';
 import 'package:pie_agenda/piepainter.dart';
+import 'package:pie_agenda/slice.dart';
 import 'package:pie_agenda/task.dart';
 
 int zoomLevel = 1; // zoom range from 1 to 3
@@ -174,14 +175,7 @@ class _MyHomePageState extends State<MyHomePage> {
             top: 0,
             child: Stack(
               alignment: Alignment.center,
-              children: [
-                CustomPaint(
-                  size: Size(pie.width, pie.width),
-                  painter: painter
-                ),
-                DragButton(time: 0, shown: true),
-                DragButton(time: 4, shown: true),
-              ],
+              children: _buildPie(),
             ),
           ),
         ),
@@ -190,6 +184,17 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  List<Widget> _buildPie() {
+    List<Widget> dragButtons = [];
+    dragButtons.add(CustomPaint(
+                  size: const Size(pieDiameter + buttonDiameter, pieDiameter + buttonDiameter),
+                  painter: painter
+                ),);
+    for (Slice slice in pie.slices) {
+      dragButtons.add(slice.dragButtonBefore);
+    }
+    return dragButtons;
+  }
   // Helper function to build the floating action buttons
   Widget _buildFloatingActionButtons() {
     return Row(
