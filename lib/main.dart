@@ -53,6 +53,27 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   bool _editModeOn = false;
 
+  // List to hold multiple drag buttons
+  List<DragButton> dragButtons = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeDragButtons();
+  }
+
+  void _initializeDragButtons() {
+    setState(() {
+      // create the dragbutton here
+      // DragButton newButton = DragButton(time: 0, shown: true);
+      // newButton.onDragUpdate = (updatedPoint);
+
+      //modify the point and onDragUpdate here
+      dragButtons.add(DragButton(time: 0, shown: true));
+      dragButtons.add(DragButton(time: 4, shown: true));
+    });
+  }
+
   void _toggleEditMode() {
     setState(() {
       _editModeOn = !_editModeOn; // Toggle the edit mode
@@ -75,14 +96,14 @@ class _MyHomePageState extends State<MyHomePage> {
               TextField(
                 controller: startTimeController,
                 decoration: const InputDecoration(
-                  labelText: 'Start Time (int)',
+                  labelText: 'Start Time (double)',
                 ),
                 keyboardType: TextInputType.number,
               ),
               TextField(
                 controller: endTimeController,
                 decoration: const InputDecoration(
-                  labelText: 'Duration (int)',
+                  labelText: 'Duration (double)',
                 ),
                 keyboardType: TextInputType.number,
               ),
@@ -103,11 +124,11 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             TextButton(
               onPressed: () {
-                final startTime = int.tryParse(startTimeController.text) ?? 0;
-                final endTime = int.tryParse(endTimeController.text) ?? 0;
+                final startTime =
+                    double.tryParse(startTimeController.text) ?? 0;
+                final endTime = double.tryParse(endTimeController.text) ?? 0;
                 final taskText = taskController.text;
-                Task task = Task.parameterized(
-                    taskText, startTime.toDouble(), endTime.toDouble());
+                Task task = Task.parameterized(taskText, startTime, endTime);
 
                 if (startTime >= 0 && endTime >= 0 && taskText.isNotEmpty) {
                   setState(() {
@@ -138,12 +159,25 @@ class _MyHomePageState extends State<MyHomePage> {
           print("Screen tapped at ${details.localPosition} within widget.");
         },
         child: Center(
-          child: Stack(alignment: Alignment.center, children: [
-            CustomPaint(size: Size(pie.width, pie.width), painter: painter),
-            DragButton(time: 0, shown: true),
-          ]),
+          child: Positioned (
+          left: 0,
+          top: 0,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              CustomPaint(
+                size: Size(pie.width, pie.width),
+                painter: painter
+              ),
+              DragButton(
+              time: 0, 
+              shown: true
+              ),
+            ],
+          ),
         ),
       ),
+
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
