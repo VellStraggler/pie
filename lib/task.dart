@@ -1,14 +1,14 @@
 // Dennis Skoy
 // ignore_for_file: no_leading_underscores_for_local_identifiers
 
-/// And object that stores a task's main attributes:
+/// An object that stores a task's main attributes:
 /// * _taskName - The task's name.
 /// * _duration - How long a task lasts.
 /// * _startTime - When a task starts.
 /// * _endTime - When a task ends.
 class Task {
   // This is the data of a task/slice. This must be able to be stored in .json
-  String _taskName; //
+  String _taskName;
   double _duration;
   double _startTime;
   double _endTime;

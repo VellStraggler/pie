@@ -1,5 +1,5 @@
 // Emory Smith
-import 'package:flutter/material.dart';
+//import 'package:flutter/material.dart';
 
 import 'dragbutton.dart';
 import 'task.dart';
@@ -10,33 +10,33 @@ class Slice {
   DragButton dragButtonBefore;
   DragButton dragButtonAfter; //
   Task task; // Default Task
-  Point corner; // Position Point
+  //Point corner; // Position Point
   bool showText = true; //Shown flag
   Point start; // Start Time
   Point end; // End time
-  final VoidCallback? onTap;
+  //final VoidCallback? onTap;
 
   /// Default Constructor
-  Slice({this.onTap})
-      : corner = Point(),
+  Slice(
+      //{this.onTap}
+      )
+      :
+        //corner = Point(),
         task = Task(),
         dragButtonBefore = DragButton(time: 0, shown: true), // default at 360
         dragButtonAfter = DragButton(time: 0, shown: true), // default at 360
         start = Point(),
         end = Point() {
     showText = true;
-    start = dragButtonBefore.position();
-    end = dragButtonAfter.position();
   }
 
-  //polygon instantiation is a PLACEHOLDER
   /// Parameterized Constructor
   Slice.parameterized({
-    required this.corner,
+    //required this.corner,
     required this.task,
     required this.dragButtonBefore,
     required this.dragButtonAfter,
-    this.onTap,
+    //this.onTap,
   })  : start = dragButtonBefore.point,
         end = dragButtonAfter.point {
     _updateSlice();
@@ -47,12 +47,12 @@ class Slice {
 // Getters and Setters
   /// Converts the start Time to Radians
   double getStartTimeToRadians() {
-    return timeToRadians(getStartTime() - 3);
+    return _timeToRadians(getStartTime() - 3);
   }
 
   /// Converts the tasks's endTime to Radians
   double getEndTimeToRadians() {
-    return timeToRadians(getEndTime());
+    return _timeToRadians(getEndTime());
   }
 
   /// Gets the task's startTime.
@@ -67,11 +67,13 @@ class Slice {
 
 // Methods
   // Handle Taps
-  void handleTap() {
-    if (onTap != null) {
-      onTap!();
-    }
-  }
+  //void handleTap() {
+  //  if (
+  //    onTap != null
+  //    ) {
+  //    onTap!();
+  //  }
+  //}
 
   // Detects change
   void _onDragButtonChanged() {
@@ -91,16 +93,10 @@ class Slice {
   }
 
   /// Converts a given time to Radians.
-  double timeToRadians(double time) {
+  double _timeToRadians(double time) {
     int hour = time.toInt();
     int minute = ((time % 1) * 60).toInt();
     double ans = (hour % 12 + minute / 60) * (2 * 3.14159265 / 12);
     return ans;
   }
-
-  // for Tafara
-  // We need a final, randomized color variable
-  // We need it to not clash with the text color
-  // You can do this by randomizing RGB values or randomizing a list of colors like Colors.blue
-  // update the painter class to reflect this change
 }

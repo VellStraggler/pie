@@ -6,7 +6,7 @@ import 'task.dart';
 class Pie {
   List<Slice> slices; // A list of slices in the pie chart
   Point center; // Center point of the pie chart
-  double width; // Polygon representing the boundary of the pie chart
+  double width; // Pie chart radius
 
   // Constructor initializes with a single slice covering the whole circle
   /// Default Constructor
@@ -36,7 +36,7 @@ class Pie {
 
     // Create a new slice, with a corner and task (can be null or provided)
     Slice newSlice = Slice.parameterized(
-      corner: Point(), // Placeholder corner
+      //corner: Point(), // Placeholder corner
       task: task, // You can assign a task if needed
       dragButtonBefore: dragButtonBefore,
       dragButtonAfter: dragButtonAfter,
