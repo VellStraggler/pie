@@ -53,6 +53,27 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   bool _editModeOn = false;
 
+  // List to hold multiple drag buttons
+  List<DragButton> dragButtons = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeDragButtons();
+  }
+
+  void _initializeDragButtons() {
+    setState(() {
+      // create the dragbutton here
+      // DragButton newButton = DragButton(time: 0, shown: true);
+      // newButton.onDragUpdate = (updatedPoint);
+
+      //modify the point and onDragUpdate here
+      dragButtons.add(DragButton(time: 0, shown: true));
+      dragButtons.add(DragButton(time: 4, shown: true));
+    });
+  }
+
   void _toggleEditMode() {
     setState(() {
       _editModeOn = !_editModeOn; // Toggle the edit mode
@@ -103,11 +124,11 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             TextButton(
               onPressed: () {
-                final startTime = double.tryParse(startTimeController.text) ?? 0;
+                final startTime =
+                    double.tryParse(startTimeController.text) ?? 0;
                 final endTime = double.tryParse(endTimeController.text) ?? 0;
                 final taskText = taskController.text;
-                Task task = Task.parameterized(
-                    taskText, startTime, endTime);
+                Task task = Task.parameterized(taskText, startTime, endTime);
 
                 if (startTime >= 0 && endTime >= 0 && taskText.isNotEmpty) {
                   setState(() {
@@ -156,6 +177,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
       ),
+
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
