@@ -12,9 +12,11 @@ class DragButton extends StatefulWidget {
   final bool shown;
   final Function(Point) onDragUpdate;
 
-  DragButton({super.key, point, required this.time, required this.shown, Function(Point)? onDragUpdate})
-    : onDragUpdate = onDragUpdate ?? ((point) {}),
-      point = Point();
+  DragButton({super.key, double time = 0, bool shown = true})
+      : time = 0,
+        point = setPointOnTime(time),
+     shown = true,
+     onDragUpdate = ((point) {});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -28,6 +30,10 @@ class DragButton extends StatefulWidget {
     return point;
   }
   
+  static setPointOnTime(double time) {
+    // Determine where on the edge of the circle the button should be positioned
+    return Point.parameterized(x: (time * 100).toInt(), y: 0);
+  }
 }
 
 class _DragButtonState extends State<DragButton> {
@@ -69,15 +75,28 @@ class _DragButtonState extends State<DragButton> {
           _notifyListeners();
         },
         child: widget.shown
-            ? Container(
-                width: 24.0,
-                height: 24.0,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.red,
-                ),
+            ? Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: 24.0,
+                    height: 24.0,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Container(
+                    width: 12.0,
+                    height: 12.0,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               )
-            : Container(),
+            : Stack(),
       ),
     );
   }

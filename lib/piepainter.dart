@@ -18,6 +18,11 @@ class PiePainter extends CustomPainter {
     painter.color = Colors.blue;
     painter.strokeWidth = 3.0;
 
+    Paint outliner = Paint();
+    outliner.style = PaintingStyle.stroke;
+    outliner.color = Colors.blue;
+    outliner.strokeWidth = 3.0;
+
     // draw the pie chart
     Offset centerOffset = Offset(size.width / 2, size.width / 2);
     double pieRadius = size.width / 2;
@@ -37,20 +42,35 @@ class PiePainter extends CustomPainter {
       canvas.drawArc(
           rectArea, start, end, true, painter); //Angles are in radians.
 
+      canvas.drawArc(
+          rectArea, start, end, true, outliner);
+
       final double textAngle = start + end / 2;
       final double textX = centerOffset.dx + pieRadius * 0.6 * cos(textAngle);
       final double textY = centerOffset.dy + pieRadius * 0.6 * sin(textAngle);
 
-      _drawText(canvas, slice.task.getTaskName(), Offset(textX, textY));
+      _drawText(canvas, slice.task.getTaskName(), textX, textY, textAngle);
     }
   }
 
-  void _drawText(Canvas canvas, String text, Offset offset) {
+  void _drawText(Canvas canvas, String text, double x, double y, double angle) {
     TextStyle textStyle = TextStyle(color: Colors.black, fontSize: 14);
     TextSpan textSpan = TextSpan(text: text, style: textStyle);
     TextPainter textPainter = TextPainter(text: textSpan, textDirection: TextDirection.ltr);
     textPainter.layout();
-    textPainter.paint(canvas, offset - Offset(textPainter.width / 2, textPainter.height / 2));
+    canvas.save();
+    canvas.translate(x,y);
+    if (((pi/2) < angle) && (angle < (3*pi/2))) {
+      canvas.rotate(angle + pi);
+    }
+    else {
+      canvas.rotate(angle);
+    }
+    canvas.translate(-x,-y);
+    textPainter.paint(canvas, Offset(x,y) - Offset(textPainter.width / 2, textPainter.height / 2));
+    canvas.restore();
+    //textPainter.layout();
+    //textPainter.paint(canvas, Offset(x,y) - Offset(textPainter.width / 2, textPainter.height / 2));
   }
 
   @override
