@@ -28,7 +28,7 @@ class PiePainter extends CustomPainter {
     double pieRadius = size.width / 2;
     canvas.drawCircle(centerOffset, pieRadius, painter);
 
-    // draw the slices
+    // draw the slicess
     painter.color = Colors.yellow;
     Rect rectArea = Rect.fromCenter(
         center: centerOffset,

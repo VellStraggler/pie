@@ -1,6 +1,6 @@
 class Point {
-  int x; // X axis coordinate.
-  int y; // y axis coordinate.
+  double x; // X axis coordinate.
+  double y; // y axis coordinate.
 
   /// Default Constructor
   Point() : x = 0, y = 0;
@@ -9,17 +9,17 @@ class Point {
     {required this.x,
     required this.y}
   );
-  int moveXAmount(int addToX) {
+  double moveXAmount(int addToX) {
     x += addToX;
     return x;
   }
 
-  int moveYAmount(int addToY) {
+  double moveYAmount(int addToY) {
     y += addToY;
     return y;
   }
 
-  void setPoint(int newX, int newY) {
+  void setPoint(double newX, double newY) {
     x = newX;
     y = newY;
   }
