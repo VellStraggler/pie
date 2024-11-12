@@ -1,41 +1,39 @@
 // Emory Smith
+import 'dart:math';
+
+import 'package:flutter/material.dart';
+
 import 'dragbutton.dart';
 import 'task.dart';
-import 'point.dart';
 
 class Slice {
   // This is the visuals of a single task. It shows up as a slice on the pie chart
   DragButton dragButtonBefore;
-  DragButton dragButtonAfter; //
+  DragButton dragButtonAfter;
   Task task; // Default Task
-  Point corner; // Position Point
   bool showText = true; //Shown flag
-  Point start; // Start Time
-  Point end; // End time
+  final VoidCallback? onTap;
+  final Color color;
 
   /// Default Constructor
-  Slice()
-      : corner = Point(),
-        task = Task(),
-        dragButtonBefore = DragButton(time: 0, shown: true), // default at 360
-        dragButtonAfter = DragButton(time: 0, shown: true), // default at 360
-        start = Point(),
-        end = Point() {
+  Slice({this.onTap})
+      : task = Task(),
+        dragButtonBefore = DragButton(time: 0, shown: true),
+        dragButtonAfter = DragButton(time: 0, shown: true),
+        color = _generateRandomColor() {
     showText = true;
-    start = dragButtonBefore.position();
-    end = dragButtonAfter.position();
   }
 
-  //polygon instantiation is a PLACEHOLDER
+  // polygon instantiation is a PLACEHOLDER
   /// Parameterized Constructor
-  Slice.parameterized(
-      {required this.corner,
-      required this.task,
-      required this.dragButtonBefore,
-      required this.dragButtonAfter})
-      : start = dragButtonBefore.point,
-        end = dragButtonAfter.point {
+  Slice.parameterized({
+    required this.task,
+    this.onTap,
+  })  : color = _generateRandomColor(),
+        dragButtonAfter = DragButton(time: task.getEndTime(), shown: true),
+        dragButtonBefore = DragButton(time: task.getStartTime(), shown: true) {
     _updateSlice();
+    // Create drag buttons based on the provided start and end positions
     dragButtonBefore.addListener(_onDragButtonChanged);
     dragButtonAfter.addListener(_onDragButtonChanged);
   }
@@ -62,16 +60,20 @@ class Slice {
   }
 
 // Methods
+  // Handle Taps
+  void handleTap() {
+    if (onTap != null) {
+      onTap!();
+    }
+  }
+
   // Detects change
   void _onDragButtonChanged() {
     _updateSlice();
   }
 
   //updates the polygon to the new shape
-  void _updateSlice() {
-    start = dragButtonBefore.position();
-    end = dragButtonAfter.position();
-  }
+  void _updateSlice() {}
 
   /// Called when getting rid of slice
   void dispose() {
@@ -92,4 +94,17 @@ class Slice {
   // We need it to not clash with the text color
   // You can do this by randomizing RGB values or randomizing a list of colors like Colors.blue
   // update the painter class to reflect this change
+  static Color _generateRandomColor() {
+    Random random = Random();
+    List<int> rgb = [
+      127 + random.nextInt(128), // Ensures a brighter color
+      127 + random.nextInt(128),
+      127 + random.nextInt(128)
+    ];
+
+    int numDrop = random.nextInt(3);
+    rgb[numDrop] = 0; //this demuddles the color to more saturated
+
+    return Color.fromARGB(255, rgb[0], rgb[1], rgb[2]);
+  }
 }
