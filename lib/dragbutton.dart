@@ -10,17 +10,11 @@ class DragButton extends StatefulWidget {
   final Point point;
   final double time;
   final bool shown;
-  final Function(Point) onDragUpdate;
 
   DragButton({super.key, double time = 0, bool shown = true})
       : time = 0,
         point = setPointOnTime(time),
-        shown = true,
-        onDragUpdate = ((point) {});
-
-  void setOnDragUpdate(Function(Point) onDragUpdate) {
-    // this.onDragUpdate = onDragUpdate;
-  }
+     shown = true;
 
   @override
   // ignore: library_private_types_in_public_api
@@ -33,7 +27,6 @@ class DragButton extends StatefulWidget {
   Point position() {
     return point;
   }
-
   static setPointOnTime(double time) {
     // Determine where on the edge of the circle the button should be positioned
     return Point.parameterized(x: (time * 100), y: 0);
@@ -55,7 +48,6 @@ class _DragButtonState extends State<DragButton> {
 
   void _notifyListeners() {
     _dragController.add(null);
-    widget.onDragUpdate(currentPosition); // Notify parent about position change
   }
 
   @override

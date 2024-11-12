@@ -1,4 +1,6 @@
 // Emory Smith
+import 'package:flutter/material.dart';
+
 import 'dragbutton.dart';
 import 'task.dart';
 import 'point.dart';
@@ -12,15 +14,14 @@ class Slice {
   bool showText = true; //Shown flag
   Point start; // Start Time
   Point end; // End time
+  final VoidCallback? onTap;
 
   /// Default Constructor
-  Slice()
+  Slice({this.onTap})
       : corner = Point(),
         task = Task(),
-        dragButtonBefore = DragButton(
-           time:0, shown:true), // default at 360
-        dragButtonAfter = DragButton(
-           time:0, shown:true), // default at 360
+        dragButtonBefore = DragButton(time: 0, shown: true), // default at 360
+        dragButtonAfter = DragButton(time: 0, shown: true), // default at 360
         start = Point(),
         end = Point() {
     showText = true;
@@ -30,12 +31,13 @@ class Slice {
 
   //polygon instantiation is a PLACEHOLDER
   /// Parameterized Constructor
-  Slice.parameterized(
-      {required this.corner,
-      required this.task,
-      required this.dragButtonBefore,
-      required this.dragButtonAfter})
-      : start = dragButtonBefore.point,
+  Slice.parameterized({
+    required this.corner,
+    required this.task,
+    required this.dragButtonBefore,
+    required this.dragButtonAfter,
+    this.onTap,
+  })  : start = dragButtonBefore.point,
         end = dragButtonAfter.point {
     _updateSlice();
     dragButtonBefore.addListener(_onDragButtonChanged);
@@ -64,6 +66,13 @@ class Slice {
   }
 
 // Methods
+  // Handle Taps
+  void handleTap() {
+    if (onTap != null) {
+      onTap!();
+    }
+  }
+
   // Detects change
   void _onDragButtonChanged() {
     _updateSlice();
