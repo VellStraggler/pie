@@ -29,7 +29,6 @@ class DragButton extends StatefulWidget {
   Point position() {
     return point;
   }
-  
   static setPointOnTime(double time) {
     // Determine where on the edge of the circle the button should be positioned
     return Point.parameterized(x: (time * 100).toInt(), y: 0);
