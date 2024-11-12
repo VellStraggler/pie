@@ -14,19 +14,7 @@ class Pie {
       : center = Point(), // Default center point at (0,0)
         width = 500, // A circular boundary with radius 500
         // Initialize with one full-circle slice
-        slices = [
-          Slice.parameterized(
-              corner: Point(), // Assuming a placeholder corner point
-              task: Task(), // No task for the default slice
-              dragButtonBefore: DragButton(
-                  time: 0, // Time (initial time)
-                  shown: true // Shown flag
-                  ),
-              dragButtonAfter: DragButton(
-                  time: 360, // End time
-                  shown: true // Shown flag
-                  ))
-        ];
+        slices = [Slice()];
 
   void addSlice() {
     // What Josh is doing:::
