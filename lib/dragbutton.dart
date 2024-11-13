@@ -1,22 +1,24 @@
 // ignore_for_file: prefer_const_constructors_in_immutables, prefer_const_constructors
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:pie_agenda/pie.dart';
 import 'dart:async';
 import 'package:pie_agenda/point.dart';
 
 // linden jensen
 
+const double buttonRadius = 12;
+const double buttonDiameter = buttonRadius * 2;
+
 class DragButton extends StatefulWidget {
   final Point point;
   final double time;
   final bool shown;
-  final Function(Point) onDragUpdate;
 
-  DragButton({super.key, double time = 0, bool shown = true})
-      : time = 0,
-        point = setPointOnTime(time),
-     shown = true,
-     onDragUpdate = ((point) {});
+  DragButton({super.key, required this.time, required this.shown})
+      : point = setPointOnTime(time);
 
   @override
   // ignore: library_private_types_in_public_api
@@ -31,7 +33,11 @@ class DragButton extends StatefulWidget {
   }
   static setPointOnTime(double time) {
     // Determine where on the edge of the circle the button should be positioned
-    return Point.parameterized(x: (time * 100).toInt(), y: 0);
+    double theta = (-pi * time / 6.0) + (pi/2.0);
+    double x = (pieRadius*cos(theta)) + pieRadius;
+    double y = -(pieRadius*sin(theta)) + pieRadius;
+
+    return Point.parameterized(x: x, y: y);
   }
 }
 
@@ -50,7 +56,6 @@ class _DragButtonState extends State<DragButton> {
 
   void _notifyListeners() {
     _dragController.add(null);
-    widget.onDragUpdate(currentPosition); // Notify parent about position change
   }
 
   @override
@@ -68,8 +73,10 @@ class _DragButtonState extends State<DragButton> {
         onPanUpdate: (details) {
           setState(() {
             currentPosition = Point.parameterized(
-            x:(currentPosition.x + details.delta.dx),
-            y:(currentPosition.y + details.delta.dy));
+                // x: (details.localPosition.dx).toInt(),
+                // y: (details.localPosition.dy).toInt());
+                x: (currentPosition.x + details.delta.dx),
+                y: (currentPosition.y + details.delta.dy));
           });
           _notifyListeners();
         },
@@ -78,16 +85,16 @@ class _DragButtonState extends State<DragButton> {
                 alignment: Alignment.center,
                 children: [
                   Container(
-                    width: 24.0,
-                    height: 24.0,
+                    width: buttonRadius*2,
+                    height: buttonRadius*2,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: Colors.black,
                     ),
                   ),
                   Container(
-                    width: 12.0,
-                    height: 12.0,
+                    width: buttonRadius,
+                    height: buttonRadius,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: Colors.white,

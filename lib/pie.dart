@@ -1,7 +1,9 @@
 import 'slice.dart';
 import 'point.dart';
-import 'dragbutton.dart';
 import 'task.dart';
+
+const double pieDiameter = 500;
+const double pieRadius = pieDiameter / 2;
 
 class Pie {
   List<Slice> slices; // A list of slices in the pie chart
@@ -12,7 +14,7 @@ class Pie {
   /// Default Constructor
   Pie()
       : center = Point(), // Default center point at (0,0)
-        width = 500, // A circular boundary with radius 500
+        width = pieDiameter, // A circular boundary with radius 500
         // Initialize with one full-circle slice
         slices = [Slice()];
 
@@ -29,18 +31,8 @@ class Pie {
 
   /// Method to add a slice to the pie chart
   void addSpecificSlice(double start, double end, Task task) {
-    // Create drag buttons based on the provided start and end positions
-    DragButton dragButtonBefore =
-        DragButton(time: start, shown: true);
-    DragButton dragButtonAfter = DragButton(time: end, shown: true);
-
     // Create a new slice, with a corner and task (can be null or provided)
-    Slice newSlice = Slice.parameterized(
-      //corner: Point(), // Placeholder corner
-      task: task, // You can assign a task if needed
-      dragButtonBefore: dragButtonBefore,
-      dragButtonAfter: dragButtonAfter,
-    );
+    Slice newSlice = Slice.parameterized(task: task);
 
     // Adds the new slice to the list
     slices.add(newSlice);

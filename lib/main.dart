@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:pie_agenda/dragbutton.dart';
 import 'package:pie_agenda/pie.dart';
 import 'package:pie_agenda/piepainter.dart';
+import 'package:pie_agenda/slice.dart';
 import 'package:pie_agenda/task.dart';
 
 int zoomLevel = 1; // zoom range from 1 to 3
@@ -80,6 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+    // Opens dialog to add a new slice to the pie
   void _showAddSliceDialog() {
     final startTimeController = TextEditingController();
     final endTimeController = TextEditingController();
@@ -88,64 +90,73 @@ class _MyHomePageState extends State<MyHomePage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Add New Slice'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: startTimeController,
-                decoration: const InputDecoration(
-                  labelText: 'Start Time (double)',
-                ),
-                keyboardType: TextInputType.number,
-              ),
-              TextField(
-                controller: endTimeController,
-                decoration: const InputDecoration(
-                  labelText: 'Duration (double)',
-                ),
-                keyboardType: TextInputType.number,
-              ),
-              TextField(
-                controller: taskController,
-                decoration: const InputDecoration(
-                  labelText: 'Task Description',
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                final startTime =
-                    double.tryParse(startTimeController.text) ?? 0;
-                final endTime = double.tryParse(endTimeController.text) ?? 0;
-                final taskText = taskController.text;
-                Task task = Task.parameterized(taskText, startTime, endTime);
-
-                if (startTime >= 0 && endTime >= 0 && taskText.isNotEmpty) {
-                  setState(() {
-                    pie.addSpecificSlice(startTime, endTime, task);
-                    painter = PiePainter(pie: pie);
-                  });
-                  Navigator.of(context).pop();
-                } else {
-                  print("Invalid input for start or end time, or empty task");
-                }
-              },
-              child: const Text('Add Slice'),
-            ),
-          ],
+        return _buildAddSliceDialog(
+          startTimeController,
+          endTimeController,
+          taskController,
         );
       },
     );
+  }
+
+  // Dialog structure for adding a new slice
+  Widget _buildAddSliceDialog(
+      TextEditingController startController,
+      TextEditingController durationController,
+      TextEditingController taskController) {
+    return AlertDialog(
+      title: const Text('Add New Slice'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildTextField(startController, 'Start Time'),
+          _buildTextField(durationController, 'Duration'),
+          _buildTextField(taskController, 'Task Description'),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            _addUserSlice(
+              startController.text,
+              durationController.text,
+              taskController.text,
+            );
+            Navigator.of(context).pop();
+          },
+          child: const Text('Add Slice'),
+        ),
+      ],
+    );
+  }
+
+  // Creates labeled text fields for user input
+  Widget _buildTextField(TextEditingController controller, String label) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(labelText: label),
+      keyboardType: TextInputType.number,
+    );
+  }
+
+  // Validates input and adds a new slice if valid
+  void _addUserSlice(String startText, String endText, String taskText) {
+    final startTime = double.tryParse(startText) ?? 0;
+    final endTime = double.tryParse(endText) ?? 0;
+
+    if (startTime >= 0 && endTime >= 0 && taskText.isNotEmpty) {
+      setState(() {
+        Task task = Task.parameterized(taskText, startTime, endTime);
+        pie.addSpecificSlice(startTime, endTime, task);
+        painter = PiePainter(pie: pie); // Update painter with new data
+      });
+    } else {
+      print("Invalid input for start or end time, or empty task");
+    }
   }
 
   @override
@@ -160,44 +171,51 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         child: Center(
           child: Positioned (
-          left: 0,
-          top: 0,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              CustomPaint(
-                size: Size(pie.width, pie.width),
-                painter: painter
-              ),
-              DragButton(
-              time: 0, 
-              shown: true
-              ),
-            ],
+            left: 0,
+            top: 0,
+            child: Stack(
+              alignment: Alignment.center,
+              children: _buildPie(),
+            ),
           ),
         ),
       ),
+      floatingActionButton: _buildFloatingActionButtons(),
+    );
+  }
 
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          Text(
-            _editModeOn ? "Edit Mode is ON " : "Edit Mode is OFF ",
-            style: const TextStyle(fontSize: 24),
-          ),
-          FloatingActionButton(
-            onPressed: _toggleEditMode,
-            tooltip: 'Toggle Edit Mode',
-            child: const Icon(Icons.edit),
-          ),
-          const SizedBox(width: 10),
-          FloatingActionButton(
-            onPressed: _showAddSliceDialog,
-            tooltip: 'Add Slice',
-            child: const Icon(Icons.add),
-          ),
-        ],
-      ),
+  List<Widget> _buildPie() {
+    List<Widget> dragButtons = [];
+    dragButtons.add(CustomPaint(
+                  size: const Size(pieDiameter + buttonDiameter, pieDiameter + buttonDiameter),
+                  painter: painter
+                ),);
+    for (Slice slice in pie.slices) {
+      dragButtons.add(slice.dragButtonBefore);
+    }
+    return dragButtons;
+  }
+  // Helper function to build the floating action buttons
+  Widget _buildFloatingActionButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: <Widget>[
+        Text(
+          _editModeOn ? "Edit Mode is ON " : "Edit Mode is OFF ",
+          style: const TextStyle(fontSize: 24),
+        ),
+        FloatingActionButton(
+          onPressed: _toggleEditMode,
+          tooltip: 'Toggle Edit Mode',
+          child: const Icon(Icons.edit),
+        ),
+        const SizedBox(width: 10),
+        FloatingActionButton(
+          onPressed: _showAddSliceDialog,
+          tooltip: 'Add Slice',
+          child: const Icon(Icons.add),
+        ),
+      ],
     );
   }
 }
