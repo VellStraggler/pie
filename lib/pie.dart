@@ -47,15 +47,6 @@ class Pie {
     _updatePieChart();
   }
 
-  /// Displays the current pie chart.
-  void display() {
-    print("Displaying the pie chart with ${slices.length} slices.");
-    for (Slice slice in slices) {
-      print(
-          "Slice from ${slice.dragButtonBefore.point.x} to ${slice.dragButtonAfter.point.x} degrees.");
-    }
-  }
-
   /// Updates and redraws the pie chart after changes
   void _updatePieChart() {
     print("Pie chart updated. Total slices: ${slices.length}");

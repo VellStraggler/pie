@@ -19,12 +19,11 @@ class Slice {
   Slice({this.onTap})
       : task = Task(),
         dragButtonBefore = DragButton(time: 0, shown: true),
-        dragButtonAfter = DragButton(time: 0, shown: true),
+        dragButtonAfter = DragButton(time: 1, shown: true),
         color = _generateRandomColor() {
     showText = true;
   }
 
-  // polygon instantiation is a PLACEHOLDER
   /// Parameterized Constructor
   Slice.parameterized({
     required this.task,
@@ -46,7 +45,7 @@ class Slice {
 
   /// Converts the tasks's endTime to Radians
   double getEndTimeToRadians() {
-    return timeToRadians(getEndTime());
+    return timeToRadians(getEndTime() - getStartTime());
   }
 
   /// Gets the task's startTime.
