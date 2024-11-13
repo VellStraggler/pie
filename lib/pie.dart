@@ -30,8 +30,7 @@ class Pie {
   /// Method to add a slice to the pie chart
   void addSpecificSlice(double start, double end, Task task) {
     // Create drag buttons based on the provided start and end positions
-    DragButton dragButtonBefore =
-        DragButton(time: start, shown: true);
+    DragButton dragButtonBefore = DragButton(time: start, shown: true);
     DragButton dragButtonAfter = DragButton(time: end, shown: true);
 
     // Create a new slice, with a corner and task (can be null or provided)
