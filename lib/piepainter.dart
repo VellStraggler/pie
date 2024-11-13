@@ -6,7 +6,7 @@ import 'package:pie_agenda/pie.dart';
 import 'package:pie_agenda/slice.dart';
 import 'dart:math';
 
-const double line = 1/6;
+const double line = 1 / 6;
 
 class PiePainter extends CustomPainter {
   final Pie pie;
@@ -27,7 +27,8 @@ class PiePainter extends CustomPainter {
       ..strokeWidth = 3.0;
 
     // draw the pie chart
-    Offset centerOffset = Offset(pieRadius + buttonRadius, pieRadius + buttonRadius);
+    Offset centerOffset =
+        Offset(pieRadius + buttonRadius, pieRadius + buttonRadius);
     canvas.drawCircle(centerOffset, pieRadius, painter);
 
     // draw the slicess
@@ -36,17 +37,17 @@ class PiePainter extends CustomPainter {
         width: pieDiameter - 10,
         height: pieDiameter - 10);
     for (Slice slice in pie.slices) {
-      double start = slice.getStartTimeToRadians();
-      double end = slice.getEndTimeToRadians();
+      double start = slice.getStartTimeToRadians() - 3;
+      double duration = slice.getDurationTimeToRadians();
       painter.color = slice.color;
 
-      print('$start $end');
+      print('$start $duration');
       canvas.drawArc(
-          rectArea, start, end, true, painter); //Angles are in radians.
+          rectArea, start, duration, true, painter); //Angles are in radians.
 
-      canvas.drawArc(rectArea, start, end, true, outliner);
+      canvas.drawArc(rectArea, start, duration, true, outliner);
 
-      final double textAngle = start + end / 2;
+      final double textAngle = start + duration / 2;
       final double textX = centerOffset.dx + pieRadius * 0.6 * cos(textAngle);
       final double textY = centerOffset.dy + pieRadius * 0.6 * sin(textAngle);
 

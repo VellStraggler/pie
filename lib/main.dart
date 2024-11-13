@@ -6,6 +6,7 @@ import 'package:pie_agenda/pie.dart';
 import 'package:pie_agenda/piepainter.dart';
 import 'package:pie_agenda/slice.dart';
 import 'package:pie_agenda/task.dart';
+import 'package:pie_agenda/clock.dart';
 
 int zoomLevel = 1; // zoom range from 1 to 3
 Pie pie = Pie();
@@ -70,8 +71,6 @@ class _MyHomePageState extends State<MyHomePage> {
       // newButton.onDragUpdate = (updatedPoint);
 
       //modify the point and onDragUpdate here
-      dragButtons.add(DragButton(time: 0, shown: true));
-      dragButtons.add(DragButton(time: 4, shown: true));
     });
   }
 
@@ -145,14 +144,15 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Validates input and adds a new slice if valid
-  void _addUserSlice(String startText, String endText, String taskText) {
+  void _addUserSlice(String startText, String durationText, String taskText) {
     final startTime = double.tryParse(startText) ?? 0;
-    final endTime = double.tryParse(endText) ?? 0;
+    final durationTime = double.tryParse(durationText) ?? 0;
 
-    if (startTime >= 0 && endTime >= 0 && taskText.isNotEmpty) {
+    if (startTime >= 0 && durationTime >= 0 && taskText.isNotEmpty) {
       setState(() {
-        Task task = Task.parameterized(taskText, startTime, endTime);
-        pie.addSpecificSlice(startTime, endTime, task);
+        Task task =
+            Task.parameterized(taskText, startTime, startTime + durationTime);
+        pie.addSpecificSlice(startTime, durationTime, task);
         painter = PiePainter(pie: pie); // Update painter with new data
       });
     } else {
@@ -164,20 +164,22 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
-      ),
+          title: Text(widget.title),
+          bottom: const PreferredSize(
+              preferredSize: Size.fromHeight(30.0),
+              child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                      padding: EdgeInsets.only(left: 16.0, bottom: 8.0),
+                      child: Clock())))),
       body: GestureDetector(
         onTapDown: (details) {
           print("Screen tapped at ${details.localPosition} within widget.");
         },
         child: Center(
-          child: Positioned(
-            left: 0,
-            top: 0,
-            child: Stack(
-              alignment: Alignment.center,
-              children: _buildPie(),
-            ),
+          child: Stack(
+            alignment: Alignment.center,
+            children: _buildPie(),
           ),
         ),
       ),
@@ -193,8 +195,9 @@ class _MyHomePageState extends State<MyHomePage> {
               pieDiameter + buttonDiameter, pieDiameter + buttonDiameter),
           painter: painter),
     );
+    dragButtons.add(pie.slices[0].dragButtonBefore);
     for (Slice slice in pie.slices) {
-      dragButtons.add(slice.dragButtonBefore);
+      dragButtons.add(slice.dragButtonAfter);
     }
     return dragButtons;
   }
