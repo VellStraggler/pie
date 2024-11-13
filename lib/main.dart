@@ -150,7 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (startTime >= 0 && durationTime >= 0 && taskText.isNotEmpty) {
       setState(() {
         Task task = Task.parameterized(taskText, startTime, startTime + durationTime);
-        pie.addSpecificSlice(startTime, startTime + durationTime, task);
+        pie.addSpecificSlice(startTime, durationTime, task);
         painter = PiePainter(pie: pie); // Update painter with new data
       });
     } else {

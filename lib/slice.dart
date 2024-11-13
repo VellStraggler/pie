@@ -40,11 +40,22 @@ class Slice {
 // Getters and Setters
   /// Converts the start Time to Radians
   double getStartTimeToRadians() {
-    return timeToRadians(getStartTime() - 3);
+    double myStart = task.getStartTime();
+    print("start: $myStart");
+    return timeToRadians(getStartTime() - 3) + 3;
   }
 
   /// Converts the tasks's endTime to Radians
   double getEndTimeToRadians() {
+    return timeToRadians(getEndTime());
+  }
+
+  /// Converts the tasks's durationTime to Radians
+  double getDurationTimeToRadians() {
+    double myEnd = task.getEndTime();
+    print("end: $myEnd");
+    double myEndR = timeToRadians(getEndTime());
+    print("endRadians: $myEndR");
     return timeToRadians(getEndTime() - getStartTime());
   }
 
@@ -97,12 +108,12 @@ class Slice {
   static Color _generateRandomColor() {
     Random random = Random();
     List<int> rgb = [
-    127 + random.nextInt(128), // Ensures a brighter color
-    127 + random.nextInt(128),
-    127 + random.nextInt(128)];
+    150 + random.nextInt(106), // Ensures a brighter color
+    150 + random.nextInt(106),
+    150 + random.nextInt(106)];
 
     int numDrop = random.nextInt(3);
-    rgb[numDrop] = 0; //this demuddles the color to more saturated
+    rgb[numDrop] -= 75; //this demuddles the color to be more saturated
 
     return Color.fromARGB(255, rgb[0], rgb[1], rgb[2]);
   }
