@@ -1,11 +1,13 @@
 // ignore_for_file: avoid_print, prefer_final_fields
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:pie_agenda/dragbutton.dart';
 import 'package:pie_agenda/pie.dart';
 import 'package:pie_agenda/piepainter.dart';
 import 'package:pie_agenda/slice.dart';
 import 'package:pie_agenda/task.dart';
+import 'package:pie_agenda/clock.dart';
 
 int zoomLevel = 1; // zoom range from 1 to 3
 Pie pie = Pie();
@@ -164,7 +166,17 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
-      ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(30.0), 
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 16.0,bottom:8.0),
+              child: Clock()
+              )
+            )
+          )
+        ),
       body: GestureDetector(
         onTapDown: (details) {
           print("Screen tapped at ${details.localPosition} within widget.");
