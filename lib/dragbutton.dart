@@ -7,8 +7,6 @@ import 'package:pie_agenda/pie.dart';
 import 'dart:async';
 import 'package:pie_agenda/point.dart';
 
-// linden jensen
-
 const double buttonRadius = 12;
 const double buttonDiameter = buttonRadius * 2;
 
@@ -31,11 +29,12 @@ class DragButton extends StatefulWidget {
   Point position() {
     return point;
   }
+
+  /// Determine where on the edge of the circle the button should be positioned
   static setPointOnTime(double time) {
-    // Determine where on the edge of the circle the button should be positioned
-    double theta = (-pi * time / 6.0) + (pi/2.0);
-    double x = (pieRadius*cos(theta)) + pieRadius;
-    double y = -(pieRadius*sin(theta)) + pieRadius;
+    double theta = (-pi * time / 6.0) + (pi / 2.0);
+    double x = (pieRadius * cos(theta)) + pieRadius;
+    double y = -(pieRadius * sin(theta)) + pieRadius;
 
     return Point.parameterized(x: x, y: y);
   }
@@ -85,8 +84,8 @@ class _DragButtonState extends State<DragButton> {
                 alignment: Alignment.center,
                 children: [
                   Container(
-                    width: buttonRadius*2,
-                    height: buttonRadius*2,
+                    width: buttonRadius * 2,
+                    height: buttonRadius * 2,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: Colors.black,

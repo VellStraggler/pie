@@ -10,8 +10,8 @@ class Pie {
   Point center; // Center point of the pie chart
   double width; // Pie chart radius
 
-  // Constructor initializes with a single slice covering the whole circle
   /// Default Constructor
+  /// Constructor initializes with a single slice covering the whole circle
   Pie()
       : center = Point(), // Default center point at (0,0)
         width = pieDiameter, // A circular boundary with radius 500

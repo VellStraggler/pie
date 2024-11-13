@@ -29,7 +29,7 @@ void zoom(bool up) {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  /// This widget is the root of your application.
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +56,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   bool _editModeOn = false;
 
-  // List to hold multiple drag buttons
+  /// List to hold multiple drag buttons
   List<DragButton> dragButtons = [];
 
   @override
@@ -83,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-    // Opens dialog to add a new slice to the pie
+  /// Opens dialog to add a new slice to the pie
   void _showAddSliceDialog() {
     final startTimeController = TextEditingController();
     final endTimeController = TextEditingController();
@@ -101,7 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  // Dialog structure for adding a new slice
+  /// Dialog structure for adding a new slice
   Widget _buildAddSliceDialog(
       TextEditingController startController,
       TextEditingController durationController,
@@ -136,7 +136,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  // Creates labeled text fields for user input
+  /// Creates labeled text fields for user input
   Widget _buildTextField(TextEditingController controller, String label) {
     return TextField(
       controller: controller,
@@ -145,7 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  // Validates input and adds a new slice if valid
+  /// Validates input and adds a new slice if valid
   void _addUserSlice(String startText, String endText, String taskText) {
     final startTime = double.tryParse(startText) ?? 0;
     final endTime = double.tryParse(endText) ?? 0;
@@ -165,24 +165,20 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(30.0), 
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 16.0,bottom:8.0),
-              child: Clock()
-              )
-            )
-          )
-        ),
+          title: Text(widget.title),
+          bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(30.0),
+              child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                      padding: const EdgeInsets.only(left: 16.0, bottom: 8.0),
+                      child: Clock())))),
       body: GestureDetector(
         onTapDown: (details) {
           print("Screen tapped at ${details.localPosition} within widget.");
         },
         child: Center(
-          child: Positioned (
+          child: Positioned(
             left: 0,
             top: 0,
             child: Stack(
@@ -198,16 +194,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<Widget> _buildPie() {
     List<Widget> dragButtons = [];
-    dragButtons.add(CustomPaint(
-                  size: const Size(pieDiameter + buttonDiameter, pieDiameter + buttonDiameter),
-                  painter: painter
-                ),);
+    dragButtons.add(
+      CustomPaint(
+          size: const Size(
+              pieDiameter + buttonDiameter, pieDiameter + buttonDiameter),
+          painter: painter),
+    );
     for (Slice slice in pie.slices) {
       dragButtons.add(slice.dragButtonBefore);
     }
     return dragButtons;
   }
-  // Helper function to build the floating action buttons
+
+  /// Helper function to build the floating action buttons
   Widget _buildFloatingActionButtons() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
