@@ -18,7 +18,7 @@ class Slice {
   Slice({this.onTap})
       : task = Task(),
         dragButtonBefore = DragButton(time: 0, shown: true),
-        dragButtonAfter = DragButton(time: 0, shown: true),
+        dragButtonAfter = DragButton(time: 1, shown: true),
         color = _generateRandomColor() {
     showText = true;
   }
@@ -82,7 +82,7 @@ class Slice {
     ];
 
     int numDrop = random.nextInt(3);
-    rgb[numDrop] = 0; //this demuddles the color to more saturated
+    rgb[numDrop] -= 75; //this demuddles the color to be more saturated
 
     return Color.fromARGB(255, rgb[0], rgb[1], rgb[2]);
   }

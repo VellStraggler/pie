@@ -16,8 +16,8 @@ class Task {
   Task()
       : _taskName = "NewTask",
         _startTime = 0,
-        _endTime = 3,
-        _duration = 3;
+        _endTime = 1,
+        _duration = 1;
 
   /// Parameterized Task Constructor.
   /// Time Syntax is as such:
@@ -44,8 +44,7 @@ class Task {
 
   /// Returns the task's endTime.
   double getEndTime() {
-    "Get the EndTime";
-    return _endTime;
+    return _startTime + _duration;
   }
 
   /// Set the task's _taskName.
@@ -68,6 +67,7 @@ class Task {
   void changeEndTime(double _endTime) {
     assert(_endTime > _startTime, "endTime must be after _startTime.");
     this._endTime = _endTime;
+    _duration = _endTime - _startTime;
   }
 
 // Data Conversion

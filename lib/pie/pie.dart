@@ -16,17 +16,17 @@ class Pie {
       : center = Point(), // Default center point at (0,0)
         width = pieDiameter, // A circular boundary with radius 500
         // Initialize with one full-circle slice
-        slices = [Slice()];
+        slices = [] {
+    addSlice();
+  }
 
   void addSlice() {
-    // What Josh is doing:::
-    // This is the default method for creating a new task
-    // it will default to a duration of 30 minutes or 0.5
     // it will be added to the task right before the "blank" task, which should always be the last task in the list
     // just to be clear, adding at index of length - 1.
     // create this task with default text of "New Task"
     // save it to the slice list in a slice
-    print("go josh");
+    Task task = Task.parameterized("Example Task", 0, 0.5);
+    addSpecificSlice(0, .5, task);
   }
 
   /// Method to add a slice to the pie chart
@@ -43,15 +43,6 @@ class Pie {
   void removeSlice(Slice sliceToRemove) {
     slices.remove(sliceToRemove);
     _updatePieChart();
-  }
-
-  /// Displays the current pie chart.
-  void display() {
-    print("Displaying the pie chart with ${slices.length} slices.");
-    for (Slice slice in slices) {
-      print(
-          "Slice from ${slice.dragButtonBefore.point.x} to ${slice.dragButtonAfter.point.x} degrees.");
-    }
   }
 
   /// Updates and redraws the pie chart after changes

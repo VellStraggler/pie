@@ -7,6 +7,7 @@ import 'package:pie_agenda/pie/slice.dart';
 import 'dart:math';
 
 const double line = 1 / 6;
+const double line = 1 / 6;
 
 /// Creates the pie displayed on screen.
 class PiePainter extends CustomPainter {
@@ -38,17 +39,17 @@ class PiePainter extends CustomPainter {
         width: pieDiameter - 10,
         height: pieDiameter - 10);
     for (Slice slice in pie.slices) {
-      double start = slice.getStartTimeToRadians();
-      double end = slice.getEndTimeToRadians();
+      double start = slice.getStartTimeToRadians() - 3;
+      double duration = slice.getDurationTimeToRadians();
       painter.color = slice.color;
 
-      print('$start $end');
+      print('$start $duration');
       canvas.drawArc(
-          rectArea, start, end, true, painter); //Angles are in radians.
+          rectArea, start, duration, true, painter); //Angles are in radians.
 
       canvas.drawArc(rectArea, start, end, true, outliner);
 
-      final double textAngle = start + end / 2;
+      final double textAngle = start + duration / 2;
       final double textX = centerOffset.dx + pieRadius * 0.6 * cos(textAngle);
       final double textY = centerOffset.dy + pieRadius * 0.6 * sin(textAngle);
 
@@ -61,14 +62,22 @@ class PiePainter extends CustomPainter {
     TextSpan textSpan = TextSpan(text: text, style: textStyle);
     TextPainter textPainter =
         TextPainter(text: textSpan, textDirection: TextDirection.ltr);
+    TextPainter textPainter =
+        TextPainter(text: textSpan, textDirection: TextDirection.ltr);
     textPainter.layout();
     canvas.save();
     canvas.translate(x, y);
     if (((pi / 2) < angle) && (angle < (3 * pi / 2))) {
+    canvas.translate(x, y);
+    if (((pi / 2) < angle) && (angle < (3 * pi / 2))) {
       canvas.rotate(angle + pi);
+    } else {
     } else {
       canvas.rotate(angle);
     }
+    canvas.translate(-x, -y);
+    textPainter.paint(canvas,
+        Offset(x, y) - Offset(textPainter.width / 2, textPainter.height / 2));
     canvas.translate(-x, -y);
     textPainter.paint(canvas,
         Offset(x, y) - Offset(textPainter.width / 2, textPainter.height / 2));
