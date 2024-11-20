@@ -145,14 +145,17 @@ class MyHomePageState extends State<MyHomePage> {
 /// Build the Pie being used in the program.
 List<Widget> _buildPie() {
   List<Widget> dragButtons = [];
+
   dragButtons.add(
     CustomPaint(
         size: const Size(
             pieDiameter + buttonDiameter, pieDiameter + buttonDiameter),
         painter: painter),
   );
+
   for (Slice slice in pie.slices) {
     dragButtons.add(slice.dragButtonBefore);
+    //dragButtons.add(slice.dragButtonAfter);
   }
   return dragButtons;
 }
