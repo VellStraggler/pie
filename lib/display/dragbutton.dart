@@ -3,9 +3,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:pie_agenda/pie.dart';
+import 'package:pie_agenda/pie/pie.dart';
 import 'dart:async';
-import 'package:pie_agenda/point.dart';
+import 'package:pie_agenda/display/point.dart';
 
 const double buttonRadius = 12;
 const double buttonDiameter = buttonRadius * 2;
@@ -72,8 +72,6 @@ class _DragButtonState extends State<DragButton> {
         onPanUpdate: (details) {
           setState(() {
             currentPosition = Point.parameterized(
-                // x: (details.localPosition.dx).toInt(),
-                // y: (details.localPosition.dy).toInt());
                 x: (currentPosition.x + details.delta.dx),
                 y: (currentPosition.y + details.delta.dy));
           });

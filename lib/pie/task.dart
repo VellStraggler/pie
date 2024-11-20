@@ -1,4 +1,3 @@
-// Dennis Skoy
 // ignore_for_file: no_leading_underscores_for_local_identifiers
 
 /// An object that stores a task's main attributes:

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-
 class Clock extends StatefulWidget {
   @override
   _TimeClock createState() => _TimeClock();
@@ -15,7 +14,6 @@ class _TimeClock extends State<Clock> {
   void initState() {
     super.initState();
     startTimer();
-    
   }
 
   String _formatTime(DateTime time) {
@@ -47,7 +45,7 @@ class _TimeClock extends State<Clock> {
   Widget build(BuildContext context) {
     return Text(
       _time,
-      style: TextStyle(fontSize: 24),      
+      style: TextStyle(fontSize: 24),
     );
   }
 }

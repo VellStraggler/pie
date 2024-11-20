@@ -1,13 +1,14 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:pie_agenda/dragbutton.dart';
-import 'package:pie_agenda/pie.dart';
-import 'package:pie_agenda/slice.dart';
+import 'package:pie_agenda/display/dragbutton.dart';
+import 'package:pie_agenda/pie/pie.dart';
+import 'package:pie_agenda/pie/slice.dart';
 import 'dart:math';
 
-const double line = 1/6;
+const double line = 1 / 6;
 
+/// Creates the pie displayed on screen.
 class PiePainter extends CustomPainter {
   final Pie pie;
 
@@ -26,11 +27,12 @@ class PiePainter extends CustomPainter {
       ..color = Colors.black
       ..strokeWidth = 3.0;
 
-    // draw the pie chart
-    Offset centerOffset = Offset(pieRadius + buttonRadius, pieRadius + buttonRadius);
+    // Draw the pie chart.
+    Offset centerOffset =
+        Offset(pieRadius + buttonRadius, pieRadius + buttonRadius);
     canvas.drawCircle(centerOffset, pieRadius, painter);
 
-    // draw the slicess
+    // Draw the slices
     Rect rectArea = Rect.fromCenter(
         center: centerOffset,
         width: pieDiameter - 10,

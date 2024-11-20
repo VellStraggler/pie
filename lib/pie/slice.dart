@@ -1,9 +1,8 @@
-// Emory Smith
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import 'dragbutton.dart';
+import '../display/dragbutton.dart';
 import 'task.dart';
 
 class Slice {
@@ -11,9 +10,9 @@ class Slice {
   DragButton dragButtonBefore;
   DragButton dragButtonAfter;
   Task task; // Default Task
-  bool showText = true; //Shown flag
+  bool showText = true; // Shown flag
   final VoidCallback? onTap;
-  final Color color;
+  Color color;
 
   /// Default Constructor
   Slice({this.onTap})
@@ -24,19 +23,13 @@ class Slice {
     showText = true;
   }
 
-  // polygon instantiation is a PLACEHOLDER
   /// Parameterized Constructor
   Slice.parameterized({
     required this.task,
     this.onTap,
   })  : color = _generateRandomColor(),
         dragButtonAfter = DragButton(time: task.getEndTime(), shown: true),
-        dragButtonBefore = DragButton(time: task.getStartTime(), shown: true) {
-    _updateSlice();
-    // Create drag buttons based on the provided start and end positions
-    dragButtonBefore.addListener(_onDragButtonChanged);
-    dragButtonAfter.addListener(_onDragButtonChanged);
-  }
+        dragButtonBefore = DragButton(time: task.getStartTime(), shown: true);
 
 // Getters and Setters
   /// Converts the start Time to Radians
@@ -61,26 +54,10 @@ class Slice {
 
 // Methods
   // Handle Taps
-  //void handleTap() {
-  //  if (
-  //    onTap != null
-  //    ) {
-  //    onTap!();
-  //  }
-  //}
-
-  // Detects change
-  void _onDragButtonChanged() {
-    _updateSlice();
-  }
-
-  //updates the polygon to the new shape
-  void _updateSlice() {}
-
-  /// Called when getting rid of slice
-  void dispose() {
-    dragButtonBefore.removeListener(_onDragButtonChanged);
-    dragButtonAfter.removeListener(_onDragButtonChanged);
+  void handleTap() {
+    if (onTap != null) {
+      onTap!();
+    }
   }
 
   /// Converts a given time to Radians.

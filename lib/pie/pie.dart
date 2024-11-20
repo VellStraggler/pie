@@ -1,5 +1,5 @@
 import 'slice.dart';
-import 'point.dart';
+import '../display/point.dart';
 import 'task.dart';
 
 const double pieDiameter = 500;
@@ -41,7 +41,6 @@ class Pie {
 
   /// Remove a slice from the pie chart
   void removeSlice(Slice sliceToRemove) {
-    sliceToRemove.dispose();
     slices.remove(sliceToRemove);
     _updatePieChart();
   }
