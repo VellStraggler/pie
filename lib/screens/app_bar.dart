@@ -12,12 +12,12 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       title: Text(title),
-      bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(30.0),
+      bottom: const PreferredSize(
+        preferredSize: Size.fromHeight(30.0),
         child: Align(
           alignment: Alignment.centerLeft,
           child: Padding(
-            padding: const EdgeInsets.only(left: 16.0, bottom: 8.0),
+            padding: EdgeInsets.only(left: 16.0, bottom: 8.0),
             child: Clock(),
           ),
         ),

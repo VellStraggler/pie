@@ -36,9 +36,8 @@ class MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  @override
-
   /// Builds the display for the Home Page.
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MyAppBar(title: widget.title),
@@ -125,7 +124,7 @@ class MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  /// Validates input and adds a new slice if valid
+  /// Validates input and adds a new slice if valid.
   void _addUserSlice(String startText, String endText, String taskText) {
     final startTime = double.tryParse(startText) ?? 0;
     final endTime = double.tryParse(endText) ?? 0;
