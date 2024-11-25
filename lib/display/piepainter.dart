@@ -1,13 +1,14 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:pie_agenda/dragbutton.dart';
-import 'package:pie_agenda/pie.dart';
-import 'package:pie_agenda/slice.dart';
+import 'package:pie_agenda/display/dragbutton.dart';
+import 'package:pie_agenda/pie/pie.dart';
+import 'package:pie_agenda/pie/slice.dart';
 import 'dart:math';
 
-const double line = 1/6;
+const double line = 1 / 6;
 
+/// Creates the pie displayed on screen.
 class PiePainter extends CustomPainter {
   final Pie pie;
 
@@ -26,45 +27,28 @@ class PiePainter extends CustomPainter {
       ..color = Colors.black
       ..strokeWidth = 3.0;
 
-    // draw the pie chart
-    Offset centerOffset = Offset(pieRadius + buttonRadius, pieRadius + buttonRadius);
+    // Draw the pie chart.
+    Offset centerOffset =
+        Offset(pieRadius + buttonRadius, pieRadius + buttonRadius);
     canvas.drawCircle(centerOffset, pieRadius, painter);
 
-    // Draw time
-    Rect timeArea = Rect.fromCenter(
-        center: centerOffset,
-        width: pieDiameter + 25,
-        height: pieDiameter + 25);
-    DateTime time = DateTime.now();
-    double hour = time.hour.toDouble();
-    if (hour >= 12) {
-      hour = hour - 12;
-    }
-    double minute = time.minute.toDouble();
-    double second = time.second.toDouble();
-    double radianTime = (hour + minute/60 + second/3600) * pi/6;
-    painter.color = Colors.red;
-    canvas.drawArc(timeArea, 3*pi/2, radianTime, true, painter);
-    
-
-    // draw the slicess
+    // Draw the slices
     Rect rectArea = Rect.fromCenter(
         center: centerOffset,
         width: pieDiameter - 10,
         height: pieDiameter - 10);
     for (Slice slice in pie.slices) {
-      double start = slice.getStartTimeToRadians() - 3;
-      double duration = slice.getDurationTimeToRadians();
+      double start = slice.getStartTimeToRadians();
+      double end = slice.getEndTimeToRadians();
       painter.color = slice.color;
 
-      print('$start $duration');
+      print('$start $end');
       canvas.drawArc(
-          rectArea, start, duration, true, painter); //Angles are in radians.
+          rectArea, start, end, true, painter); //Angles are in radians.
 
-      canvas.drawArc(
-          rectArea, start, duration, true, outliner);
+      canvas.drawArc(rectArea, start, end, true, outliner);
 
-      final double textAngle = start + duration / 2;
+      final double textAngle = start + end / 2;
       final double textX = centerOffset.dx + pieRadius * 0.6 * cos(textAngle);
       final double textY = centerOffset.dy + pieRadius * 0.6 * sin(textAngle);
 
@@ -75,20 +59,20 @@ class PiePainter extends CustomPainter {
   void _drawText(Canvas canvas, String text, double x, double y, double angle) {
     TextStyle textStyle = TextStyle(color: Colors.black, fontSize: 14);
     TextSpan textSpan = TextSpan(text: text, style: textStyle);
-    TextPainter textPainter = TextPainter(text: textSpan, textDirection: TextDirection.ltr);
+    TextPainter textPainter =
+        TextPainter(text: textSpan, textDirection: TextDirection.ltr);
     textPainter.layout();
     canvas.save();
-    canvas.translate(x,y);
-    if (((pi/2) < angle) && (angle < (3*pi/2))) {
+    canvas.translate(x, y);
+    if (((pi / 2) < angle) && (angle < (3 * pi / 2))) {
       canvas.rotate(angle + pi);
-    }
-    else {
+    } else {
       canvas.rotate(angle);
     }
-    canvas.translate(-x,-y);
-    textPainter.paint(canvas, Offset(x,y) - Offset(textPainter.width / 2, textPainter.height / 2));
+    canvas.translate(-x, -y);
+    textPainter.paint(canvas,
+        Offset(x, y) - Offset(textPainter.width / 2, textPainter.height / 2));
     canvas.restore();
-    //textPainter.layout();
     //textPainter.paint(canvas, Offset(x,y) - Offset(textPainter.width / 2, textPainter.height / 2));
   }
 

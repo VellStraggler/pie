@@ -1,9 +1,8 @@
-// Emory Smith
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import 'dragbutton.dart';
+import '../display/dragbutton.dart';
 import 'task.dart';
 
 class Slice {
@@ -11,9 +10,9 @@ class Slice {
   DragButton dragButtonBefore;
   DragButton dragButtonAfter;
   Task task; // Default Task
-  bool showText = true; //Shown flag
+  bool showText = true; // Shown flag
   final VoidCallback? onTap;
-  final Color color;
+  Color color;
 
   /// Default Constructor
   Slice({this.onTap})
@@ -30,33 +29,17 @@ class Slice {
     this.onTap,
   })  : color = _generateRandomColor(),
         dragButtonAfter = DragButton(time: task.getEndTime(), shown: true),
-        dragButtonBefore= DragButton(time: task.getStartTime(), shown: true) {
-    _updateSlice();
-    // Create drag buttons based on the provided start and end positions
-    dragButtonBefore.addListener(_onDragButtonChanged);
-    dragButtonAfter.addListener(_onDragButtonChanged);
-  }
+        dragButtonBefore = DragButton(time: task.getStartTime(), shown: true);
 
 // Getters and Setters
   /// Converts the start Time to Radians
   double getStartTimeToRadians() {
-    double myStart = task.getStartTime();
-    print("start: $myStart");
-    return timeToRadians(getStartTime() - 3) + 3;
+    return _timeToRadians(getStartTime() - 3);
   }
 
   /// Converts the tasks's endTime to Radians
   double getEndTimeToRadians() {
-    return timeToRadians(getEndTime());
-  }
-
-  /// Converts the tasks's durationTime to Radians
-  double getDurationTimeToRadians() {
-    double myEnd = task.getEndTime();
-    print("end: $myEnd");
-    double myEndR = timeToRadians(getEndTime());
-    print("endRadians: $myEndR");
-    return timeToRadians(getEndTime() - getStartTime());
+    return _timeToRadians(getEndTime());
   }
 
   /// Gets the task's startTime.
@@ -77,23 +60,8 @@ class Slice {
     }
   }
 
-  // Detects change
-  void _onDragButtonChanged() {
-    _updateSlice();
-  }
-
-  //updates the polygon to the new shape
-  void _updateSlice() {
-  }
-
-  /// Called when getting rid of slice
-  void dispose() {
-    dragButtonBefore.removeListener(_onDragButtonChanged);
-    dragButtonAfter.removeListener(_onDragButtonChanged);
-  }
-
   /// Converts a given time to Radians.
-  double timeToRadians(double time) {
+  double _timeToRadians(double time) {
     int hour = time.toInt();
     int minute = ((time % 1) * 60).toInt();
     double ans = (hour % 12 + minute / 60) * (2 * 3.14159265 / 12);
@@ -108,9 +76,10 @@ class Slice {
   static Color _generateRandomColor() {
     Random random = Random();
     List<int> rgb = [
-    150 + random.nextInt(106), // Ensures a brighter color
-    150 + random.nextInt(106),
-    150 + random.nextInt(106)];
+      127 + random.nextInt(128), // Ensures a brighter color
+      127 + random.nextInt(128),
+      127 + random.nextInt(128)
+    ];
 
     int numDrop = random.nextInt(3);
     rgb[numDrop] -= 75; //this demuddles the color to be more saturated
