@@ -4,8 +4,9 @@ import 'package:pie_agenda/pie/task.dart';
 import 'package:pie_agenda/display/dragbutton.dart';
 import 'package:pie_agenda/pie/pie.dart';
 import 'package:pie_agenda/display/piepainter.dart';
-import 'app_bar.dart';
+//import 'app_bar.dart';
 import 'floating_buttons.dart';
+import '../display/clock.dart';
 
 Pie pie = Pie();
 PiePainter painter = PiePainter(pie: pie);
@@ -40,7 +41,19 @@ class MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyAppBar(title: widget.title),
+      appBar: AppBar(
+        title: Text(widget.title),
+        bottom: const PreferredSize(
+          preferredSize: Size.fromHeight(30.0),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: EdgeInsets.only(left: 16.0, bottom: 8.0),
+              child: Clock(),
+            ),
+          ),
+        ),
+      ),
       body: GestureDetector(
         onTapDown: (details) {
           print("Screen tapped at ${details.localPosition} within widget.");
