@@ -6,6 +6,7 @@ import 'package:pie_agenda/pie/pie.dart';
 import 'package:pie_agenda/display/piepainter.dart';
 import 'app_bar.dart';
 import 'floating_buttons.dart';
+import 'dart:async';
 
 Pie pie = Pie();
 PiePainter painter = PiePainter(pie: pie);
@@ -22,9 +23,12 @@ class MyHomePage extends StatefulWidget {
 /// App Home Page
 class MyHomePageState extends State<MyHomePage> {
   bool _editModeOn = false;
+  Timer? _timer;
+
   @override
   void initState() {
     super.initState();
+    startTimer();
   }
 
   /// Creates labeled text fields for user input
@@ -139,6 +143,35 @@ class MyHomePageState extends State<MyHomePage> {
     } else {
       print("Invalid input for start or end time, or empty task");
     }
+  }
+
+  // Timer
+  //String _formatTime(int hour, int min) {
+  //  String code = "AM";
+  //  if (hour >= 12) {
+  //    hour = hour - 12;
+  //    code = "PM";
+  //  }
+
+  //  return '${hour.toString()}:${min.toString().padLeft(2, '0')} $code';
+  //}
+
+  void startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      //DateTime time = DateTime.now();
+      setState(() {
+        //_hour = time.hour;
+        //_minute = time.minute;
+        //_current_time = _formatTime(_hour, _minute);
+        painter = PiePainter(pie: pie);
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 }
 
