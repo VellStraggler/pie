@@ -6,7 +6,8 @@ import 'package:pie_agenda/pie.dart';
 import 'package:pie_agenda/piepainter.dart';
 import 'package:pie_agenda/slice.dart';
 import 'package:pie_agenda/task.dart';
-import 'package:pie_agenda/clock.dart';
+//import 'package:pie_agenda/clock.dart';
+import 'dart:async';
 
 int zoomLevel = 1; // zoom range from 1 to 3
 Pie pie = Pie();
@@ -54,6 +55,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   bool _editModeOn = false;
+  Timer? _timer;
+  int _hour = DateTime.now().hour;
+  int _minute = DateTime.now().minute;
+  String _current_time = "";
 
   // List to hold multiple drag buttons
   List<DragButton> dragButtons = [];
@@ -62,6 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _initializeDragButtons();
+    startTimer();
   }
 
   void _initializeDragButtons() {
@@ -163,13 +169,13 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
-        bottom: const PreferredSize(
-          preferredSize: Size.fromHeight(30.0), 
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(30.0), 
           child: Align(
             alignment: Alignment.centerLeft,
             child: Padding(
-              padding: EdgeInsets.only(left: 16.0,bottom:8.0),
-              child: Clock()
+              padding: const EdgeInsets.only(left: 16.0,bottom:8.0),
+              child: Text(_current_time, style: const TextStyle(fontSize: 24),)
               )
             )
           )
@@ -223,5 +229,34 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ],
     );
+  }
+
+  // Timer stuff
+String _formatTime(int hour, int min) {
+    String code = "AM";
+    if (hour >= 12) {
+      hour = hour - 12;
+      code = "PM";
+    }
+
+    return '${hour.toString()}:${min.toString().padLeft(2, '0')} $code';
+  }
+
+void startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      DateTime time = DateTime.now();
+      setState(() {
+        _hour = time.hour;
+        _minute = time.minute;
+        _current_time = _formatTime(_hour, _minute);
+        painter = PiePainter(pie: pie);
+      });
+    });
+  }
+
+@override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 }

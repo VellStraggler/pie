@@ -24,13 +24,14 @@ class _TimeClock extends State<Clock> {
 
   String _formatTime(DateTime time) {
     int hour = time.hour;
+    int minute = time.minute;
     String code = "AM";
     if (hour >= 12) {
       hour = hour - 12;
       code = "PM";
     }
 
-    return '${hour.toString()}:${time.minute.toString().padLeft(2, '0')} $code';
+    return '${hour.toString()}:${minute.toString().padLeft(2, '0')} $code';
   }
 
   void startTimer() {
