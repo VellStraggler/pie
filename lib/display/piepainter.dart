@@ -32,6 +32,22 @@ class PiePainter extends CustomPainter {
         Offset(pieRadius + buttonRadius, pieRadius + buttonRadius);
     canvas.drawCircle(centerOffset, pieRadius, painter);
 
+    // Draw time
+    Rect timeArea = Rect.fromCenter(
+        center: centerOffset,
+        width: pieDiameter + 25,
+        height: pieDiameter + 25);
+    DateTime time = DateTime.now();
+    double hour = time.hour.toDouble();
+    if (hour >= 12) {
+      hour = hour - 12;
+    }
+    double minute = time.minute.toDouble();
+    double second = time.second.toDouble();
+    double radianTime = (hour + minute / 60 + second / 3600) * pi / 6;
+    painter.color = Colors.red;
+    canvas.drawArc(timeArea, 3 * pi / 2, radianTime, true, painter);
+
     // Draw the slices
     Rect rectArea = Rect.fromCenter(
         center: centerOffset,
