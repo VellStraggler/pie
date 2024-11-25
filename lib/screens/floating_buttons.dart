@@ -34,6 +34,12 @@ class FloatingButtons extends StatelessWidget {
           tooltip: 'Add Slice',
           child: const Icon(Icons.add),
         ),
+        const SizedBox(width: 10),
+        FloatingActionButton(
+          onPressed: showAddSliceDialog,
+          tooltip: 'Add Slice',
+          child: const Icon(Icons.delete_forever),
+        )
       ],
     );
   }
