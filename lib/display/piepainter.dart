@@ -39,7 +39,7 @@ class PiePainter extends CustomPainter {
         height: pieDiameter - 10);
     for (Slice slice in pie.slices) {
       double start = slice.getStartTimeToRadians();
-      double end = slice.getEndTimeToRadians();
+      double end = slice.getDurationToRadians();
       painter.color = slice.color;
 
       print('$start $end');

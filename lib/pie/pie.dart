@@ -16,36 +16,20 @@ class Pie {
       : center = Point(), // Default center point at (0,0)
         width = pieDiameter, // A circular boundary with radius 500
         // Initialize with one full-circle slice
-        slices = [] {
-    addSlice();
-  }
-
-  void addSlice() {
-    // create this task with default text of "New Task"
-    // save it to the slice list in a slice
-    Task task = Task.parameterized("Example Task", 0, 0.5);
-    addSpecificSlice(0, .5, task);
-  }
+        slices = [Slice()];
 
   /// Method to add a slice to the pie chart
-  void addSpecificSlice(double start, double end, Task task) {
+  void addSlice(Task task) {
     // Create a new slice, with a corner and task (can be null or provided)
     Slice newSlice = Slice.parameterized(task: task);
 
     // Adds the new slice to the list
     slices.add(newSlice);
-    _updatePieChart();
   }
 
   /// Remove a slice from the pie chart
   void removeSlice(Slice sliceToRemove) {
     slices.remove(sliceToRemove);
-    _updatePieChart();
-  }
-
-  /// Updates and redraws the pie chart after changes
-  void _updatePieChart() {
-    print("Pie chart updated. Total slices: ${slices.length}");
   }
 
   @override

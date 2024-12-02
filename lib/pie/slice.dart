@@ -38,8 +38,8 @@ class Slice {
   }
 
   /// Converts the tasks's endTime to Radians
-  double getEndTimeToRadians() {
-    return _timeToRadians(getEndTime());
+  double getDurationToRadians() {
+    return _timeToRadians(getDuration());
   }
 
   /// Gets the task's startTime.
@@ -47,9 +47,13 @@ class Slice {
     return task.getStartTime();
   }
 
-  /// Gets the task's endTime.
   double getEndTime() {
     return task.getEndTime();
+  }
+
+  /// Gets the task's endTime.
+  double getDuration() {
+    return task.getDuration();
   }
 
 // Methods

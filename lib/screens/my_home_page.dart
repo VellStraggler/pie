@@ -92,7 +92,13 @@ class MyHomePageState extends State<MyHomePage> {
             onPressed: _removeSelectedSlice,
             tooltip: 'Delete Slice',
             child: const Icon(Icons.delete_forever),
-          )
+          ),
+        const SizedBox(width: 10),
+        FloatingActionButton(
+          onPressed: _listSlices,
+          tooltip: 'List Slices',
+          child: const Icon(Icons.list),
+        )
       ],
     );
   }
@@ -166,18 +172,61 @@ class MyHomePageState extends State<MyHomePage> {
   /// Validates input and adds a new slice if valid.
   void _addUserSlice(String startText, String endText, String taskText) {
     final startTime = double.tryParse(startText) ?? 0;
-    final endTime = double.tryParse(endText) ?? 0;
+    final duration = double.tryParse(endText) ?? 0;
 
-    if (startTime >= 0 && endTime >= 0 && taskText.isNotEmpty) {
+    if (startTime >= 0 && duration >= 0 && taskText.isNotEmpty) {
       setState(() {
-        Task task = Task.parameterized(taskText, startTime, endTime);
-        pie.addSpecificSlice(startTime, endTime, task);
+        Task task = Task.parameterized(taskText, startTime, duration);
+        pie.addSlice(task);
         painter = PiePainter(pie: pie); // Update painter with new data
       });
     } else {
-      print("Invalid input for start or end time, or empty task");
+      print("Invalid input for start, end time, or empty task");
     }
   }
+
+  void _listSlices() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Slices'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: pie.slices.map((slice) {
+                return ListTile(
+                  title: Text(slice.task.getTaskName()),
+                  subtitle: Text(
+                      'Start: ${_formatTime(slice.getStartTime())}, End: ${_formatTime(slice.getEndTime())}'),
+                );
+              }).toList(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: const Text('Close'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// Converts a slice's time to a time format.
+String _formatTime(double time) {
+  int hours = time.floor();
+  int minutes = ((time - hours) * 60).round();
+  // Handle cases where minutes might be 60 due to rounding
+  if (minutes == 60) {
+    hours += 1;
+    minutes = 0;
+  }
+  // Ensure hours wrap around if exceeding 24
+  hours = hours % 24;
+  String timeOfDay = "$hours:$minutes";
+  return timeOfDay;
 }
 
 /// Build the PiePainter and the DragButtons being used in the program.
