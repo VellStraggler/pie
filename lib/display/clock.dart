@@ -49,7 +49,7 @@ class _TimeClock extends State<Clock> {
   Widget build(BuildContext context) {
     return Text(
       _time,
-      style: TextStyle(fontSize: 24),
+      style: const TextStyle(fontSize: 24),
     );
   }
 }

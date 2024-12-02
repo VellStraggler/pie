@@ -21,8 +21,6 @@ class Pie {
   }
 
   void addSlice() {
-    // it will be added to the task right before the "blank" task, which should always be the last task in the list
-    // just to be clear, adding at index of length - 1.
     // create this task with default text of "New Task"
     // save it to the slice list in a slice
     Task task = Task.parameterized("Example Task", 0, 0.5);
