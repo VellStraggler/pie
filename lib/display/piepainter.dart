@@ -41,7 +41,8 @@ class PiePainter extends CustomPainter {
     double second = time.second.toDouble();
     double radianTime = (hour + minute / 60 + second / 3600) * pi / 6;
     painter.color = Colors.black;
-    canvas.drawArc(timeArea, 0, 10, true, painter);
+    canvas.drawArc(timeArea, (3 * pi / 2) + radianTime, (2 * pi) - (radianTime),
+        true, painter);
     painter.color = Colors.red;
     canvas.drawArc(timeArea, 3 * pi / 2, radianTime, true, painter);
 
