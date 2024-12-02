@@ -56,6 +56,10 @@ class Slice {
     return task.getDuration();
   }
 
+  String getTaskName() {
+    return task.getTaskName();
+  }
+
 // Methods
   // Handle Taps
   void handleTap() {

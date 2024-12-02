@@ -194,7 +194,7 @@ class MyHomePageState extends State<MyHomePage> {
             child: ListBody(
               children: pie.slices.map((slice) {
                 return ListTile(
-                  title: Text(slice.task.getTaskName()),
+                  title: Text(slice.getTaskName()),
                   subtitle: Text(
                       'Start: ${_formatTime(slice.getStartTime())}, End: ${_formatTime(slice.getEndTime())}'),
                 );
