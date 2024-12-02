@@ -9,6 +9,7 @@ import 'floating_buttons.dart';
 
 Pie pie = Pie();
 PiePainter painter = PiePainter(pie: pie);
+bool _editModeOn = false;
 
 /// Home Page Widget
 class MyHomePage extends StatefulWidget {
@@ -21,7 +22,6 @@ class MyHomePage extends StatefulWidget {
 
 /// App Home Page
 class MyHomePageState extends State<MyHomePage> {
-  bool _editModeOn = false;
   @override
   void initState() {
     super.initState();
@@ -52,7 +52,7 @@ class MyHomePageState extends State<MyHomePage> {
             top: 0,
             child: Stack(
               alignment: Alignment.center,
-              children: _buildPie(),
+              children: _buildPie(_editModeOn),
             ),
           ),
         ),
@@ -142,20 +142,24 @@ class MyHomePageState extends State<MyHomePage> {
   }
 }
 
-/// Build the Pie being used in the program.
-List<Widget> _buildPie() {
-  List<Widget> dragButtons = [];
+/// Build the PiePainter and the DragButtons being used in the program.
+List<Widget> _buildPie(bool editModeOn) {
+  List<Widget> pieAndDragButtons = [];
+  // First item is the pie painter, the rest are dragbuttons
+  // (and eventually guidebuttons too)
 
-  dragButtons.add(
+  pieAndDragButtons.add(
     CustomPaint(
         size: const Size(
             pieDiameter + buttonDiameter, pieDiameter + buttonDiameter),
         painter: painter),
   );
-
-  for (Slice slice in pie.slices) {
-    dragButtons.add(slice.dragButtonBefore);
-    //dragButtons.add(slice.dragButtonAfter);
+  if (editModeOn) {
+    // There are n + 1 dragbuttons for n slices
+    pieAndDragButtons.add(pie.slices[0].dragButtonBefore); // Here's the +1
+    for (Slice slice in pie.slices) {
+      pieAndDragButtons.add(slice.dragButtonAfter);
+    }
   }
-  return dragButtons;
+  return pieAndDragButtons;
 }
