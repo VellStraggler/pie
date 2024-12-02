@@ -5,7 +5,6 @@ import 'package:pie_agenda/display/dragbutton.dart';
 import 'package:pie_agenda/pie/pie.dart';
 import 'package:pie_agenda/display/piepainter.dart';
 import 'package:pie_agenda/display/clock.dart';
-//import 'floating_buttons.dart';
 
 Pie pie = Pie();
 PiePainter painter = PiePainter(pie: pie);
