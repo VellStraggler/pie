@@ -6,11 +6,13 @@ class FloatingButtons extends StatelessWidget {
   final bool editModeOn;
   final VoidCallback toggleEditMode;
   final VoidCallback showAddSliceDialog;
+  final VoidCallback removeSelectedSlice;
 
   const FloatingButtons({
     required this.editModeOn,
     required this.toggleEditMode,
     required this.showAddSliceDialog,
+    required this.removeSelectedSlice,
     super.key,
   });
 
@@ -35,11 +37,12 @@ class FloatingButtons extends StatelessWidget {
           child: const Icon(Icons.add),
         ),
         const SizedBox(width: 10),
-        FloatingActionButton(
-          onPressed: showAddSliceDialog,
-          tooltip: 'Add Slice',
-          child: const Icon(Icons.delete_forever),
-        )
+        if (editModeOn)
+          FloatingActionButton(
+            onPressed: removeSelectedSlice,
+            tooltip: 'Delete Slice',
+            child: const Icon(Icons.delete_forever),
+          )
       ],
     );
   }

@@ -61,6 +61,7 @@ class MyHomePageState extends State<MyHomePage> {
         editModeOn: _editModeOn,
         toggleEditMode: _toggleEditMode,
         showAddSliceDialog: _showAddSliceDialog,
+        removeSelectedSlice: _removeSelectedSlice,
       ),
     );
   }
@@ -88,6 +89,12 @@ class MyHomePageState extends State<MyHomePage> {
         );
       },
     );
+  }
+
+  // WIP
+  void _removeSelectedSlice() {
+    // get the last slice that was selected
+    // remove it from the slices
   }
 
   /// Dialog structure for adding a new slice
