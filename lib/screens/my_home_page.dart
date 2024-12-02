@@ -4,8 +4,8 @@ import 'package:pie_agenda/pie/task.dart';
 import 'package:pie_agenda/display/dragbutton.dart';
 import 'package:pie_agenda/pie/pie.dart';
 import 'package:pie_agenda/display/piepainter.dart';
-import 'app_bar.dart';
-import 'floating_buttons.dart';
+import 'package:pie_agenda/display/clock.dart';
+//import 'floating_buttons.dart';
 
 Pie pie = Pie();
 PiePainter painter = PiePainter(pie: pie);
@@ -41,28 +41,60 @@ class MyHomePageState extends State<MyHomePage> {
   /// Builds the display for the Home Page.
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyAppBar(title: widget.title),
-      body: GestureDetector(
-        onTapDown: (details) {
-          print("Screen tapped at ${details.localPosition} within widget.");
-        },
-        child: Center(
-          child: Positioned(
-            left: 0,
-            top: 0,
-            child: Stack(
-              alignment: Alignment.center,
-              children: _buildPie(_editModeOn),
+        appBar: AppBar(
+            title: Text(widget.title),
+            bottom: const PreferredSize(
+                preferredSize: Size.fromHeight(30.0),
+                child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                        padding: EdgeInsets.only(left: 16.0, bottom: 8.0),
+                        child: Clock())))),
+        body: GestureDetector(
+          onTapDown: (details) {
+            print("Screen tapped at ${details.localPosition} within widget.");
+          },
+          child: Center(
+            child: Positioned(
+              left: 0,
+              top: 0,
+              child: Stack(
+                alignment: Alignment.center,
+                children: _buildPie(_editModeOn),
+              ),
             ),
           ),
         ),
-      ),
-      floatingActionButton: FloatingButtons(
-        editModeOn: _editModeOn,
-        toggleEditMode: _toggleEditMode,
-        showAddSliceDialog: _showAddSliceDialog,
-        removeSelectedSlice: _removeSelectedSlice,
-      ),
+        floatingActionButton: _buildFloatingActionButtons());
+  }
+
+  Widget _buildFloatingActionButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: <Widget>[
+        Text(
+          _editModeOn ? "Edit Mode is ON " : "Edit Mode is OFF ",
+          style: const TextStyle(fontSize: 24),
+        ),
+        FloatingActionButton(
+          onPressed: _toggleEditMode,
+          tooltip: 'Toggle Edit Mode',
+          child: const Icon(Icons.edit),
+        ),
+        const SizedBox(width: 10),
+        FloatingActionButton(
+          onPressed: _showAddSliceDialog,
+          tooltip: 'Add Slice',
+          child: const Icon(Icons.add),
+        ),
+        const SizedBox(width: 10),
+        if (_editModeOn)
+          FloatingActionButton(
+            onPressed: _removeSelectedSlice,
+            tooltip: 'Delete Slice',
+            child: const Icon(Icons.delete_forever),
+          )
+      ],
     );
   }
 
