@@ -4,5 +4,7 @@
   "cSpell.ignoreWords": [
     "dragbutton",
     "piepainter"
-  ]
+  ],
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "Dart-Code.dart-code"
 }
