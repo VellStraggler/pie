@@ -4,8 +4,7 @@ import 'package:pie_agenda/pie/task.dart';
 import 'package:pie_agenda/display/dragbutton.dart';
 import 'package:pie_agenda/pie/pie.dart';
 import 'package:pie_agenda/display/piepainter.dart';
-import 'app_bar.dart';
-import 'floating_buttons.dart';
+import 'package:pie_agenda/display/clock.dart';
 
 Pie pie = Pie();
 PiePainter painter = PiePainter(pie: pie);
@@ -36,33 +35,70 @@ class MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  @override
-
   /// Builds the display for the Home Page.
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyAppBar(title: widget.title),
-      body: GestureDetector(
-        onTapDown: (details) {
-          print("Screen tapped at ${details.localPosition} within widget.");
-        },
-        child: Center(
-          child: Positioned(
-            left: 0,
-            top: 0,
-            child: Stack(
-              alignment: Alignment.center,
-              children: _buildPie(_editModeOn),
+        appBar: AppBar(
+            title: Text(widget.title),
+            bottom: const PreferredSize(
+                preferredSize: Size.fromHeight(30.0),
+                child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                        padding: EdgeInsets.only(left: 16.0, bottom: 8.0),
+                        child: Clock())))),
+        body: GestureDetector(
+          onTapDown: (details) {
+            print("Screen tapped at ${details.localPosition} within widget.");
+          },
+          child: Center(
+            child: Positioned(
+              left: 0,
+              top: 0,
+              child: Stack(
+                alignment: Alignment.center,
+                children: _buildPie(_editModeOn),
+              ),
             ),
           ),
         ),
-      ),
-      floatingActionButton: FloatingButtons(
-        editModeOn: _editModeOn,
-        toggleEditMode: _toggleEditMode,
-        showAddSliceDialog: _showAddSliceDialog,
-        removeSelectedSlice: _removeSelectedSlice,
-      ),
+        floatingActionButton: _buildFloatingActionButtons());
+  }
+
+  Widget _buildFloatingActionButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: <Widget>[
+        Text(
+          _editModeOn ? "Edit Mode is ON " : "Edit Mode is OFF ",
+          style: const TextStyle(fontSize: 24),
+        ),
+        FloatingActionButton(
+          onPressed: _toggleEditMode,
+          tooltip: 'Toggle Edit Mode',
+          child: const Icon(Icons.edit),
+        ),
+        const SizedBox(width: 10),
+        FloatingActionButton(
+          onPressed: _showAddSliceDialog,
+          tooltip: 'Add Slice',
+          child: const Icon(Icons.add),
+        ),
+        const SizedBox(width: 10),
+        if (_editModeOn)
+          FloatingActionButton(
+            onPressed: _removeSelectedSlice,
+            tooltip: 'Delete Slice',
+            child: const Icon(Icons.delete_forever),
+          ),
+        const SizedBox(width: 10),
+        FloatingActionButton(
+          onPressed: _listSlices,
+          tooltip: 'List Slices',
+          child: const Icon(Icons.list),
+        )
+      ],
     );
   }
 
@@ -132,21 +168,64 @@ class MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  /// Validates input and adds a new slice if valid
+  /// Validates input and adds a new slice if valid.
   void _addUserSlice(String startText, String endText, String taskText) {
     final startTime = double.tryParse(startText) ?? 0;
-    final endTime = double.tryParse(endText) ?? 0;
+    final duration = double.tryParse(endText) ?? 0;
 
-    if (startTime >= 0 && endTime >= 0 && taskText.isNotEmpty) {
+    if (startTime >= 0 && duration >= 0 && taskText.isNotEmpty) {
       setState(() {
-        Task task = Task.parameterized(taskText, startTime, endTime);
-        pie.addSpecificSlice(startTime, endTime, task);
+        Task task = Task.parameterized(taskText, startTime, duration);
+        pie.addSlice(task);
         painter = PiePainter(pie: pie); // Update painter with new data
       });
     } else {
-      print("Invalid input for start or end time, or empty task");
+      print("Invalid input for start, end time, or empty task");
     }
   }
+
+  void _listSlices() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Slices'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: pie.slices.map((slice) {
+                return ListTile(
+                  title: Text(slice.getTaskName()),
+                  subtitle: Text(
+                      'Start: ${_formatTime(slice.getStartTime())}, End: ${_formatTime(slice.getEndTime())}'),
+                );
+              }).toList(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: const Text('Close'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// Converts a slice's time to a time format.
+String _formatTime(double time) {
+  int hours = time.floor();
+  int minutes = ((time - hours) * 60).round();
+  // Handle cases where minutes might be 60 due to rounding
+  if (minutes == 60) {
+    hours += 1;
+    minutes = 0;
+  }
+  // Ensure hours wrap around if exceeding 24
+  hours = hours % 24;
+  String timeOfDay = "$hours:$minutes";
+  return timeOfDay;
 }
 
 /// Build the PiePainter and the DragButtons being used in the program.
