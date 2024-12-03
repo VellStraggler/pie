@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:pie_agenda/pie/slice.dart';
 import 'package:pie_agenda/pie/task.dart';
@@ -21,9 +23,12 @@ class MyHomePage extends StatefulWidget {
 
 /// App Home Page
 class MyHomePageState extends State<MyHomePage> {
+  Timer? _timer;
+
   @override
   void initState() {
     super.initState();
+    startTimer();
   }
 
   /// Creates labeled text fields for user input
@@ -85,7 +90,7 @@ class MyHomePageState extends State<MyHomePage> {
           tooltip: 'Add Slice',
           child: const Icon(Icons.add),
         ),
-        const SizedBox(width: 10),
+        if (_editModeOn) const SizedBox(width: 10),
         if (_editModeOn)
           FloatingActionButton(
             onPressed: _removeSelectedSlice,
@@ -210,6 +215,24 @@ class MyHomePageState extends State<MyHomePage> {
         );
       },
     );
+  }
+
+  void startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      //DateTime time = DateTime.now();
+      setState(() {
+        //_hour = time.hour;
+        //_minute = time.minute;
+        //_current_time = _formatTime(_hour, _minute);
+        painter = PiePainter(pie: pie);
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 }
 
