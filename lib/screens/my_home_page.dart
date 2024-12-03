@@ -32,10 +32,11 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   /// Creates labeled text fields for user input
-  Widget _buildTextField(TextEditingController controller, String label) {
+  Widget _buildTextField(TextEditingController controller, String label,
+      [String hintText = ""]) {
     return TextField(
       controller: controller,
-      decoration: InputDecoration(labelText: label),
+      decoration: InputDecoration(labelText: label, hintText: hintText),
       keyboardType: TextInputType.number,
     );
   }
@@ -148,8 +149,8 @@ class MyHomePageState extends State<MyHomePage> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _buildTextField(startController, 'Start Time'),
-          _buildTextField(durationController, 'Duration'),
+          _buildTextField(startController, 'Start Time (HH:MM)', 'e.g. 6:30'),
+          _buildTextField(durationController, 'Duration (HH:MM)', 'e.g. 6:30'),
           _buildTextField(taskController, 'Task Description'),
         ],
       ),
@@ -175,20 +176,53 @@ class MyHomePageState extends State<MyHomePage> {
 
   /// Validates input and adds a new slice if valid.
   void _addUserSlice(String startText, String endText, String taskText) {
-    final startTime = double.tryParse(startText) ?? 0;
-    final duration = double.tryParse(endText) ?? 0;
+    final startTime = parseTime(startText);
+    final durationTime = parseTime(endText);
 
-    if (startTime >= 0 && duration >= 0 && taskText.isNotEmpty) {
+    if (taskText.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please input a task'),
+        ),
+      );
+    } else if (startTime < 0 || startTime >= 13) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please input a valid start time. Use HH:MM format.'),
+        ),
+      );
+    } else if (durationTime < 0 || durationTime > 12 - (startTime % 12)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please input a valid duration. Use HH:MM format.'),
+        ),
+      );
+    } else {
       setState(() {
-        Task task = Task.parameterized(taskText, startTime, duration);
+        Task task = Task.parameterized(taskText, startTime, durationTime);
         pie.addSlice(task);
         painter = PiePainter(pie: pie); // Update painter with new data
       });
-    } else {
-      print("Invalid input for start, end time, or empty task");
     }
   }
 
+  double parseTime(String timeString) {
+    try {
+      final parts = timeString.split(':');
+      if (parts.length != 2) return -1;
+
+      final hours = int.parse(parts[0]);
+      final minutes = int.parse(parts[1]);
+
+      if (hours < 0 || minutes < 0 || minutes >= 60) return -1;
+
+      return hours + (minutes / 60.0); // Convert to fractional hours
+    } catch (e) {
+      return -1; // Return -1 for invalid input
+    }
+  }
+
+  /// Called by the listSlices button, displays text of all slice data
   void _listSlices() {
     showDialog(
       context: context,
