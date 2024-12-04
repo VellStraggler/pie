@@ -62,7 +62,7 @@ class PiePainter extends CustomPainter {
       double end = slice.getDurationToRadians();
       painter.color = slice.color;
 
-      print('$start $end');
+      // print('$start $end');
       canvas.drawArc(
           rectArea, start, end, true, painter); //Angles are in radians.
 
@@ -74,6 +74,10 @@ class PiePainter extends CustomPainter {
 
       _drawText(canvas, slice.task.getTaskName(), textX, textY, textAngle);
     }
+
+    // Draw Tick marks
+    canvas.drawLine(Offset(pieDiameter, pieRadius),
+        Offset(pieDiameter + 50, pieRadius), outliner);
   }
 
   void _drawText(Canvas canvas, String text, double x, double y, double angle) {

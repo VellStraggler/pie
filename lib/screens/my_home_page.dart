@@ -1,17 +1,18 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:pie_agenda/display/point.dart';
 import 'package:pie_agenda/pie/slice.dart';
 import 'package:pie_agenda/pie/task.dart';
 import 'package:pie_agenda/display/dragbutton.dart';
 import 'package:pie_agenda/pie/pie.dart';
 import 'package:pie_agenda/display/piepainter.dart';
 import 'package:pie_agenda/display/clock.dart';
-import 'package:pie_agenda/pie/tickmark.dart';
 
 Pie pie = Pie();
 PiePainter painter = PiePainter(pie: pie);
 bool _editModeOn = false;
+Slice selectedSlice = Slice();
 
 const Color mainBackground = Color.fromRGBO(15, 65, 152, 1);
 const Color menuBackground = Color.fromRGBO(255, 0, 255, 1);
@@ -29,6 +30,18 @@ class MyHomePage extends StatefulWidget {
 /// App Home Page
 class MyHomePageState extends State<MyHomePage> {
   Timer? _timer;
+  final GlobalKey _gestureKey = GlobalKey();
+  double? widgetHeight;
+  double? widgetWidth;
+
+  void _getWidgetSize() {
+    final RenderBox renderBox =
+        _gestureKey.currentContext!.findRenderObject() as RenderBox;
+    setState(() {
+      widgetHeight = renderBox.size.height;
+      widgetWidth = renderBox.size.width;
+    });
+  }
 
   @override
   void initState() {
@@ -61,17 +74,37 @@ class MyHomePageState extends State<MyHomePage> {
                         padding: EdgeInsets.only(left: 16.0, bottom: 8.0),
                         child: Clock())))),
         body: GestureDetector(
+          key: _gestureKey,
           onTapDown: (details) {
+            _getWidgetSize();
+            // We need to get the rotation from the center that a tapped point is at
+            // convert it to a double time
+            print("$widgetWidth and height: $widgetHeight");
+            double tapTime = DragButton.getTimeFromPoint(Point.parameterized(
+                x: details.localPosition.dx - (widgetWidth! / 2) + pieRadius,
+                y: details.localPosition.dy - (widgetHeight! / 2) + pieRadius));
+            // search through the slices for one whose endpoints are before and after this time
+            print("tapTime is $tapTime");
+            for (Slice slice in pie.slices) {
+              if (slice.getStartTime() < tapTime) {
+                if (slice.getEndTime() > tapTime) {
+                  selectedSlice = slice;
+                  int darken = 50;
+                  slice.color = Color.fromRGBO(
+                      slice.color.red - darken,
+                      slice.color.green - darken,
+                      slice.color.blue - darken,
+                      1.0);
+                }
+              }
+            }
+            // we may not have one
             print("Screen tapped at ${details.localPosition} within widget.");
           },
           child: Center(
-            child: Positioned(
-              left: 0,
-              top: 0,
-              child: Stack(
-                alignment: Alignment.center,
-                children: _buildPie(_editModeOn),
-              ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: _buildPie(_editModeOn),
             ),
           ),
         ),
@@ -195,6 +228,11 @@ class MyHomePageState extends State<MyHomePage> {
     } else {
       print("Invalid input for start, end time, or empty task");
     }
+  }
+
+  Offset windowSize() {
+    return Offset(
+        MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
   }
 
   void _listSlices() {
