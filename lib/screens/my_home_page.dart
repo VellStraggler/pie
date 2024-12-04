@@ -1,17 +1,18 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:pie_agenda/display/point.dart';
 import 'package:pie_agenda/pie/slice.dart';
 import 'package:pie_agenda/pie/task.dart';
 import 'package:pie_agenda/display/dragbutton.dart';
 import 'package:pie_agenda/pie/pie.dart';
 import 'package:pie_agenda/display/piepainter.dart';
 import 'package:pie_agenda/display/clock.dart';
-import 'package:pie_agenda/pie/tickmark.dart';
 
 Pie pie = Pie();
 PiePainter painter = PiePainter(pie: pie);
 bool _editModeOn = false;
+Slice selectedSlice = Slice();
 
 const Color mainBackground = Color.fromRGBO(15, 65, 152, 1);
 const Color menuBackground = Color.fromRGBO(255, 0, 255, 1);
@@ -29,6 +30,18 @@ class MyHomePage extends StatefulWidget {
 /// App Home Page
 class MyHomePageState extends State<MyHomePage> {
   Timer? _timer;
+  final GlobalKey _gestureKey = GlobalKey();
+  double? widgetHeight;
+  double? widgetWidth;
+
+  void _getWidgetSize() {
+    final RenderBox renderBox =
+        _gestureKey.currentContext!.findRenderObject() as RenderBox;
+    setState(() {
+      widgetHeight = renderBox.size.height;
+      widgetWidth = renderBox.size.width;
+    });
+  }
 
   @override
   void initState() {
@@ -61,17 +74,43 @@ class MyHomePageState extends State<MyHomePage> {
                         padding: EdgeInsets.only(left: 16.0, bottom: 8.0),
                         child: Clock())))),
         body: GestureDetector(
+          key: _gestureKey,
           onTapDown: (details) {
-            print("Screen tapped at ${details.localPosition} within widget.");
+            _getWidgetSize();
+            // We need to get the rotation from the center that a tapped point is at
+            // convert it to a double time
+            // print("$widgetWidth and height: $widgetHeight");
+
+            double tapTime = DragButton.getTimeFromPoint(Point.parameterized(
+                x: details.localPosition.dx - (widgetWidth! / 2) + pieRadius,
+                y: details.localPosition.dy - (widgetHeight! / 2) + pieRadius));
+            // Need to start from the corner of the pie, not the corner of the whole window
+            // search through the slices for one whose endpoints are before and after this time
+            // print("tapTime is $tapTime");
+            int i = 0;
+            bool found = false;
+            for (Slice slice in pie.slices) {
+              if (slice.getStartTime() < tapTime) {
+                if (slice.getEndTime() > tapTime) {
+                  selectedSlice = slice;
+                  pie.setSelectedSliceIndex(i);
+                  found = true;
+                  break;
+                }
+              }
+              i++;
+            }
+            if (!found) {
+              pie.setSelectedSliceIndex(-1);
+            }
+            // we may not have one
+            // print("Screen tapped at ${details.localPosition} within widget.");
+            updateScreen();
           },
           child: Center(
-            child: Positioned(
-              left: 0,
-              top: 0,
-              child: Stack(
-                alignment: Alignment.center,
-                children: _buildPie(_editModeOn),
-              ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: _buildPie(_editModeOn),
             ),
           ),
         ),
@@ -197,6 +236,11 @@ class MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Offset windowSize() {
+    return Offset(
+        MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
+  }
+
   void _listSlices() {
     showDialog(
       context: context,
@@ -225,15 +269,15 @@ class MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  void updateScreen() {
+    setState(() {
+      painter = PiePainter(pie: pie);
+    });
+  }
+
   void startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      //DateTime time = DateTime.now();
-      setState(() {
-        //_hour = time.hour;
-        //_minute = time.minute;
-        //_current_time = _formatTime(_hour, _minute);
-        painter = PiePainter(pie: pie);
-      });
+      updateScreen();
     });
   }
 
