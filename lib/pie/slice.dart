@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-
+import 'package:pie_agenda/display/point.dart';
 import '../display/dragbutton.dart';
 import 'task.dart';
 
@@ -15,10 +15,12 @@ class Slice {
   Color color;
 
   /// Default Constructor
-  Slice({this.onTap})
+  Slice({this.onTap, required List<Point> guidePoints})
       : task = Task(),
-        dragButtonBefore = DragButton(time: 0, shown: true),
-        dragButtonAfter = DragButton(time: 1, shown: true),
+        dragButtonBefore =
+            DragButton(time: 0, shown: true, guidePoints: guidePoints, onDragStateChanged: (isDragging) {}),
+        dragButtonAfter =
+            DragButton(time: 1, shown: true, guidePoints: guidePoints, onDragStateChanged: (isDragging) {}),
         color = _generateRandomColor() {
     showText = true;
   }
@@ -27,10 +29,11 @@ class Slice {
   Slice.parameterized({
     required this.task,
     this.onTap,
-  })  : color = _generateRandomColor(),
-        dragButtonAfter = DragButton(time: task.getEndTime(), shown: true),
-        dragButtonBefore = DragButton(time: task.getStartTime(), shown: true);
-
+    required List<Point> guidePoints,
+  })  : dragButtonBefore = DragButton(time: task.getStartTime(), shown: true, guidePoints: guidePoints, onDragStateChanged: (isDragging) {}),
+        dragButtonAfter = DragButton(time: task.getEndTime(), shown: true, guidePoints: guidePoints, onDragStateChanged: (isDragging) {}),
+        color = _generateRandomColor(),
+        showText = true;
 // Getters and Setters
   /// Converts the start Time to Radians
   double getStartTimeToRadians() {
@@ -50,6 +53,10 @@ class Slice {
   /// Gets the task's endTime.
   double getEndTime() {
     return task.getEndTime();
+  }
+
+  String getTaskName() {
+    return task.getTaskName();
   }
 
 // Methods

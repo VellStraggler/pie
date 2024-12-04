@@ -23,8 +23,8 @@ class Task {
   /// Time Syntax is as such:
   /// * 1.25 = 1:30
   /// * 0.5 = 12:30
-  Task.parameterized(this._taskName, this._startTime, this._endTime)
-      : _duration = _endTime - _startTime;
+  Task.parameterized(this._taskName, this._startTime, this._duration)
+      : _endTime = _duration + _startTime;
 
 // Getters and Setters
   /// Returns the task's name.

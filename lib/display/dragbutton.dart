@@ -9,145 +9,147 @@ import 'package:pie_agenda/display/point.dart';
 
 const double buttonRadius = 12;
 const double buttonDiameter = buttonRadius * 2;
+bool firstCall = true;
 
 class DragButton extends StatefulWidget {
   final Point point;
   final double time;
   final bool shown;
+  final List<Point> guidePoints;
+  final ValueChanged<bool> onDragStateChanged;
 
-  DragButton({super.key, required this.time, required this.shown})
-      : point = setPointOnTime(time);
+  DragButton({
+    Key? key,
+    required this.time,
+    required this.shown,
+    required this.onDragStateChanged,
+    required this.guidePoints,
+  })  : point = setPointOnTime(time),
+        super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _DragButtonState createState() => _DragButtonState();
 
-  void removeListener(void Function() onDragButtonChanged) {}
-
-  void addListener(void Function() onDragButtonChanged) {}
-
-  Point position() {
-    return point;
-  }
-
-  /// Determine where on the edge of the circle the button should be positioned
-  static setPointOnTime(double time) {
+  static Point setPointOnTime(double time) {
     double theta = (-pi * time / 6.0) + (pi / 2.0);
     double x = (pieRadius * cos(theta)) + pieRadius;
     double y = -(pieRadius * sin(theta)) + pieRadius;
-
     return Point.parameterized(x: x, y: y);
   }
 
+  static Point setInitPointOnTime(double time) {
+    double theta = (-pi * time / 6.0) + (pi / 2.0);
+    double x = (pieRadius * cos(theta)) +
+        pieRadius +
+        buttonRadius; // Add buttonRadius for alignment
+    double y = -(pieRadius * sin(theta)) +
+        pieRadius +
+        buttonRadius; // Add buttonRadius for alignment
+    firstCall = false;
+    return Point.parameterized(x: x, y: y);
+  }
+
+  //static Point setPointOnTime(double time) {
+  //double theta = (-pi * time / 6.0) + (pi / 2.0);
+  //double x = (pieRadius * cos(theta)) + pieRadius + buttonRadius; // Add buttonRadius for alignment
+  //double y = -(pieRadius * sin(theta)) + pieRadius + buttonRadius; // Add buttonRadius for alignment
+  //return Point.parameterized(x: x, y: y);
+//}
+
   static double getTimeFromPoint(Point point) {
-    // Calculate the center of the circle
     double centerX = pieRadius;
     double centerY = pieRadius;
-    // Calculate the vector from the center to the given point
     double deltaX = point.x - centerX;
     double deltaY = point.y - centerY;
-    // Calculate the angle (theta) relative to the positive x-axis
-    double theta =
-        atan2(-deltaY, deltaX); // Negate deltaY because y-axis is inverted
-    // Normalize theta to start from the top of the clock (12 o'clock)
+    double theta = atan2(-deltaY, deltaX);
     theta = (pi / 2) - theta;
-    // Ensure theta is in the range [0, 2*pi)
-    if (theta < 0) {
-      theta += 2 * pi;
-    }
-    // Map the angle to a time value
+    if (theta < 0) theta += 2 * pi;
     double time = (theta * 6.0) / pi;
-    // Clamp time to the range [0, 12) to handle floating-point precision issues
-    if (time >= 12.0) {
-      time -= 12.0;
-    }
+    if (time >= 12.0) time -= 12.0;
     return time;
   }
 }
 
 class _DragButtonState extends State<DragButton> {
   late Point currentPosition;
-  final _dragController = StreamController<void>();
+  bool isDragging = false;
 
   @override
   void initState() {
     super.initState();
-    Point newPoint = Point();
-    newPoint.x = widget.point.x;
-    newPoint.y = widget.point.y;
-    currentPosition = newPoint;
+    if (firstCall) {
+      firstCall = false;
+      currentPosition = DragButton.setInitPointOnTime(widget.time);
+    }
+    currentPosition = Point.parameterized(x: widget.point.x, y: widget.point.y);
   }
 
-  void _notifyListeners() {
-    _dragController.add(null);
-  }
-
-  @override
-  void dispose() {
-    _dragController.close();
-    super.dispose();
+  void _updateDragState(bool dragging) {
+    if (widget.onDragStateChanged != null) {
+      widget.onDragStateChanged(dragging);
+    }
+    setState(() {
+      isDragging = dragging;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      left: currentPosition.x.toDouble(),
-      top: currentPosition.y.toDouble(),
+      left: currentPosition.x - buttonRadius,
+      top: currentPosition.y - buttonRadius,
       child: GestureDetector(
+        onPanStart: (details) {
+          _updateDragState(true);
+        },
         onPanUpdate: (details) {
-          // Keep the Dragbutton stuck on the edge of the circle
           setState(() {
-            currentPosition = getNearestSnapPoint(currentPosition, details);
+            currentPosition = Point.parameterized(
+              x: currentPosition.x + details.delta.dx,
+              y: currentPosition.y + details.delta.dy,
+            );
           });
-          _notifyListeners();
         },
         onPanEnd: (details) {
-          // When the user lets go, snap the Dragbutton to the nearest 15-minute mark
           setState(() {
-            currentPosition = getRoundedSnapPoint(currentPosition);
+            currentPosition = _getRoundedSnapPoint(currentPosition);
           });
-          _notifyListeners();
+          _updateDragState(false);
         },
         child: widget.shown
-            ? Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    width: buttonRadius * 2,
-                    height: buttonRadius * 2,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.black,
-                    ),
-                  ),
-                  Container(
-                    width: buttonRadius,
-                    height: buttonRadius,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
+            ? Container(
+                width: buttonDiameter,
+                height: buttonDiameter,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.black,
+                ),
               )
-            : Stack(),
+            : const SizedBox.shrink(),
       ),
     );
   }
 
-  static Point getNearestSnapPoint(
-      Point currentPosition, DragUpdateDetails details) {
+  Point _getNearestSnapPoint(Point currentPosition, DragUpdateDetails details) {
     Point current = Point.parameterized(
-        x: (currentPosition.x + details.delta.dx),
-        y: (currentPosition.y + details.delta.dy));
+        x: currentPosition.x + details.delta.dx,
+        y: currentPosition.y + details.delta.dy);
     Point newPoint =
         DragButton.setPointOnTime(DragButton.getTimeFromPoint(current));
     return newPoint;
   }
 
-  static Point getRoundedSnapPoint(Point current) {
+  //Point _getRoundedSnapPoint(Point current) {
+  //  double time = DragButton.getTimeFromPoint(current);
+  //  time = (time * 4).round() / 4;
+  //  return DragButton.setPointOnTime(time);
+  //}
+
+  Point _getRoundedSnapPoint(Point current) {
     double time = DragButton.getTimeFromPoint(current);
     time = (time * 4).round() / 4;
-    return DragButton.setPointOnTime(time);
+    Point snapPoint = DragButton.setPointOnTime(time);
+    return Point.parameterized(
+        x: snapPoint.x + buttonRadius, y: snapPoint.y + buttonRadius);
   }
 }
