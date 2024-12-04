@@ -6,6 +6,7 @@ import 'package:pie_agenda/pie/pie.dart';
 import 'package:pie_agenda/display/piepainter.dart';
 import 'app_bar.dart';
 import 'floating_buttons.dart';
+import 'package:pie_agenda/pie/tickMark.dart';
 
 Pie pie = Pie();
 PiePainter painter = PiePainter(pie: pie);
@@ -52,7 +53,13 @@ class MyHomePageState extends State<MyHomePage> {
             top: 0,
             child: Stack(
               alignment: Alignment.center,
-              children: _buildPie(),
+              children: [
+                ... _buildPie(),
+                CustomPaint(
+                  size: Size(pieDiameter + 10, pieDiameter + 10), 
+                  painter: CustomLinePainter(),
+                )
+              ]
             ),
           ),
         ),
