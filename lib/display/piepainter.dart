@@ -62,7 +62,7 @@ class PiePainter extends CustomPainter {
       double end = slice.getDurationToRadians();
       painter.color = slice.color;
 
-      print('$start $end');
+      //print('$start $end');
       canvas.drawArc(
           rectArea, start, end, true, painter); //Angles are in radians.
 

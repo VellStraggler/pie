@@ -11,11 +11,10 @@ class Slice {
   DragButton dragButtonAfter;
   Task task; // Default Task
   bool showText = true; // Shown flag
-  final VoidCallback? onTap;
   Color color;
 
   /// Default Constructor
-  Slice({this.onTap})
+  Slice()
       : task = Task(),
         dragButtonBefore = DragButton(time: 0, shown: true),
         dragButtonAfter = DragButton(time: 1, shown: true),
@@ -26,7 +25,7 @@ class Slice {
   /// Parameterized Constructor
   Slice.parameterized({
     required this.task,
-    this.onTap,
+    //this.onTap,
   })  : color = _generateRandomColor(),
         dragButtonAfter = DragButton(time: task.getEndTime(), shown: true),
         dragButtonBefore = DragButton(time: task.getStartTime(), shown: true);
@@ -60,14 +59,6 @@ class Slice {
     return task.getTaskName();
   }
 
-// Methods
-  // Handle Taps
-  void handleTap() {
-    if (onTap != null) {
-      onTap!();
-    }
-  }
-
   /// Converts a given time to Radians.
   double _timeToRadians(double time) {
     int hour = time.toInt();
@@ -76,11 +67,7 @@ class Slice {
     return ans;
   }
 
-  // for Tafara
-  // We need a final, randomized color variable
-  // We need it to not clash with the text color
-  // You can do this by randomizing RGB values or randomizing a list of colors like Colors.blue
-  // update the painter class to reflect this change
+  /// Create color for slice.
   static Color _generateRandomColor() {
     Random random = Random();
     List<int> rgb = [
@@ -93,5 +80,15 @@ class Slice {
     rgb[numDrop] -= 75; //this demuddles the color to be more saturated
 
     return Color.fromARGB(255, rgb[0], rgb[1], rgb[2]);
+  }
+
+  /// Convert task data to Json.
+  Map<String, dynamic> toJson() {
+    return {'task': task.toJson()};
+  }
+
+  @override
+  String toString() {
+    return task.toString();
   }
 }

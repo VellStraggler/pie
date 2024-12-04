@@ -88,4 +88,8 @@ class Task {
     return Task.parameterized(json['_taskName'] as String,
         json['_startTime'] as double, json['_endTime'] as double);
   }
+  @override
+  String toString() {
+    return "$_taskName, $_duration, $_startTime, $_endTime";
+  }
 }

@@ -7,14 +7,14 @@ import 'package:pie_agenda/display/dragbutton.dart';
 import 'package:pie_agenda/pie/pie.dart';
 import 'package:pie_agenda/display/piepainter.dart';
 import 'package:pie_agenda/display/clock.dart';
-import 'package:pie_agenda/pie/tickmark.dart';
+//import 'package:pie_agenda/pie/tickmark.dart';
 
 Pie pie = Pie();
 PiePainter painter = PiePainter(pie: pie);
 bool _editModeOn = false;
 
 const Color mainBackground = Color.fromRGBO(15, 65, 152, 1);
-const Color menuBackground = Color.fromRGBO(255, 0, 255, 1);
+const Color menuBackground = Color.fromRGBO(77, 148, 173, 1);
 const Color topBackground = Color.fromRGBO(28, 111, 213, 1);
 
 /// Home Page Widget
@@ -62,16 +62,12 @@ class MyHomePageState extends State<MyHomePage> {
                         child: Clock())))),
         body: GestureDetector(
           onTapDown: (details) {
-            print("Screen tapped at ${details.localPosition} within widget.");
+            //print("Screen tapped at ${details.localPosition} within widget.");
           },
           child: Center(
-            child: Positioned(
-              left: 0,
-              top: 0,
-              child: Stack(
-                alignment: Alignment.center,
-                children: _buildPie(_editModeOn),
-              ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: _buildPie(_editModeOn),
             ),
           ),
         ),
@@ -143,6 +139,7 @@ class MyHomePageState extends State<MyHomePage> {
   void _removeSelectedSlice() {
     // get the last slice that was selected
     // remove it from the slices
+    print(pie.toJson());
   }
 
   /// Dialog structure for adding a new slice

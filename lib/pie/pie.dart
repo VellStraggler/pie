@@ -18,6 +18,11 @@ class Pie {
         // Initialize with one full-circle slice
         slices = [Slice()];
 
+  /// Parameterized Constructor
+  Pie.parameterized(this.slices)
+      : center = Point(),
+        width = pieDiameter;
+
   /// Method to add a slice to the pie chart.
   void addSlice(Task task) {
     // Create a new slice, with a corner and task (can be null or provided)
@@ -32,8 +37,22 @@ class Pie {
     slices.remove(sliceToRemove);
   }
 
+// Data Conversion
+  ///Convert Pie object to JSON.
+  Map<String, dynamic> toJson() {
+    return {'slices': slices.map((slice) => slice.toJson()).toList()};
+  }
+
+  /// Convert JSON to a Pie object.
+  factory Pie.fromJson(Map<String, dynamic> json) {
+    return Pie.parameterized(json['slices'] as List<Slice>);
+  }
+
   @override
   String toString() {
-    return slices[0].toString();
+    if (slices.isEmpty) {
+      return 'No slices';
+    }
+    return slices.map((slice) => slice.toString()).join(', ');
   }
 }
