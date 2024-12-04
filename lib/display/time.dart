@@ -3,7 +3,7 @@ import 'package:pie_agenda/display/point.dart';
 import 'package:flutter/material.dart';
 
 class Time {
-  int time; // Time in hours or another unit
+  double time; // Time in hours or another unit
   Point point; // Position of the time text
   bool shown; // Whether the time will be displayed
 

@@ -7,6 +7,7 @@ import 'package:pie_agenda/display/dragbutton.dart';
 import 'package:pie_agenda/pie/pie.dart';
 import 'package:pie_agenda/display/piepainter.dart';
 import 'package:pie_agenda/display/clock.dart';
+import 'package:pie_agenda/pie/tickmark.dart';
 
 Pie pie = Pie();
 PiePainter painter = PiePainter(pie: pie);
@@ -67,10 +68,12 @@ class MyHomePageState extends State<MyHomePage> {
             child: Positioned(
               left: 0,
               top: 0,
-              child: Stack(
-                alignment: Alignment.center,
-                children: _buildPie(_editModeOn),
-              ),
+              child: Stack(alignment: Alignment.center, children: [
+                ..._buildPie(_editModeOn),
+                CustomPaint(
+                    size: const Size(pieDiameter + 50, pieDiameter + 50),
+                    painter: CustomLinePainter()),
+              ]),
             ),
           ),
         ),
