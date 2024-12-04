@@ -7,10 +7,15 @@ import 'package:pie_agenda/display/dragbutton.dart';
 import 'package:pie_agenda/pie/pie.dart';
 import 'package:pie_agenda/display/piepainter.dart';
 import 'package:pie_agenda/display/clock.dart';
+import 'package:pie_agenda/pie/tickmark.dart';
 
 Pie pie = Pie();
 PiePainter painter = PiePainter(pie: pie);
 bool _editModeOn = false;
+
+const Color mainBackground = Color.fromRGBO(15, 65, 152, 1);
+const Color menuBackground = Color.fromRGBO(255, 0, 255, 1);
+const Color topBackground = Color.fromRGBO(28, 111, 213, 1);
 
 /// Home Page Widget
 class MyHomePage extends StatefulWidget {
@@ -45,7 +50,9 @@ class MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: mainBackground,
         appBar: AppBar(
+            backgroundColor: topBackground,
             title: Text(widget.title),
             bottom: const PreferredSize(
                 preferredSize: Size.fromHeight(30.0),
@@ -62,10 +69,12 @@ class MyHomePageState extends State<MyHomePage> {
             child: Positioned(
               left: 0,
               top: 0,
-              child: Stack(
-                alignment: Alignment.center,
-                children: _buildPie(_editModeOn),
-              ),
+              child: Stack(alignment: Alignment.center, children: [
+                ..._buildPie(_editModeOn),
+                CustomPaint(
+                    size: const Size(pieDiameter + 50, pieDiameter + 50),
+                    painter: CustomLinePainter()),
+              ]),
             ),
           ),
         ),
@@ -145,6 +154,7 @@ class MyHomePageState extends State<MyHomePage> {
       TextEditingController durationController,
       TextEditingController taskController) {
     return AlertDialog(
+      backgroundColor: menuBackground,
       title: const Text('Add New Slice'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
