@@ -70,8 +70,8 @@ class Slice {
 
   /// Converts a given time to Radians.
   double _timeToRadians(double time) {
-    int hour = time.toInt();
-    int minute = ((time % 1) * 60).toInt();
+    double hour = time.toDouble().floorToDouble();
+    double minute = ((time % 1) * 60).toDouble();
     double ans = (hour % 12 + minute / 60) * (2 * 3.14159265 / 12);
     return ans;
   }
