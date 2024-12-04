@@ -3,7 +3,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-// import 'package:pie_agenda/display/time.dart';
 import 'package:pie_agenda/pie/pie.dart';
 import 'dart:async';
 import 'package:pie_agenda/display/point.dart';
@@ -15,7 +14,6 @@ class DragButton extends StatefulWidget {
   final Point point;
   final double time;
   final bool shown;
-  // final Time timeDisplay;
 
   DragButton({super.key, required this.time, required this.shown})
       : point = setPointOnTime(time);

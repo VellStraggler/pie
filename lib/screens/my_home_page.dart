@@ -69,12 +69,10 @@ class MyHomePageState extends State<MyHomePage> {
             child: Positioned(
               left: 0,
               top: 0,
-              child: Stack(alignment: Alignment.center, children: [
-                ..._buildPie(_editModeOn),
-                CustomPaint(
-                    size: const Size(pieDiameter + 50, pieDiameter + 50),
-                    painter: CustomLinePainter()),
-              ]),
+              child: Stack(
+                alignment: Alignment.center,
+                children: _buildPie(_editModeOn),
+              ),
             ),
           ),
         ),
