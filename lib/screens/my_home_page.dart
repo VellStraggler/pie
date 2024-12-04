@@ -79,27 +79,33 @@ class MyHomePageState extends State<MyHomePage> {
             _getWidgetSize();
             // We need to get the rotation from the center that a tapped point is at
             // convert it to a double time
-            print("$widgetWidth and height: $widgetHeight");
+            // print("$widgetWidth and height: $widgetHeight");
+
             double tapTime = DragButton.getTimeFromPoint(Point.parameterized(
                 x: details.localPosition.dx - (widgetWidth! / 2) + pieRadius,
                 y: details.localPosition.dy - (widgetHeight! / 2) + pieRadius));
+            // Need to start from the corner of the pie, not the corner of the whole window
             // search through the slices for one whose endpoints are before and after this time
-            print("tapTime is $tapTime");
+            // print("tapTime is $tapTime");
+            int i = 0;
+            bool found = false;
             for (Slice slice in pie.slices) {
               if (slice.getStartTime() < tapTime) {
                 if (slice.getEndTime() > tapTime) {
                   selectedSlice = slice;
-                  int darken = 50;
-                  slice.color = Color.fromRGBO(
-                      slice.color.red - darken,
-                      slice.color.green - darken,
-                      slice.color.blue - darken,
-                      1.0);
+                  pie.setSelectedSliceIndex(i);
+                  found = true;
+                  break;
                 }
               }
+              i++;
+            }
+            if (!found) {
+              pie.setSelectedSliceIndex(-1);
             }
             // we may not have one
-            print("Screen tapped at ${details.localPosition} within widget.");
+            // print("Screen tapped at ${details.localPosition} within widget.");
+            updateScreen();
           },
           child: Center(
             child: Stack(
@@ -263,15 +269,15 @@ class MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  void updateScreen() {
+    setState(() {
+      painter = PiePainter(pie: pie);
+    });
+  }
+
   void startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      //DateTime time = DateTime.now();
-      setState(() {
-        //_hour = time.hour;
-        //_minute = time.minute;
-        //_current_time = _formatTime(_hour, _minute);
-        painter = PiePainter(pie: pie);
-      });
+      updateScreen();
     });
   }
 

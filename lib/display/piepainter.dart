@@ -54,13 +54,17 @@ class PiePainter extends CustomPainter {
 
     // Draw the slices
     Rect rectArea = Rect.fromCenter(
-        center: centerOffset,
-        width: pieDiameter - 10,
-        height: pieDiameter - 10);
+        center: centerOffset, width: pieDiameter, height: pieDiameter);
+    int i = 0;
     for (Slice slice in pie.slices) {
       double start = slice.getStartTimeToRadians();
       double end = slice.getDurationToRadians();
       painter.color = slice.color;
+      if (i == pie.getSelectedSliceIndex()) {
+        int darken = 50;
+        painter.color = Color.fromRGBO(slice.color.red - darken,
+            slice.color.green - darken, slice.color.blue - darken, 1.0);
+      }
 
       // print('$start $end');
       canvas.drawArc(
@@ -73,6 +77,7 @@ class PiePainter extends CustomPainter {
       final double textY = centerOffset.dy + pieRadius * 0.6 * sin(textAngle);
 
       _drawText(canvas, slice.task.getTaskName(), textX, textY, textAngle);
+      i++;
     }
 
     // Draw Tick marks
