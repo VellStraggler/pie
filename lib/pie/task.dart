@@ -78,7 +78,6 @@ class Task {
       '_taskName': _taskName,
       '_duration': _duration,
       '_startTime': _startTime,
-      '_endTime': _endTime,
     };
   }
 
@@ -86,7 +85,7 @@ class Task {
   /// * Task taskFromJson = Task.fromJson(jsonDecode(jsonString));
   factory Task.fromJson(Map<String, dynamic> json) {
     return Task.parameterized(json['_taskName'] as String,
-        json['_startTime'] as double, json['_endTime'] as double);
+        json['_startTime'] as double, json['_duration'] as double);
   }
   @override
   String toString() {
