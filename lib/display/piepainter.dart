@@ -5,6 +5,7 @@ import 'package:pie_agenda/display/dragbutton.dart';
 import 'package:pie_agenda/pie/pie.dart';
 import 'package:pie_agenda/pie/slice.dart';
 import 'dart:math';
+import 'package:pie_agenda/display/point.dart';
 
 const double line = 1 / 6;
 
@@ -83,6 +84,20 @@ class PiePainter extends CustomPainter {
     // Draw Tick marks
     canvas.drawLine(Offset(pieDiameter, pieRadius),
         Offset(pieDiameter + 50, pieRadius), outliner);
+
+    // Draw Guide buttons
+    if (pie.guidebuttons) {
+      for (int i = 0; i < 48; i++) {
+        Point position = DragButton.setPointOnTime(i.toDouble() / 4);
+        // draw guidebutton at position
+        int circleSize = 12;
+        painter.color = Color.fromRGBO(158, 158, 158, .5);
+        canvas.drawCircle(
+            Offset(position.x + circleSize, position.y + circleSize),
+            circleSize.toDouble(),
+            painter);
+      }
+    }
   }
 
   void _drawText(Canvas canvas, String text, double x, double y, double angle) {
