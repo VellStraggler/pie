@@ -15,7 +15,7 @@ bool _editModeOn = false;
 Slice selectedSlice = Slice();
 
 const Color mainBackground = Color.fromRGBO(15, 65, 152, 1);
-const Color menuBackground = Color.fromRGBO(255, 0, 255, 1);
+const Color menuBackground = Color.fromRGBO(149, 50, 149, 1);
 const Color topBackground = Color.fromRGBO(28, 111, 213, 1);
 
 /// Home Page Widget
@@ -249,6 +249,7 @@ class MyHomePageState extends State<MyHomePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: menuBackground,
           title: const Text('Slices'),
           content: SingleChildScrollView(
             child: ListBody(
