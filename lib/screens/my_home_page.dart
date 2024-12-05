@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:pie_agenda/display/point.dart';
 import 'package:pie_agenda/pie/slice.dart';
 import 'package:pie_agenda/pie/task.dart';
 import 'package:pie_agenda/display/dragbutton.dart';
@@ -13,6 +16,8 @@ import 'package:pie_agenda/display/clock.dart';
 
 Pie pie = Pie();
 PiePainter painter = PiePainter(pie: pie);
+bool _editModeOn = false;
+Slice selectedSlice = Slice();
 
 const Color mainBackground = Color.fromRGBO(15, 65, 152, 1);
 const Color menuBackground = Color.fromRGBO(255, 0, 255, 1);
@@ -28,10 +33,21 @@ class MyHomePage extends StatefulWidget {
 }
 
 /// App Home Page
-class _MyHomePageState extends State<MyHomePage> {
-  bool _editModeOn = false;
-  bool _isAnyDragging = false; // Track if any DragButton is being dragged
+class MyHomePageState extends State<MyHomePage> {
+  bool _isAnyDragging = false;
   Timer? _timer;
+  final GlobalKey _gestureKey = GlobalKey();
+  double? widgetHeight;
+  double? widgetWidth;
+
+  void _getWidgetSize() {
+    final RenderBox renderBox =
+        _gestureKey.currentContext!.findRenderObject() as RenderBox;
+    setState(() {
+      widgetHeight = renderBox.size.height;
+      widgetWidth = renderBox.size.width;
+    });
+  }
 
   @override
   void initState() {
@@ -52,34 +68,60 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: mainBackground,
-      appBar: AppBar(
-        backgroundColor: topBackground,
-        title: Text(widget.title),
-        bottom: const PreferredSize(
-          preferredSize: Size.fromHeight(30.0),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: EdgeInsets.only(left: 16.0, bottom: 8.0),
-              child: Clock(),
+        backgroundColor: mainBackground,
+        appBar: AppBar(
+            backgroundColor: topBackground,
+            title: Text(widget.title),
+            bottom: const PreferredSize(
+                preferredSize: Size.fromHeight(30.0),
+                child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                        padding: EdgeInsets.only(left: 16.0, bottom: 8.0),
+                        child: Clock())))),
+        body: GestureDetector(
+          key: _gestureKey,
+          onTapDown: (details) {
+            _getWidgetSize();
+            // We need to get the rotation from the center that a tapped point is at
+            // convert it to a double time
+            // print("$widgetWidth and height: $widgetHeight");
+
+            double tapTime = DragButton.getTimeFromPoint(Point.parameterized(
+                x: details.localPosition.dx - (widgetWidth! / 2) + pieRadius,
+                y: details.localPosition.dy - (widgetHeight! / 2) + pieRadius));
+            // Need to start from the corner of the pie, not the corner of the whole window
+            // search through the slices for one whose endpoints are before and after this time
+            // print("tapTime is $tapTime");
+            int i = 0;
+            bool found = false;
+            for (Slice slice in pie.slices) {
+              if (slice.getStartTime() < tapTime) {
+                if (slice.getEndTime() + .25 > tapTime) {
+                  //.25 accounts for dragbutton :O
+                  selectedSlice = slice;
+                  pie.setSelectedSliceIndex(i);
+                  found = true;
+                  break;
+                }
+              }
+              i++;
+            }
+            if (!found || !_editModeOn) {
+              pie.setSelectedSliceIndex(-1);
+              // if one was not selected, deselect what we do have
+            }
+            // print("Screen tapped at ${details.localPosition} within widget.");
+            updateScreen();
+          },
+          child: Center(
+            child: Stack(
+              alignment: Alignment.center,
+              children: _buildPie(),
             ),
           ),
         ),
-      ),
-      body: GestureDetector(
-        onTapDown: (details) {
-          print("Screen tapped at ${details.localPosition} within widget.");
-        },
-        child: Center(
-          child: Stack(
-            alignment: Alignment.center,
-            children: _buildPie(),
-          ),
-        ),
-      ),
-      floatingActionButton: _buildFloatingActionButtons(),
-    );
+        floatingActionButton: _buildFloatingActionButtons());
   }
 
   Widget _buildFloatingActionButtons() {
@@ -101,7 +143,7 @@ class _MyHomePageState extends State<MyHomePage> {
           tooltip: 'Add Slice',
           child: const Icon(Icons.add),
         ),
-        if (_editModeOn) SizedBox(width: 10),
+        if (_editModeOn) const SizedBox(width: 10),
         if (_editModeOn)
           FloatingActionButton(
             onPressed: _removeSelectedSlice,
@@ -122,6 +164,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _editModeOn = !_editModeOn; // Toggle the edit mode
     });
+    updateScreen();
   }
 
   void _showAddSliceDialog() {
@@ -142,7 +185,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _removeSelectedSlice() {
-    // Placeholder for functionality
+    // get the last slice that was selected
+    // remove it from the slices
+    pie.removeSlice();
   }
 
   Widget _buildAddSliceDialog(
@@ -180,19 +225,25 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  /// Validates input and adds a new slice if valid.
   void _addUserSlice(String startText, String endText, String taskText) {
     final startTime = double.tryParse(startText) ?? 0;
-    final endTime = double.tryParse(endText) ?? 0;
+    final duration = double.tryParse(endText) ?? 0;
 
-    if (startTime >= 0 && endTime >= 0 && taskText.isNotEmpty) {
+    if (startTime >= 0 && duration >= 0 && taskText.isNotEmpty) {
       setState(() {
-        Task task = Task.parameterized(taskText, startTime, endTime);
-        pie.addSpecificSlice(startTime, endTime, task);
+        Task task = Task.parameterized(taskText, startTime, duration);
+        pie.addSlice(task);
         painter = PiePainter(pie: pie); // Update painter with new data
       });
     } else {
-      print("Invalid input for start or end time, or empty task");
+      print("Invalid input for start, end time, or empty task");
     }
+  }
+
+  Offset windowSize() {
+    return Offset(
+        MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
   }
 
   void _listSlices() {
@@ -207,7 +258,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 return ListTile(
                   title: Text(slice.getTaskName()),
                   subtitle: Text(
-                      'Start: ${_formatTime(slice.task.getStartTime())}, End: ${_formatTime(slice.task.getEndTime())}'),
+                      'Start: ${_formatTime(slice.getStartTime())}, End: ${_formatTime(slice.getEndTime())}'),
                 );
               }).toList(),
             ),
@@ -223,11 +274,15 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  void updateScreen() {
+    setState(() {
+      painter = PiePainter(pie: pie);
+    });
+  }
+
   void startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        painter = PiePainter(pie: pie);
-      });
+      updateScreen();
     });
   }
 
@@ -236,6 +291,28 @@ class _MyHomePageState extends State<MyHomePage> {
     _timer?.cancel();
     super.dispose();
   }
+}
+
+/// Converts a slice's time to a time format.
+String _formatTime(double time) {
+  int hours = time.floor();
+  int minutes = ((time - hours) * 60).round();
+  // Handle cases where minutes might be 60 due to rounding
+  if (minutes == 60) {
+    hours += 1;
+    minutes = 0;
+  }
+  // Ensure hours wrap around if exceeding 24
+  hours = hours % 24;
+  String timeOfDay = "$hours:$minutes";
+  return timeOfDay;
+}
+
+/// Build the PiePainter and the DragButtons being used in the program.
+List<Widget> _buildPie() {
+  List<Widget> pieAndDragButtons = [];
+  // First item is the pie painter, the rest are dragbuttons
+  // (and eventually guidebuttons too)
 
   String _formatTime(double time) {
     int hours = time.floor();
@@ -267,6 +344,11 @@ class _MyHomePageState extends State<MyHomePage> {
       List<Point> guidePoints = _generateGuidePoints(12);
 
       // Add drag buttons for each slice
+      if (pie.selectedSliceIndex != -1) {
+        //pieAndDragButtons.add(pie.slices[pie.selectedSliceIndex].dragButtonBefore);
+        pieAndDragButtons.add(pie.slices[pie.selectedSliceIndex].dragButtonAfter);
+      }
+      
       for (Slice slice in pie.slices) {
         pieAndDragButtons.add(
           DragButton(

@@ -11,15 +11,19 @@ class Pie {
   List<Slice> slices; // A list of slices in the pie chart
   Point center; // Center point of the pie chart
   double width; // Pie chart radius
+  int selectedSliceIndex;
 
   /// Default Constructor
-  /// Constructor initializes with a single slice covering the whole circle
+  /// Constructor initializes with a single slice covering the whole circle.
   Pie()
       : center = Point(), // Default center point at (0,0)
         width = pieDiameter, // A circular boundary with radius 500
         // Initialize with one full-circle slice
-        slices = [] {
-    addSlice();
+        slices = [Slice()],
+        selectedSliceIndex = -1;
+
+  int getSelectedSliceIndex() {
+    return selectedSliceIndex;
   }
 
   void addSlice() {
@@ -29,9 +33,12 @@ class Pie {
     //List<Point> guidePoints = _generateGuidePoints(12); // Assuming 12 slices in the pie chart
     addSpecificSlice(0, .5, task);
   }
+  void setSelectedSliceIndex(int i) {
+    selectedSliceIndex = i;
+  }
 
-  /// Method to add a slice to the pie chart
-  void addSpecificSlice(double start, double end, Task task) {
+  /// Method to add a slice to the pie chart.
+  void addSlice(Task task) {
     // Create a new slice, with a corner and task (can be null or provided)
 
     List<Point> guidePoints = [];
@@ -51,20 +58,14 @@ class Pie {
 
     Slice newSlice = Slice.parameterized(task: task, guidePoints: guidePoints);
 
-    // Adds the new slice to the list
+    // Adds the new slice to the list.
     slices.add(newSlice);
-    _updatePieChart();
   }
 
-  /// Remove a slice from the pie chart
-  void removeSlice(Slice sliceToRemove) {
-    slices.remove(sliceToRemove);
-    _updatePieChart();
-  }
-
-  /// Updates and redraws the pie chart after changes
-  void _updatePieChart() {
-    print("Pie chart updated. Total slices: ${slices.length}");
+  /// Remove a slice from the pie chart.
+  void removeSlice() {
+    slices.remove(slices[selectedSliceIndex]);
+    selectedSliceIndex = -1;
   }
 
   @override

@@ -1,11 +1,9 @@
 import 'package:pie_agenda/display/point.dart';
 
 class Time {
-  // This is a visual of each half hour of the pie chart. Some will be invisible some of the time
-  //
-  int time;
-  Point point;
-  bool shown;
+  double time; // Time in hours or another unit
+  Point point; // Position of the time text
+  bool shown; // Whether the time will be displayed
 
   Time(this.time, this.point) : shown = true;
 

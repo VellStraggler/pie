@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:pie_agenda/pie/pie.dart';
 import 'dart:async';
 import 'package:pie_agenda/display/point.dart';
+import 'package:pie_agenda/pie/slice.dart';
 
 const double buttonRadius = 12;
 const double buttonDiameter = buttonRadius * 2;
@@ -17,6 +18,8 @@ class DragButton extends StatefulWidget {
   final bool shown;
   final List<Point> guidePoints;
   final ValueChanged<bool> onDragStateChanged;
+  late final Function(Point) onDragEnd; // callback for drag end
+  late final Slice slice;
 
   DragButton({
     Key? key,
@@ -109,12 +112,16 @@ class _DragButtonState extends State<DragButton> {
               y: currentPosition.y + details.delta.dy,
             );
           });
+          widget.onDragEnd(currentPosition);
+          _notifyListeners();
         },
         onPanEnd: (details) {
           setState(() {
             currentPosition = _getRoundedSnapPoint(currentPosition);
           });
-          _updateDragState(false);
+          // _updateDragState(false);
+          widget.onDragEnd(currentPosition);
+          _notifyListeners();
         },
         child: widget.shown
             ? Container(
