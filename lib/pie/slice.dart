@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:pie_agenda/display/point.dart';
 
 import '../display/dragbutton.dart';
 import 'task.dart';
@@ -21,6 +22,9 @@ class Slice {
         dragButtonAfter = DragButton(time: 1, shown: true),
         color = _generateHashedColor(0, 1, Task().getTaskName()) {
     showText = true;
+    dragButtonBefore.onDragEnd = updateToDragButtons;
+    dragButtonAfter.onDragEnd = updateToDragButtons;
+    // add pointers to this Slice in the dragbuttons
   }
 
   /// Parameterized Constructor
@@ -29,8 +33,14 @@ class Slice {
     this.onTap,
   })  : color = _generateHashedColor(
             task.getStartTime(), task.getEndTime(), task.getTaskName()),
-        dragButtonAfter = DragButton(time: task.getEndTime(), shown: true),
-        dragButtonBefore = DragButton(time: task.getStartTime(), shown: true);
+        dragButtonAfter = DragButton(
+          time: task.getEndTime(),
+          shown: true,
+        ),
+        dragButtonBefore = DragButton(time: task.getStartTime(), shown: true) {
+    dragButtonBefore.onDragEnd = updateToDragButtons;
+    dragButtonAfter.onDragEnd = updateToDragButtons;
+  }
 
 // Getters and Setters
   /// Converts the start Time to Radians
@@ -61,6 +71,14 @@ class Slice {
     return task.getTaskName();
   }
 
+  /// take the dragbutton locations as reference
+  void updateToDragButtons(Point newPosition) {
+    double newTime = DragButton.getTimeFromPoint(newPosition);
+    task.setStartTime(dragButtonBefore.time);
+    task.setEndTime(newTime);
+    task.setDuration(task.getEndTime() - task.getStartTime());
+  }
+
 // Methods
   // Handle Taps
   void handleTap() {
@@ -77,11 +95,7 @@ class Slice {
     return ans;
   }
 
-  // for Tafara
-  // We need a final, randomized color variable
-  // We need it to not clash with the text color
-  // You can do this by randomizing RGB values or randomizing a list of colors like Colors.blue
-  // update the painter class to reflect this change
+  // ignore: unused_element
   static Color _generateRandomColor() {
     Random random = Random();
     List<int> rgb = [
@@ -108,15 +122,15 @@ class Slice {
     ];
 
     // drop the smallest number of the 3
-    // int numDrop = 0;
-    // if (b <= a) {
-    //   if (b <= d) {
-    //     numDrop = 1;
-    //   } else {
-    //     numDrop = 2;
-    //   }
-    // }
-    // rgb[numDrop] -= 75; //this demuddles the color to be more saturated
+    int numDrop = 0;
+    if (b <= a) {
+      if (b <= d) {
+        numDrop = 1;
+      } else {
+        numDrop = 2;
+      }
+    }
+    rgb[numDrop] -= 75; //this demuddles the color to be more saturated
 
     return Color.fromARGB(255, rgb[0], rgb[1], rgb[2]);
   }
