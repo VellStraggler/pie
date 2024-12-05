@@ -9,6 +9,7 @@ class Pie {
   List<Slice> slices; // A list of slices in the pie chart
   Point center; // Center point of the pie chart
   double width; // Pie chart radius
+  int selectedSliceIndex;
 
   /// Default Constructor
   /// Constructor initializes with a single slice covering the whole circle.
@@ -16,7 +17,16 @@ class Pie {
       : center = Point(), // Default center point at (0,0)
         width = pieDiameter, // A circular boundary with radius 500
         // Initialize with one full-circle slice
-        slices = [Slice()];
+        slices = [Slice()],
+        selectedSliceIndex = -1;
+
+  int getSelectedSliceIndex() {
+    return selectedSliceIndex;
+  }
+
+  void setSelectedSliceIndex(int i) {
+    selectedSliceIndex = i;
+  }
 
   /// Method to add a slice to the pie chart.
   void addSlice(Task task) {
@@ -28,8 +38,9 @@ class Pie {
   }
 
   /// Remove a slice from the pie chart.
-  void removeSlice(Slice sliceToRemove) {
-    slices.remove(sliceToRemove);
+  void removeSlice() {
+    slices.remove(slices[selectedSliceIndex]);
+    selectedSliceIndex = -1;
   }
 
   @override
