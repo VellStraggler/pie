@@ -76,8 +76,8 @@ class Task {
   Map<String, dynamic> toJson() {
     return {
       '_taskName': _taskName,
-      '_duration': _duration,
       '_startTime': _startTime,
+      '_duration': _duration,
     };
   }
 

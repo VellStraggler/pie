@@ -1,5 +1,6 @@
 import 'dart:async';
-
+import 'dart:convert';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart';
 import 'package:pie_agenda/display/point.dart';
 import 'package:pie_agenda/pie/slice.dart';
@@ -13,6 +14,17 @@ Pie pie = Pie();
 PiePainter painter = PiePainter(pie: pie);
 bool _editModeOn = false;
 Slice selectedSlice = Slice();
+
+Future<void> loadPie() async {
+  try {
+    String jsonString = await rootBundle.loadString('assets/data/pie.json');
+    Map<String, dynamic> jsonMap = jsonDecode(jsonString);
+
+    pie = Pie.fromJson(jsonMap);
+  } catch (e) {
+    print("No valid pie found");
+  }
+}
 
 const Color mainBackground = Color.fromRGBO(15, 65, 152, 1);
 const Color menuBackground = Color.fromRGBO(77, 148, 173, 1);
@@ -47,6 +59,7 @@ class MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     startTimer();
+    loadPie();
   }
 
   /// Creates labeled text fields for user input

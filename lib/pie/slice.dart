@@ -87,6 +87,11 @@ class Slice {
     return {'task': task.toJson()};
   }
 
+  factory Slice.fromJson(Map<String, dynamic> json) {
+    Task newTask = Task.fromJson(json);
+    return Slice.parameterized(task: newTask);
+  }
+
   @override
   String toString() {
     return task.toString();

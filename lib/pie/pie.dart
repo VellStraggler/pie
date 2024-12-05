@@ -56,7 +56,11 @@ class Pie {
 
   /// Convert JSON to a Pie object.
   factory Pie.fromJson(Map<String, dynamic> json) {
-    return Pie.parameterized(json['slices'] as List<Slice>);
+    assert(json is Map<String, dynamic>);
+    var jsonSlices = json['slices'] as List;
+    List<Slice> sliceList =
+        jsonSlices.map((slice) => Slice.fromJson(slice)).toList();
+    return Pie.parameterized(sliceList);
   }
 
   @override

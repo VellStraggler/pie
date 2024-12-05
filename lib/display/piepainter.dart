@@ -66,7 +66,6 @@ class PiePainter extends CustomPainter {
             slice.color.green - darken, slice.color.blue - darken, 1.0);
       }
 
-      //// print('$start $end');
       canvas.drawArc(
           rectArea, start, end, true, painter); //Angles are in radians.
 
