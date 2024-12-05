@@ -158,6 +158,7 @@ class MyHomePageState extends State<MyHomePage> {
   void _toggleEditMode() {
     setState(() {
       _editModeOn = !_editModeOn; // Toggle the edit mode
+      pie.guidebuttons = _editModeOn;
     });
     updateScreen();
   }
