@@ -38,8 +38,9 @@ class Pie {
   }
 
   /// Remove a slice from the pie chart.
-  void removeSlice(Slice sliceToRemove) {
-    slices.remove(sliceToRemove);
+  void removeSlice() {
+    slices.remove(slices[selectedSliceIndex]);
+    selectedSliceIndex = -1;
   }
 
   @override
