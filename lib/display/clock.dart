@@ -13,6 +13,20 @@ class Clock extends StatefulWidget {
 class _TimeClock extends State<Clock> {
   Timer? _timer;
   String _time = "";
+  List<String> months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
   @override
   void initState() {
@@ -23,13 +37,19 @@ class _TimeClock extends State<Clock> {
   String _formatTime(DateTime time) {
     int hour = time.hour;
     int minute = time.minute;
+    int intDay = time.day;
+    int intMonth = time.month;
+
     String code = "AM";
     if (hour >= 12) {
       hour = hour - 12;
       code = "PM";
     }
+    if (hour == 0) {
+      hour = 12;
+    }
 
-    return '${hour.toString()}:${minute.toString().padLeft(2, '0')} $code';
+    return '${months[intMonth - 1]} ${intDay} | ${hour.toString()}:${minute.toString().padLeft(2, '0')} $code';
   }
 
   void startTimer() {
