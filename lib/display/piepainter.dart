@@ -6,7 +6,7 @@ import 'package:pie_agenda/pie/pie.dart';
 import 'package:pie_agenda/pie/slice.dart';
 import 'dart:math';
 
-const double line = 1 / 6;
+const double pieRadius = 100.0; // Adjust this value as needed
 
 /// Creates the pie displayed on screen.
 class PiePainter extends CustomPainter {
@@ -33,10 +33,7 @@ class PiePainter extends CustomPainter {
     canvas.drawCircle(centerOffset, pieRadius, painter);
 
     // Draw the slices
-    Rect rectArea = Rect.fromCenter(
-        center: centerOffset,
-        width: pieDiameter - 10,
-        height: pieDiameter - 10);
+    Rect rectArea = Rect.fromCircle(center: centerOffset, radius: pieRadius);
     for (Slice slice in pie.slices) {
       double start = slice.getStartTimeToRadians();
       double end = slice.getEndTimeToRadians();
@@ -53,6 +50,10 @@ class PiePainter extends CustomPainter {
       final double textY = centerOffset.dy + pieRadius * 0.6 * sin(textAngle);
 
       _drawText(canvas, slice.task.getTaskName(), textX, textY, textAngle);
+
+      // Render the time next to the drag buttons
+      slice.dragButtonBefore.timeDisplay.render(canvas);
+      slice.dragButtonAfter.timeDisplay.render(canvas);
     }
   }
 

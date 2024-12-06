@@ -1,5 +1,4 @@
 import 'package:pie_agenda/display/point.dart';
-
 import 'package:flutter/material.dart';
 
 class Time {
@@ -23,30 +22,13 @@ class Time {
 
       textPainter.layout();
 
-      // Offset the time slightly above the point position
+      // Offset the time slightly next to the point position
       Offset textOffset = Offset(
-        point.x - textPainter.width / 2,
-        point.y - 20, // Adjust the vertical position
+        point.x + 15, // Adjust the horizontal position
+        point.y - textPainter.height / 2,
       );
 
       textPainter.paint(canvas, textOffset);
     }
   }
 }
-
-
-// class Time {
-//   // This is a visual of each half hour of the pie chart. Some will be invisible some of the time
-//   //
-//   int time;
-//   Point point;
-//   bool shown;
-
-//   Time(this.time, this.point) : shown = true;
-
-//   void displayInfo() {
-//     print('Time: $time, point: $point');
-//   }
-// }
-
-
