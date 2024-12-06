@@ -34,7 +34,7 @@ class Pie {
   Pie.parameterized(this.slices)
       : center = Point(),
         width = pieDiameter,
-        selectedSliceIndex = -1;
+        selectedSliceIndex = -1,
         guidebuttons = false;
 
   /// Method to add a slice to the pie chart.
@@ -60,7 +60,7 @@ class Pie {
 
   /// Convert JSON to a Pie object.
   factory Pie.fromJson(Map<String, dynamic> json) {
-    assert(json is Map<String, dynamic>);
+    //assert(json is Map<String, dynamic>);
     var jsonSlices = json['slices'] as List;
     List<Slice> sliceList =
         jsonSlices.map((slice) => Slice.fromJson(slice)).toList();

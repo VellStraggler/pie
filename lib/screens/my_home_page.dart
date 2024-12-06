@@ -194,10 +194,8 @@ class MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  // WIP
+  /// Removes the last slice selected from the pie.
   void _removeSelectedSlice() {
-    // get the last slice that was selected
-    // remove it from the slices
     //print(pie.toJson());
     pie.removeSlice();
   }
@@ -259,6 +257,7 @@ class MyHomePageState extends State<MyHomePage> {
         MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
   }
 
+  /// List the Tasks for the current Pie
   void _listSlices() {
     showDialog(
       context: context,
@@ -324,9 +323,9 @@ String _formatTime(double time) {
 
 /// Build the PiePainter and the DragButtons being used in the program.
 List<Widget> _buildPie() {
-  List<Widget> pieAndDragButtons = [];
   // First item is the pie painter, the rest are dragbuttons
   // (and eventually guidebuttons too)
+  List<Widget> pieAndDragButtons = [];
 
   pieAndDragButtons.add(
     CustomPaint(
