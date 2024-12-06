@@ -74,6 +74,9 @@ class Slice {
   /// take the dragbutton locations as reference
   void updateToDragButtons(Point newPosition) {
     double newTime = DragButton.getTimeFromPoint(newPosition);
+    dragButtonAfter.point = newPosition;
+    // dragButtonAfter = DragButton(time: newTime, shown: true);
+    // dragButtonAfter.onDragEnd = updateToDragButtons;
     task.setStartTime(dragButtonBefore.time);
     task.setEndTime(newTime);
     task.setDuration(task.getEndTime() - task.getStartTime());

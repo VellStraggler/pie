@@ -11,8 +11,9 @@ import 'package:pie_agenda/pie/slice.dart';
 const double buttonRadius = 12;
 const double buttonDiameter = buttonRadius * 2;
 
+// ignore: must_be_immutable
 class DragButton extends StatefulWidget {
-  final Point point;
+  Point point;
   final double time;
   final bool shown;
   late final Function(Point) onDragEnd; // callback for drag end
