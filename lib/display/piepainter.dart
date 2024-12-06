@@ -5,6 +5,7 @@ import 'package:pie_agenda/display/dragbutton.dart';
 import 'package:pie_agenda/pie/pie.dart';
 import 'package:pie_agenda/pie/slice.dart';
 import 'dart:math';
+import 'package:pie_agenda/display/point.dart';
 
 const double line = 1 / 6;
 
@@ -54,15 +55,19 @@ class PiePainter extends CustomPainter {
 
     // Draw the slices
     Rect rectArea = Rect.fromCenter(
-        center: centerOffset,
-        width: pieDiameter - 10,
-        height: pieDiameter - 10);
+        center: centerOffset, width: pieDiameter, height: pieDiameter);
+    int i = 0;
     for (Slice slice in pie.slices) {
       double start = slice.getStartTimeToRadians();
       double end = slice.getDurationToRadians();
       painter.color = slice.color;
+      if (i == pie.getSelectedSliceIndex()) {
+        int darken = 50;
+        painter.color = Color.fromRGBO(slice.color.red - darken,
+            slice.color.green - darken, slice.color.blue - darken, 1.0);
+      }
 
-      print('$start $end');
+      // print('$start $end');
       canvas.drawArc(
           rectArea, start, end, true, painter); //Angles are in radians.
 
@@ -73,6 +78,25 @@ class PiePainter extends CustomPainter {
       final double textY = centerOffset.dy + pieRadius * 0.6 * sin(textAngle);
 
       _drawText(canvas, slice.task.getTaskName(), textX, textY, textAngle);
+      i++;
+    }
+
+    // Draw Tick marks
+    canvas.drawLine(Offset(pieDiameter, pieRadius),
+        Offset(pieDiameter + 50, pieRadius), outliner);
+
+    // Draw Guide buttons
+    if (pie.guidebuttons) {
+      for (int i = 0; i < 48; i++) {
+        Point position = DragButton.setPointOnTime(i.toDouble() / 4);
+        // draw guidebutton at position
+        int circleSize = 12;
+        painter.color = Color.fromRGBO(158, 158, 158, .5);
+        canvas.drawCircle(
+            Offset(position.x + circleSize, position.y + circleSize),
+            circleSize.toDouble(),
+            painter);
+      }
     }
   }
 
