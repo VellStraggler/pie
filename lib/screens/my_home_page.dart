@@ -27,7 +27,7 @@ Future<void> loadPie() async {
 }
 
 const Color mainBackground = Color.fromRGBO(15, 65, 152, 1);
-const Color menuBackground = Color.fromRGBO(77, 148, 173, 1);
+const Color menuBackground = Color.fromRGBO(149, 50, 149, 1);
 const Color topBackground = Color.fromRGBO(28, 111, 213, 1);
 
 /// Home Page Widget
@@ -104,7 +104,8 @@ class MyHomePageState extends State<MyHomePage> {
             bool found = false;
             for (Slice slice in pie.slices) {
               if (slice.getStartTime() < tapTime) {
-                if (slice.getEndTime() > tapTime) {
+                if (slice.getEndTime() + .25 > tapTime) {
+                  //.25 accounts for dragbutton :O
                   selectedSlice = slice;
                   pie.setSelectedSliceIndex(i);
                   found = true;
@@ -113,17 +114,17 @@ class MyHomePageState extends State<MyHomePage> {
               }
               i++;
             }
-            if (!found) {
+            if (!found || !_editModeOn) {
               pie.setSelectedSliceIndex(-1);
+              // if one was not selected, deselect what we do have
             }
-            // we may not have one
             // print("Screen tapped at ${details.localPosition} within widget.");
             updateScreen();
           },
           child: Center(
             child: Stack(
               alignment: Alignment.center,
-              children: _buildPie(_editModeOn),
+              children: _buildPie(),
             ),
           ),
         ),
@@ -170,7 +171,9 @@ class MyHomePageState extends State<MyHomePage> {
   void _toggleEditMode() {
     setState(() {
       _editModeOn = !_editModeOn; // Toggle the edit mode
+      pie.guidebuttons = _editModeOn;
     });
+    updateScreen();
   }
 
   /// Opens dialog to add a new slice to the pie
@@ -195,7 +198,8 @@ class MyHomePageState extends State<MyHomePage> {
   void _removeSelectedSlice() {
     // get the last slice that was selected
     // remove it from the slices
-    print(pie.toJson());
+    //print(pie.toJson());
+    pie.removeSlice();
   }
 
   /// Dialog structure for adding a new slice
@@ -260,6 +264,7 @@ class MyHomePageState extends State<MyHomePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: menuBackground,
           title: const Text('Slices'),
           content: SingleChildScrollView(
             child: ListBody(
@@ -318,7 +323,7 @@ String _formatTime(double time) {
 }
 
 /// Build the PiePainter and the DragButtons being used in the program.
-List<Widget> _buildPie(bool editModeOn) {
+List<Widget> _buildPie() {
   List<Widget> pieAndDragButtons = [];
   // First item is the pie painter, the rest are dragbuttons
   // (and eventually guidebuttons too)
@@ -329,12 +334,9 @@ List<Widget> _buildPie(bool editModeOn) {
             pieDiameter + buttonDiameter, pieDiameter + buttonDiameter),
         painter: painter),
   );
-  if (editModeOn) {
-    // There are n + 1 dragbuttons for n slices
-    pieAndDragButtons.add(pie.slices[0].dragButtonBefore); // Here's the +1
-    for (Slice slice in pie.slices) {
-      pieAndDragButtons.add(slice.dragButtonAfter);
-    }
+  if (_editModeOn && pie.selectedSliceIndex != -1) {
+    //pieAndDragButtons.add(pie.slices[pie.selectedSliceIndex].dragButtonBefore);
+    pieAndDragButtons.add(pie.slices[pie.selectedSliceIndex].dragButtonAfter);
   }
   return pieAndDragButtons;
 }
