@@ -5,12 +5,12 @@ class CustomLinePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.black
+      ..color = Colors.white
       ..strokeWidth = 2.0;
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
 
-    final tickLength = 10.0;
+    const tickLength = 40.0;
 
     final positions = [
       Offset(center.dx, center.dy - radius),
