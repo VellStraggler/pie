@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:pie_agenda/display/point.dart';
 
 import '../display/dragbutton.dart';
 import 'task.dart';
@@ -19,17 +20,27 @@ class Slice {
       : task = Task(),
         dragButtonBefore = DragButton(time: 0, shown: true),
         dragButtonAfter = DragButton(time: 1, shown: true),
-        color = _generateRandomColor() {
+        color = _generateHashedColor(0, 1, Task().getTaskName()) {
     showText = true;
+    dragButtonBefore.onDragEnd = updateToDragButtons;
+    dragButtonAfter.onDragEnd = updateToDragButtons;
+    // add pointers to this Slice in the dragbuttons
   }
 
   /// Parameterized Constructor
   Slice.parameterized({
     required this.task,
     this.onTap,
-  })  : color = _generateRandomColor(),
-        dragButtonAfter = DragButton(time: task.getEndTime(), shown: true),
-        dragButtonBefore = DragButton(time: task.getStartTime(), shown: true);
+  })  : color = _generateHashedColor(
+            task.getStartTime(), task.getEndTime(), task.getTaskName()),
+        dragButtonAfter = DragButton(
+          time: task.getEndTime(),
+          shown: true,
+        ),
+        dragButtonBefore = DragButton(time: task.getStartTime(), shown: true) {
+    dragButtonBefore.onDragEnd = updateToDragButtons;
+    dragButtonAfter.onDragEnd = updateToDragButtons;
+  }
 
 // Getters and Setters
   /// Converts the start Time to Radians
@@ -38,8 +49,8 @@ class Slice {
   }
 
   /// Converts the tasks's endTime to Radians
-  double getEndTimeToRadians() {
-    return _timeToRadians(getEndTime());
+  double getDurationToRadians() {
+    return _timeToRadians(getDuration());
   }
 
   /// Gets the task's startTime.
@@ -47,9 +58,25 @@ class Slice {
     return task.getStartTime();
   }
 
-  /// Gets the task's endTime.
   double getEndTime() {
     return task.getEndTime();
+  }
+
+  /// Gets the task's endTime.
+  double getDuration() {
+    return task.getDuration();
+  }
+
+  String getTaskName() {
+    return task.getTaskName();
+  }
+
+  /// take the dragbutton locations as reference
+  void updateToDragButtons(Point newPosition) {
+    double newTime = DragButton.getTimeFromPoint(newPosition);
+    task.setStartTime(dragButtonBefore.time);
+    task.setEndTime(newTime);
+    task.setDuration(task.getEndTime() - task.getStartTime());
   }
 
 // Methods
@@ -68,11 +95,7 @@ class Slice {
     return ans;
   }
 
-  // for Tafara
-  // We need a final, randomized color variable
-  // We need it to not clash with the text color
-  // You can do this by randomizing RGB values or randomizing a list of colors like Colors.blue
-  // update the painter class to reflect this change
+  // ignore: unused_element
   static Color _generateRandomColor() {
     Random random = Random();
     List<int> rgb = [
@@ -82,6 +105,31 @@ class Slice {
     ];
 
     int numDrop = random.nextInt(3);
+    rgb[numDrop] -= 75; //this demuddles the color to be more saturated
+
+    return Color.fromARGB(255, rgb[0], rgb[1], rgb[2]);
+  }
+
+  static Color _generateHashedColor(double a, double b, String c) {
+    // a and b are both from 0 to 12
+    a *= (128 / 12);
+    b *= (128 / 12);
+    double d = min((128 / 8) * c.length, 128);
+    List<int> rgb = [
+      127 + a.toInt(), // Ensures a brighter color
+      127 + b.toInt(),
+      127 + d.toInt()
+    ];
+
+    // drop the smallest number of the 3
+    int numDrop = 0;
+    if (b <= a) {
+      if (b <= d) {
+        numDrop = 1;
+      } else {
+        numDrop = 2;
+      }
+    }
     rgb[numDrop] -= 75; //this demuddles the color to be more saturated
 
     return Color.fromARGB(255, rgb[0], rgb[1], rgb[2]);

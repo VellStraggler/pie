@@ -23,8 +23,8 @@ class Task {
   /// Time Syntax is as such:
   /// * 1.25 = 1:30
   /// * 0.5 = 12:30
-  Task.parameterized(this._taskName, this._startTime, this._endTime)
-      : _duration = _endTime - _startTime;
+  Task.parameterized(this._taskName, this._startTime, this._duration)
+      : _endTime = _duration + _startTime;
 
 // Getters and Setters
   /// Returns the task's name.
@@ -53,18 +53,18 @@ class Task {
   }
 
   /// Set the tasks's _duration.
-  void changeDuration(double _duration) {
+  void setDuration(double _duration) {
     this._duration = _duration;
   }
 
   /// Set the task's _startTime.
-  void changeStartTime(double _startTime) {
+  void setStartTime(double _startTime) {
     assert(_startTime < _endTime, "_startTime must be before _endTime.");
     this._startTime = _startTime;
   }
 
   /// Set the task's _endTime.
-  void changeEndTime(double _endTime) {
+  void setEndTime(double _endTime) {
     assert(_endTime > _startTime, "endTime must be after _startTime.");
     this._endTime = _endTime;
     _duration = _endTime - _startTime;
