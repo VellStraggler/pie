@@ -26,7 +26,9 @@ class CustomLinePainter extends CustomPainter {
         center.dy + (radius - tickLength) * sin(angle),
       );
       final end = Offset(
-          center.dx + radius * cos(angle), center.dy + radius * sin(angle));
+        center.dx + radius * cos(angle),
+        center.dy + radius * sin(angle)
+      );
       canvas.drawLine(start, end, paint);
     }
   }
