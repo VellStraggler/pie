@@ -35,6 +35,7 @@ class Pie {
       : center = Point(),
         width = pieDiameter,
         selectedSliceIndex = -1;
+        guidebuttons = false;
 
   /// Method to add a slice to the pie chart.
   void addSlice(Task task) {
