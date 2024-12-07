@@ -2,7 +2,7 @@ import 'slice.dart';
 import '../display/point.dart';
 import 'task.dart';
 
-const double pieDiameter = 500;
+const double pieDiameter = 350;
 const double pieRadius = pieDiameter / 2;
 
 class Pie {

@@ -45,16 +45,20 @@ class Slice {
 // Getters and Setters
   /// Converts the start Time to Radians
   double getStartTimeToRadians() {
-    return _timeToRadians(getStartTime() - 3);
+    // return timeToRadians(getStartTime() - 3);
+    return timeToRadians(getStartTime());
   }
 
   /// Converts the tasks's endTime to Radians
   double getDurationToRadians() {
-    return _timeToRadians(getDuration());
+    return timeToRadians(getDuration());
   }
 
   /// Gets the task's startTime.
   double getStartTime() {
+    if (dragButtonBefore.time != task.getStartTime()) {
+      task.setStartTime(dragButtonBefore.time);
+    }
     return task.getStartTime();
   }
 
@@ -71,14 +75,25 @@ class Slice {
     return task.getTaskName();
   }
 
+  ///modifies startTime and duration
+  void _dragStartTime(double time) {
+    task.setStartTime(time);
+    dragButtonBefore.setTime(time);
+    double newDuration = task.getEndTime() - time;
+    task.setDuration(newDuration);
+  }
+
   /// take the dragbutton locations as reference
   void updateToDragButtons(Point newPosition) {
     double newTime = DragButton.getTimeFromPoint(newPosition);
-    dragButtonAfter.point = newPosition;
-    // dragButtonAfter = DragButton(time: newTime, shown: true);
-    // dragButtonAfter.onDragEnd = updateToDragButtons;
-    task.setStartTime(dragButtonBefore.time);
-    task.setEndTime(newTime);
+    // if its closer to endtime, it changes endtime
+    if ((getEndTime() - newTime).abs() < (getStartTime() - newTime).abs()) {
+      dragButtonAfter.setPoint(newPosition);
+    } else {
+      dragButtonBefore.setPoint(newPosition);
+    }
+    _dragStartTime(dragButtonBefore.time);
+    task.setEndTime(dragButtonAfter.time);
     task.setDuration(task.getEndTime() - task.getStartTime());
   }
 
@@ -88,14 +103,6 @@ class Slice {
     if (onTap != null) {
       onTap!();
     }
-  }
-
-  /// Converts a given time to Radians.
-  double _timeToRadians(double time) {
-    int hour = time.toInt();
-    int minute = ((time % 1) * 60).toInt();
-    double ans = (hour % 12 + minute / 60) * (2 * 3.14159265 / 12);
-    return ans;
   }
 
   // ignore: unused_element
@@ -136,5 +143,13 @@ class Slice {
     rgb[numDrop] -= 75; //this demuddles the color to be more saturated
 
     return Color.fromARGB(255, rgb[0], rgb[1], rgb[2]);
+  }
+
+  /// Converts a given time to Radians.
+  static double timeToRadians(double time) {
+    int hour = time.toInt();
+    int minute = ((time % 1) * 60).toInt();
+    double ans = (hour % 12 + (minute / 60)) * (pi / 6);
+    return ans;
   }
 }

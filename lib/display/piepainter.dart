@@ -58,8 +58,9 @@ class PiePainter extends CustomPainter {
         center: centerOffset, width: pieDiameter, height: pieDiameter);
     int i = 0;
     for (Slice slice in pie.slices) {
-      double start = slice.getStartTimeToRadians();
-      double end = slice.getDurationToRadians();
+      double start = slice.getStartTimeToRadians() - Slice.timeToRadians(3);
+      // This offset of 3 has never made sense, and it only applies to the start time
+      double duration = slice.getDurationToRadians();
       painter.color = slice.color;
       if (i == pie.getSelectedSliceIndex()) {
         int darken = 50;
@@ -67,13 +68,12 @@ class PiePainter extends CustomPainter {
             slice.color.green - darken, slice.color.blue - darken, 1.0);
       }
 
-      // print('$start $end');
       canvas.drawArc(
-          rectArea, start, end, true, painter); //Angles are in radians.
+          rectArea, start, duration, true, painter); //Angles are in radians.
 
-      canvas.drawArc(rectArea, start, end, true, outliner);
+      canvas.drawArc(rectArea, start, duration, true, outliner);
 
-      final double textAngle = start + end / 2;
+      final double textAngle = start + duration / 2;
       final double textX = centerOffset.dx + pieRadius * 0.6 * cos(textAngle);
       final double textY = centerOffset.dy + pieRadius * 0.6 * sin(textAngle);
 
@@ -88,7 +88,7 @@ class PiePainter extends CustomPainter {
     // Draw Guide buttons
     if (pie.guidebuttons) {
       for (int i = 0; i < 48; i++) {
-        Point position = DragButton.setPointOnTime(i.toDouble() / 4);
+        Point position = DragButton.getPointFromTime(i.toDouble() / 4);
         // draw guidebutton at position
         int circleSize = 12;
         painter.color = Color.fromRGBO(158, 158, 158, .8);

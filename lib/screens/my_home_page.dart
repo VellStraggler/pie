@@ -90,8 +90,8 @@ class MyHomePageState extends State<MyHomePage> {
             int i = 0;
             bool found = false;
             for (Slice slice in pie.slices) {
-              if (slice.getStartTime() < tapTime) {
-                if (slice.getEndTime() + .25 > tapTime) {
+              if (slice.getStartTime() - .2 < tapTime) {
+                if (slice.getEndTime() + .2 > tapTime) {
                   //.25 accounts for dragbutton :O
                   selectedSlice = slice;
                   pie.setSelectedSliceIndex(i);
@@ -233,6 +233,7 @@ class MyHomePageState extends State<MyHomePage> {
       setState(() {
         Task task = Task.parameterized(taskText, startTime, duration);
         pie.addSlice(task);
+        pie.selectedSliceIndex = pie.slices.length - 1;
         painter = PiePainter(pie: pie); // Update painter with new data
       });
     } else {
@@ -321,7 +322,7 @@ List<Widget> _buildPie() {
         painter: painter),
   );
   if (_editModeOn && pie.selectedSliceIndex != -1) {
-    //pieAndDragButtons.add(pie.slices[pie.selectedSliceIndex].dragButtonBefore);
+    pieAndDragButtons.add(pie.slices[pie.selectedSliceIndex].dragButtonBefore);
     pieAndDragButtons.add(pie.slices[pie.selectedSliceIndex].dragButtonAfter);
   }
   return pieAndDragButtons;

@@ -14,13 +14,13 @@ const double buttonDiameter = buttonRadius * 2;
 // ignore: must_be_immutable
 class DragButton extends StatefulWidget {
   Point point;
-  final double time;
+  double time;
   final bool shown;
   late final Function(Point) onDragEnd; // callback for drag end
   late final Slice slice;
 
   DragButton({super.key, required this.time, required this.shown})
-      : point = setPointOnTime(time);
+      : point = getPointFromTime(time);
 
   @override
   // ignore: library_private_types_in_public_api
@@ -34,8 +34,20 @@ class DragButton extends StatefulWidget {
     return point;
   }
 
+  /// also updates point
+  void setTime(double time) {
+    this.time = time;
+    point = getPointFromTime(time);
+  }
+
+  ///also updates time
+  void setPoint(Point newPoint) {
+    point = newPoint;
+    time = getTimeFromPoint(point);
+  }
+
   /// Determine where on the edge of the circle the button should be positioned
-  static setPointOnTime(double time) {
+  static getPointFromTime(double time) {
     double theta = (-pi * time / 6.0) + (pi / 2.0);
     double x = (pieRadius * cos(theta)) + pieRadius;
     double y = -(pieRadius * sin(theta)) + pieRadius;
@@ -58,6 +70,8 @@ class DragButton extends StatefulWidget {
     // Ensure theta is in the range [0, 2*pi)
     if (theta < 0) {
       theta += 2 * pi;
+    } else if (theta >= 2 * pi) {
+      theta -= 2 * pi;
     }
     // Map the angle to a time value
     double time = (theta * 6.0) / pi;
@@ -147,13 +161,13 @@ class _DragButtonState extends State<DragButton> {
         x: (currentPosition.x + details.delta.dx),
         y: (currentPosition.y + details.delta.dy));
     Point newPoint =
-        DragButton.setPointOnTime(DragButton.getTimeFromPoint(current));
+        DragButton.getPointFromTime(DragButton.getTimeFromPoint(current));
     return newPoint;
   }
 
   static Point getRoundedSnapPoint(Point current) {
     double time = DragButton.getTimeFromPoint(current);
     time = (time * 4).round() / 4;
-    return DragButton.setPointOnTime(time);
+    return DragButton.getPointFromTime(time);
   }
 }
