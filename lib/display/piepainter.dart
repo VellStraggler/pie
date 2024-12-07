@@ -86,7 +86,7 @@ class PiePainter extends CustomPainter {
         Offset(pieDiameter + 50, pieRadius), outliner);
 
     // Draw Guide buttons
-    if (pie.guidebuttons) {
+    if (pie.selectedSliceIndex != -1) {
       for (int i = 0; i < 48; i++) {
         Point position = DragButton.getPointFromTime(i.toDouble() / 4);
         // draw guidebutton at position

@@ -11,7 +11,6 @@ import 'package:pie_agenda/display/clock.dart';
 
 Pie pie = Pie();
 PiePainter painter = PiePainter(pie: pie);
-bool _editModeOn = false;
 Slice selectedSlice = Slice();
 
 const Color mainBackground = Color.fromRGBO(15, 65, 152, 1);
@@ -92,7 +91,7 @@ class MyHomePageState extends State<MyHomePage> {
             for (Slice slice in pie.slices) {
               if (slice.getStartTime() - .2 < tapTime) {
                 if (slice.getEndTime() + .2 > tapTime) {
-                  //.25 accounts for dragbutton :O
+                  //.2 accounts for dragbutton :O
                   selectedSlice = slice;
                   pie.setSelectedSliceIndex(i);
                   found = true;
@@ -101,7 +100,7 @@ class MyHomePageState extends State<MyHomePage> {
               }
               i++;
             }
-            if (!found || !_editModeOn) {
+            if (!found) {
               pie.setSelectedSliceIndex(-1);
               // if one was not selected, deselect what we do have
             }
@@ -122,23 +121,13 @@ class MyHomePageState extends State<MyHomePage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
-        Text(
-          _editModeOn ? "Edit Mode is ON " : "Edit Mode is OFF ",
-          style: const TextStyle(fontSize: 24),
-        ),
-        FloatingActionButton(
-          onPressed: _toggleEditMode,
-          tooltip: 'Toggle Edit Mode',
-          child: const Icon(Icons.edit),
-        ),
-        const SizedBox(width: 10),
         FloatingActionButton(
           onPressed: _showAddSliceDialog,
           tooltip: 'Add Slice',
           child: const Icon(Icons.add),
         ),
-        if (_editModeOn) const SizedBox(width: 10),
-        if (_editModeOn)
+        if (isEditing()) const SizedBox(width: 10),
+        if (isEditing())
           FloatingActionButton(
             onPressed: _removeSelectedSlice,
             tooltip: 'Delete Slice',
@@ -152,15 +141,6 @@ class MyHomePageState extends State<MyHomePage> {
         )
       ],
     );
-  }
-
-  /// Let the user edit the pie.
-  void _toggleEditMode() {
-    setState(() {
-      _editModeOn = !_editModeOn; // Toggle the edit mode
-      pie.guidebuttons = _editModeOn;
-    });
-    updateScreen();
   }
 
   /// Opens dialog to add a new slice to the pie
@@ -321,9 +301,13 @@ List<Widget> _buildPie() {
             pieDiameter + buttonDiameter, pieDiameter + buttonDiameter),
         painter: painter),
   );
-  if (_editModeOn && pie.selectedSliceIndex != -1) {
+  if (isEditing()) {
     pieAndDragButtons.add(pie.slices[pie.selectedSliceIndex].dragButtonBefore);
     pieAndDragButtons.add(pie.slices[pie.selectedSliceIndex].dragButtonAfter);
   }
   return pieAndDragButtons;
+}
+
+bool isEditing() {
+  return pie.selectedSliceIndex > -1;
 }
