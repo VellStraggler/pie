@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:pie_agenda/display/point.dart';
@@ -9,7 +10,8 @@ import 'package:pie_agenda/pie/pie.dart';
 import 'package:pie_agenda/display/piepainter.dart';
 import 'package:pie_agenda/display/clock.dart';
 
-Pie pie = Pie();
+/// These will be re-instantiated as soon as we get the width of the screen
+Pie pie = Pie(350);
 PiePainter painter = PiePainter(pie: pie);
 Slice selectedSlice = Slice();
 
@@ -45,6 +47,15 @@ class MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    // Get the dimensions of the app ASAP here
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _getWidgetSize();
+      // Find the smallest of the two dimensions
+      double smallestDimension = min(widgetHeight!, widgetWidth!);
+      // Use the dimensions here
+      pie = Pie(smallestDimension * .9);
+      painter = PiePainter(pie: pie);
+    });
     startTimer();
   }
 
@@ -81,8 +92,12 @@ class MyHomePageState extends State<MyHomePage> {
             // print("$widgetWidth and height: $widgetHeight");
 
             double tapTime = DragButton.getTimeFromPoint(Point.parameterized(
-                x: details.localPosition.dx - (widgetWidth! / 2) + pieRadius,
-                y: details.localPosition.dy - (widgetHeight! / 2) + pieRadius));
+                x: details.localPosition.dx -
+                    (widgetWidth! / 2) +
+                    (pie.width / 2),
+                y: details.localPosition.dy -
+                    (widgetHeight! / 2) +
+                    (pie.width / 2)));
             // Need to start from the corner of the pie, not the corner of the whole window
             // search through the slices for one whose endpoints are before and after this time
             // print("tapTime is $tapTime");
@@ -297,8 +312,7 @@ List<Widget> _buildPie() {
 
   pieAndDragButtons.add(
     CustomPaint(
-        size: const Size(
-            pieDiameter + buttonDiameter, pieDiameter + buttonDiameter),
+        size: Size(pie.width + buttonDiameter, pie.width + buttonDiameter),
         painter: painter),
   );
   if (isEditing()) {

@@ -3,6 +3,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:pie_agenda/pie/diameter.dart';
 import 'package:pie_agenda/pie/pie.dart';
 import 'dart:async';
 import 'package:pie_agenda/display/point.dart';
@@ -18,6 +19,7 @@ class DragButton extends StatefulWidget {
   final bool shown;
   late final Function(Point) onDragEnd; // callback for drag end
   late final Slice slice;
+  late final Pie pie;
 
   DragButton({super.key, required this.time, required this.shown})
       : point = getPointFromTime(time);
@@ -49,16 +51,20 @@ class DragButton extends StatefulWidget {
   /// Determine where on the edge of the circle the button should be positioned
   static getPointFromTime(double time) {
     double theta = (-pi * time / 6.0) + (pi / 2.0);
-    double x = (pieRadius * cos(theta)) + pieRadius;
-    double y = -(pieRadius * sin(theta)) + pieRadius;
+    double x = (_radius() * cos(theta)) + _radius();
+    double y = -(_radius() * sin(theta)) + _radius();
 
     return Point.parameterized(x: x, y: y);
   }
 
+  static double _radius() {
+    return (Diameter.instance.pie / 2);
+  }
+
   static double getTimeFromPoint(Point point) {
     // Calculate the center of the circle
-    double centerX = pieRadius;
-    double centerY = pieRadius;
+    double centerX = _radius();
+    double centerY = _radius();
     // Calculate the vector from the center to the given point
     double deltaX = point.x - centerX;
     double deltaY = point.y - centerY;

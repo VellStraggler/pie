@@ -30,9 +30,10 @@ class PiePainter extends CustomPainter {
 
     // Draw time
     Rect timeArea = Rect.fromCenter(
-        center: Offset(pieRadius + buttonRadius, pieRadius + buttonRadius),
-        width: pieDiameter + 25,
-        height: pieDiameter + 25);
+        center: Offset(
+            (pie.width / 2) + buttonRadius, (pie.width / 2) + buttonRadius),
+        width: pie.width + 25,
+        height: pie.width + 25);
     DateTime time = DateTime.now();
     double hour = time.hour.toDouble();
     if (hour >= 12) {
@@ -49,13 +50,13 @@ class PiePainter extends CustomPainter {
 
     // Draw the pie chart.
     Offset centerOffset =
-        Offset(pieRadius + buttonRadius, pieRadius + buttonRadius);
+        Offset((pie.width / 2) + buttonRadius, (pie.width / 2) + buttonRadius);
     painter.color = Colors.blue;
-    canvas.drawCircle(centerOffset, pieRadius, painter);
+    canvas.drawCircle(centerOffset, (pie.width / 2), painter);
 
     // Draw the slices
     Rect rectArea = Rect.fromCenter(
-        center: centerOffset, width: pieDiameter, height: pieDiameter);
+        center: centerOffset, width: pie.width, height: pie.width);
     int i = 0;
     for (Slice slice in pie.slices) {
       double start = slice.getStartTimeToRadians() - Slice.timeToRadians(3);
@@ -74,16 +75,18 @@ class PiePainter extends CustomPainter {
       canvas.drawArc(rectArea, start, duration, true, outliner);
 
       final double textAngle = start + duration / 2;
-      final double textX = centerOffset.dx + pieRadius * 0.6 * cos(textAngle);
-      final double textY = centerOffset.dy + pieRadius * 0.6 * sin(textAngle);
+      final double textX =
+          centerOffset.dx + (pie.width / 2) * 0.6 * cos(textAngle);
+      final double textY =
+          centerOffset.dy + (pie.width / 2) * 0.6 * sin(textAngle);
 
       _drawText(canvas, slice.task.getTaskName(), textX, textY, textAngle);
       i++;
     }
 
     // Draw Tick marks
-    canvas.drawLine(Offset(pieDiameter, pieRadius),
-        Offset(pieDiameter + 50, pieRadius), outliner);
+    canvas.drawLine(Offset(pie.width, (pie.width / 2)),
+        Offset(pie.width + 50, (pie.width / 2)), outliner);
 
     // Draw Guide buttons
     if (pie.selectedSliceIndex != -1) {
