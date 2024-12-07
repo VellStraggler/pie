@@ -36,6 +36,11 @@ class DragButton extends StatefulWidget {
     return point;
   }
 
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return time.toString();
+  }
+
   /// also updates point
   void setTime(double time) {
     this.time = time;

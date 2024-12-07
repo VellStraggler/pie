@@ -30,8 +30,8 @@ class PiePainter extends CustomPainter {
 
     // Draw time
     Rect timeArea = Rect.fromCenter(
-        center: Offset(
-            (pie.width / 2) + buttonRadius, (pie.width / 2) + buttonRadius),
+        center:
+            Offset(pie.radius() + buttonRadius, pie.radius() + buttonRadius),
         width: pie.width + 25,
         height: pie.width + 25);
     DateTime time = DateTime.now();
@@ -50,20 +50,22 @@ class PiePainter extends CustomPainter {
 
     // Draw the pie chart.
     Offset centerOffset =
-        Offset((pie.width / 2) + buttonRadius, (pie.width / 2) + buttonRadius);
+        Offset(pie.radius() + buttonRadius, pie.radius() + buttonRadius);
     painter.color = Colors.blue;
-    canvas.drawCircle(centerOffset, (pie.width / 2), painter);
+    canvas.drawCircle(centerOffset, pie.radius(), painter);
 
     // Draw the slices
     Rect rectArea = Rect.fromCenter(
         center: centerOffset, width: pie.width, height: pie.width);
     int i = 0;
     for (Slice slice in pie.slices) {
+      slice.shown = false;
       double start = slice.getStartTimeToRadians() - Slice.timeToRadians(3);
       // This offset of 3 has never made sense, and it only applies to the start time
       double duration = slice.getDurationToRadians();
       painter.color = slice.color;
       if (i == pie.getSelectedSliceIndex()) {
+        slice.shown = true;
         int darken = 50;
         painter.color = Color.fromRGBO(slice.color.red - darken,
             slice.color.green - darken, slice.color.blue - darken, 1.0);
@@ -76,17 +78,13 @@ class PiePainter extends CustomPainter {
 
       final double textAngle = start + duration / 2;
       final double textX =
-          centerOffset.dx + (pie.width / 2) * 0.6 * cos(textAngle);
+          centerOffset.dx + pie.radius() * 0.6 * cos(textAngle);
       final double textY =
-          centerOffset.dy + (pie.width / 2) * 0.6 * sin(textAngle);
+          centerOffset.dy + pie.radius() * 0.6 * sin(textAngle);
 
       _drawText(canvas, slice.task.getTaskName(), textX, textY, textAngle);
       i++;
     }
-
-    // Draw Tick marks
-    canvas.drawLine(Offset(pie.width, (pie.width / 2)),
-        Offset(pie.width + 50, (pie.width / 2)), outliner);
 
     // Draw Guide buttons
     if (pie.selectedSliceIndex != -1) {

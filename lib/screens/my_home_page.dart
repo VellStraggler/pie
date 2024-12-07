@@ -100,7 +100,6 @@ class MyHomePageState extends State<MyHomePage> {
                     (pie.width / 2)));
             // Need to start from the corner of the pie, not the corner of the whole window
             // search through the slices for one whose endpoints are before and after this time
-            // print("tapTime is $tapTime");
             int i = 0;
             bool found = false;
             for (Slice slice in pie.slices) {
@@ -119,7 +118,6 @@ class MyHomePageState extends State<MyHomePage> {
               pie.setSelectedSliceIndex(-1);
               // if one was not selected, deselect what we do have
             }
-            // print("Screen tapped at ${details.localPosition} within widget.");
             updateScreen();
           },
           child: Center(
@@ -176,7 +174,6 @@ class MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  // WIP
   void _removeSelectedSlice() {
     // get the last slice that was selected
     // remove it from the slices
@@ -308,17 +305,18 @@ String _formatTime(double time) {
 List<Widget> _buildPie() {
   List<Widget> pieAndDragButtons = [];
   // First item is the pie painter, the rest are dragbuttons
-  // (and eventually guidebuttons too)
-
   pieAndDragButtons.add(
     CustomPaint(
         size: Size(pie.width + buttonDiameter, pie.width + buttonDiameter),
         painter: painter),
   );
   if (isEditing()) {
-    pieAndDragButtons.add(pie.slices[pie.selectedSliceIndex].dragButtonBefore);
-    pieAndDragButtons.add(pie.slices[pie.selectedSliceIndex].dragButtonAfter);
+    for (Slice slice in pie.slices) {
+      pieAndDragButtons.add(slice.dragButtonBefore);
+      pieAndDragButtons.add(slice.dragButtonAfter);
+    }
   }
+  print(pie.selectedSliceIndex);
   return pieAndDragButtons;
 }
 
