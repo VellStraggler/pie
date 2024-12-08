@@ -276,6 +276,7 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   void _listSlices() {
+    pie.setSelectedSliceIndex(-1);
     showDialog(
       context: context,
       builder: (BuildContext context) {
