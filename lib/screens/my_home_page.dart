@@ -15,9 +15,9 @@ Pie pie = Pie(350);
 PiePainter painter = PiePainter(pie: pie);
 Slice selectedSlice = Slice();
 
-const Color mainBackground = Color.fromRGBO(15, 65, 152, 1);
-const Color menuBackground = Color.fromRGBO(149, 50, 149, 1);
-const Color topBackground = Color.fromRGBO(28, 111, 213, 1);
+const Color mainBackground = Color.fromRGBO(219, 220, 255, 1); //(219,220,255)
+const Color menuBackground = Color.fromRGBO(212, 255, 234, 1); //(212,255,234)
+const Color topBackground = Color.fromRGBO(238, 203, 255, 1); //(238,203,255)
 
 /// Home Page Widget
 class MyHomePage extends StatefulWidget {
