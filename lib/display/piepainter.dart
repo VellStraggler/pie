@@ -37,13 +37,26 @@ class PiePainter extends CustomPainter {
         height: pie.width + 25);
     DateTime time = DateTime.now();
     double hour = time.hour.toDouble();
-    if (hour >= 12) {
-      hour = hour - 12;
-    }
     double minute = time.minute.toDouble();
     double second = time.second.toDouble();
+    if (isAfternoon) {
+      if (hour >= 12) {
+        hour = hour - 12;
+      } else {
+        hour = 0;
+        minute = 0;
+        second = 0;
+      }
+    } else {
+      //AM
+      if (hour >= 12) {
+        hour = 11;
+        minute = 59;
+        second = 59;
+      }
+    }
     double radianTime = (hour + minute / 60 + second / 3600) * pi / 6;
-    painter.color = themeColor2;
+    painter.color = buttonColor;
     double midnight = (3 * pi / 2);
     canvas.drawArc(timeArea, midnight + radianTime, (2 * pi) - (radianTime),
         true, painter);
@@ -52,7 +65,7 @@ class PiePainter extends CustomPainter {
     // End tick of the time
     painter.color = themeColor1;
     canvas.drawArc(
-        timeArea, midnight + radianTime - (.02), (.02), true, painter);
+        timeArea, midnight + radianTime - (.01), (.02), true, painter);
 
     // Draw the pie chart.
     Offset centerOffset =
@@ -73,9 +86,7 @@ class PiePainter extends CustomPainter {
       painter.color = slice.color;
       if (i == pie.getSelectedSliceIndex()) {
         slice.shown = true;
-        int darken = 50;
-        painter.color = Color.fromRGBO(slice.color.red - darken,
-            slice.color.green - darken, slice.color.blue - darken, 1.0);
+        painter.color = darkenColor(slice.color);
       }
 
       canvas.drawArc(

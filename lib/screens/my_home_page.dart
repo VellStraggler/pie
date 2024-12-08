@@ -12,9 +12,9 @@ import 'package:pie_agenda/display/piepainter.dart';
 import 'package:pie_agenda/display/clock.dart';
 
 /// These will be re-instantiated as soon as we get the width of the screen
-Pie AMPie = Pie();
-Pie PMPie = Pie();
-Pie pie = AMPie; //pointer
+Pie aMPie = Pie();
+Pie pMPie = Pie();
+Pie pie = aMPie; //pointer
 bool isAfternoon = false;
 PiePainter painter = PiePainter(pie: pie);
 Slice selectedSlice = Slice();
@@ -23,6 +23,7 @@ const Color themeColor2 = Color.fromRGBO(39, 102, 169, 1); //(219,220,255)
 const Color menuBackground = Color.fromRGBO(35, 50, 218, 1); //(212,255,234)
 const Color themeColor1 = Color.fromRGBO(249, 248, 255, 1); //(238,203,255)
 const Color almostBlack = Color.fromRGBO(5, 8, 72, 1);
+const Color buttonColor = Color.fromRGBO(132, 173, 255, 1);
 
 /// Home Page Widget
 class MyHomePage extends StatefulWidget {
@@ -60,8 +61,8 @@ class MyHomePageState extends State<MyHomePage> {
       // Use the dimensions here
       // Relies on AMPie being the default
       Diameter.instance.pie = smallestDimension * .9;
-      AMPie = Pie();
-      pie = AMPie;
+      aMPie = Pie();
+      pie = aMPie;
       painter = PiePainter(pie: pie);
     });
     startTimer();
@@ -84,13 +85,13 @@ class MyHomePageState extends State<MyHomePage> {
         appBar: AppBar(
             backgroundColor: themeColor2,
             foregroundColor: themeColor1,
-            title: Text(widget.title),
-            bottom: const PreferredSize(
-                preferredSize: Size.fromHeight(30.0),
+            // title:Text(widget.title)
+            title: const PreferredSize(
+                preferredSize: Size.fromHeight(32.0),
                 child: Align(
-                    alignment: Alignment.centerLeft,
+                    alignment: Alignment.center,
                     child: Padding(
-                        padding: EdgeInsets.only(left: 16.0, bottom: 8.0),
+                        padding: EdgeInsets.only(bottom: 4.0),
                         child: Clock())))),
         body: GestureDetector(
           key: _gestureKey,
@@ -144,6 +145,7 @@ class MyHomePageState extends State<MyHomePage> {
       children: <Widget>[
         FloatingActionButton(
           onPressed: _showAddSliceDialog,
+          backgroundColor: buttonColor,
           tooltip: 'Add Slice',
           child: const Icon(Icons.add),
         ),
@@ -151,12 +153,14 @@ class MyHomePageState extends State<MyHomePage> {
         if (isEditing())
           FloatingActionButton(
             onPressed: _removeSelectedSlice,
+            backgroundColor: buttonColor,
             tooltip: 'Delete Slice',
             child: const Icon(Icons.delete_forever),
           ),
         const SizedBox(width: 10),
         FloatingActionButton(
           onPressed: _listSlices,
+          backgroundColor: buttonColor,
           tooltip: 'List Slices',
           child: const Icon(Icons.list),
         ),
@@ -171,7 +175,7 @@ class MyHomePageState extends State<MyHomePage> {
           ),
         if (!isAfternoon)
           FloatingActionButton(
-            backgroundColor: themeColor2,
+            backgroundColor: buttonColor,
             onPressed: _switchTime,
             tooltip: 'Switch to PM',
             child: const Text("AM"),
@@ -183,9 +187,9 @@ class MyHomePageState extends State<MyHomePage> {
   void _switchTime() {
     isAfternoon = !isAfternoon;
     if (isAfternoon) {
-      pie = PMPie;
+      pie = pMPie;
     } else {
-      pie = AMPie;
+      pie = aMPie;
     }
   }
 
@@ -355,4 +359,10 @@ List<Widget> _buildPie() {
 
 bool isEditing() {
   return pie.selectedSliceIndex > -1;
+}
+
+Color darkenColor(Color color) {
+  const int darken = 50;
+  return Color.fromRGBO(
+      color.red - darken, color.green - darken, color.blue - darken, 1.0);
 }
