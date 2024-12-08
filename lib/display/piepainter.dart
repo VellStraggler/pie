@@ -51,7 +51,8 @@ class PiePainter extends CustomPainter {
     canvas.drawArc(timeArea, midnight, radianTime, true, painter);
     // End tick of the time
     painter.color = themeColor1;
-    canvas.drawArc(timeArea, midnight + radianTime, (pi / 96), true, painter);
+    canvas.drawArc(
+        timeArea, midnight + radianTime - (.02), (.02), true, painter);
 
     // Draw the pie chart.
     Offset centerOffset =
@@ -99,21 +100,21 @@ class PiePainter extends CustomPainter {
       ..strokeWidth = 2.0;
 
     const int numTickMarks = 12;
-    const double tickLength = 10.0;
+    const double tickLength = buttonRadius;
 
     for (int i = 0; i < numTickMarks; i++) {
       final double angle = (2 * pi / numTickMarks) * i;
       final start = Offset(
-        centerOffset.dx + (pieRadius - tickLength) * cos(angle),
-        centerOffset.dy + (pieRadius - tickLength) * sin(angle),
+        centerOffset.dx + (pie.radius() - tickLength) * cos(angle),
+        centerOffset.dy + (pie.radius() - tickLength) * sin(angle),
       );
       final end = Offset(
-        centerOffset.dx + pieRadius * cos(angle),
-        centerOffset.dy + pieRadius * sin(angle),
+        centerOffset.dx + (pie.radius()) * cos(angle),
+        centerOffset.dy + (pie.radius()) * sin(angle),
       );
       canvas.drawLine(start, end, tickPaint);
     }
-    
+
     // Draw Guide buttons
     if (pie.selectedSliceIndex != -1) {
       for (int i = 0; i < 48; i++) {

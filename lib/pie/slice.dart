@@ -104,7 +104,7 @@ class Slice {
       dragButtonBefore.setPoint(newPosition);
     }
     _dragStartTime(dragButtonBefore.time);
-    task.setEndTime(dragButtonAfter.time);
+    _dragEndTime(dragButtonAfter.time);
     task.setDuration(task.getEndTime() - task.getStartTime());
   }
 
