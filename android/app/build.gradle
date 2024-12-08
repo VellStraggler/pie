@@ -37,6 +37,20 @@ android {
             signingConfig = signingConfigs.debug
         }
     }
+
+    signingConfigs {
+        release {
+            keyAlias 'my-release-key'
+            keyPassword 'password'
+            storeFile file('my-release-key.jks')
+            storePassword 'your-store-password'
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
 }
 
 flutter {
