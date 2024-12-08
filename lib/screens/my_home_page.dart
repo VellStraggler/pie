@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:pie_agenda/display/point.dart';
+import 'package:pie_agenda/pie/diameter.dart';
 import 'package:pie_agenda/pie/slice.dart';
 import 'package:pie_agenda/pie/task.dart';
 import 'package:pie_agenda/display/dragbutton.dart';
@@ -11,7 +12,10 @@ import 'package:pie_agenda/display/piepainter.dart';
 import 'package:pie_agenda/display/clock.dart';
 
 /// These will be re-instantiated as soon as we get the width of the screen
-Pie pie = Pie(350);
+Pie AMPie = Pie();
+Pie PMPie = Pie();
+Pie pie = AMPie; //pointer
+bool isAfternoon = false;
 PiePainter painter = PiePainter(pie: pie);
 Slice selectedSlice = Slice();
 
@@ -54,7 +58,10 @@ class MyHomePageState extends State<MyHomePage> {
       // Find the smallest of the two dimensions
       double smallestDimension = min(widgetHeight!, widgetWidth!);
       // Use the dimensions here
-      pie = Pie(smallestDimension * .9);
+      // Relies on AMPie being the default
+      Diameter.instance.pie = smallestDimension * .9;
+      AMPie = Pie();
+      pie = AMPie;
       painter = PiePainter(pie: pie);
     });
     startTimer();
@@ -76,6 +83,7 @@ class MyHomePageState extends State<MyHomePage> {
         backgroundColor: themeColor1,
         appBar: AppBar(
             backgroundColor: themeColor2,
+            foregroundColor: themeColor1,
             title: Text(widget.title),
             bottom: const PreferredSize(
                 preferredSize: Size.fromHeight(30.0),
@@ -90,7 +98,6 @@ class MyHomePageState extends State<MyHomePage> {
             _getWidgetSize();
             // We need to get the rotation from the center that a tapped point is at
             // convert it to a double time
-            // print("$widgetWidth and height: $widgetHeight");
 
             double tapTime = DragButton.getTimeFromPoint(Point.parameterized(
                 x: details.localPosition.dx -
@@ -152,9 +159,34 @@ class MyHomePageState extends State<MyHomePage> {
           onPressed: _listSlices,
           tooltip: 'List Slices',
           child: const Icon(Icons.list),
-        )
+        ),
+        const SizedBox(width: 10),
+        if (isAfternoon)
+          FloatingActionButton(
+            backgroundColor: almostBlack,
+            foregroundColor: themeColor1,
+            onPressed: _switchTime,
+            tooltip: 'Switch to AM',
+            child: const Text("PM"),
+          ),
+        if (!isAfternoon)
+          FloatingActionButton(
+            backgroundColor: themeColor2,
+            onPressed: _switchTime,
+            tooltip: 'Switch to PM',
+            child: const Text("AM"),
+          ),
       ],
     );
+  }
+
+  void _switchTime() {
+    isAfternoon = !isAfternoon;
+    if (isAfternoon) {
+      pie = PMPie;
+    } else {
+      pie = AMPie;
+    }
   }
 
   /// Opens dialog to add a new slice to the pie
@@ -317,7 +349,7 @@ List<Widget> _buildPie() {
       pieAndDragButtons.add(slice.dragButtonAfter);
     }
   }
-  print(pie.selectedSliceIndex);
+  // print(pie.selectedSliceIndex);
   return pieAndDragButtons;
 }
 
