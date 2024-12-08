@@ -15,9 +15,10 @@ Pie pie = Pie(350);
 PiePainter painter = PiePainter(pie: pie);
 Slice selectedSlice = Slice();
 
-const Color mainBackground = Color.fromRGBO(219, 220, 255, 1); //(219,220,255)
-const Color menuBackground = Color.fromRGBO(212, 255, 234, 1); //(212,255,234)
-const Color topBackground = Color.fromRGBO(238, 203, 255, 1); //(238,203,255)
+const Color themeColor2 = Color.fromRGBO(39, 102, 169, 1); //(219,220,255)
+const Color menuBackground = Color.fromRGBO(35, 50, 218, 1); //(212,255,234)
+const Color themeColor1 = Color.fromRGBO(249, 248, 255, 1); //(238,203,255)
+const Color almostBlack = Color.fromRGBO(5, 8, 72, 1);
 
 /// Home Page Widget
 class MyHomePage extends StatefulWidget {
@@ -72,9 +73,9 @@ class MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: mainBackground,
+        backgroundColor: themeColor1,
         appBar: AppBar(
-            backgroundColor: topBackground,
+            backgroundColor: themeColor2,
             title: Text(widget.title),
             bottom: const PreferredSize(
                 preferredSize: Size.fromHeight(30.0),
@@ -186,7 +187,7 @@ class MyHomePageState extends State<MyHomePage> {
       TextEditingController durationController,
       TextEditingController taskController) {
     return AlertDialog(
-      backgroundColor: menuBackground,
+      backgroundColor: themeColor1,
       title: const Text('Add New Slice'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -243,7 +244,7 @@ class MyHomePageState extends State<MyHomePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: menuBackground,
+          backgroundColor: themeColor1,
           title: const Text('Slices'),
           content: SingleChildScrollView(
             child: ListBody(
