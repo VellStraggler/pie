@@ -13,14 +13,13 @@ class Pie {
 
   /// Default Constructor
   /// Constructor initializes with a single slice covering the whole circle.
-  Pie(double diameter)
+  Pie()
       : center = Point(), // Default center point at (0,0)
-        width = diameter, // A circular boundary with radius 500
+        width = Diameter.instance.pie, // A circular boundary with radius 500
         // Initialize with one full-circle slice
         slices = [],
         selectedSliceIndex = -1,
         guidebuttons = false {
-    Diameter.instance.pie = diameter;
     slices.add(Slice());
   }
 

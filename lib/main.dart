@@ -20,7 +20,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Pie Agenda Home Page'),
+      home: const MyHomePage(title: 'Pie Agenda'),
+      debugShowCheckedModeBanner: false,
     );
   }
 }

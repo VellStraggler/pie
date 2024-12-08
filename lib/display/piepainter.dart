@@ -6,6 +6,7 @@ import 'package:pie_agenda/pie/pie.dart';
 import 'package:pie_agenda/pie/slice.dart';
 import 'dart:math';
 import 'package:pie_agenda/display/point.dart';
+import 'package:pie_agenda/screens/my_home_page.dart';
 
 const double line = 1 / 6;
 
@@ -20,12 +21,12 @@ class PiePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     // Create the paint object (the previous is assumedly destroyed)
     Paint painter = Paint()
-      ..color = Colors.blue
+      ..color = almostBlack
       ..strokeWidth = 3.0;
 
     Paint outliner = Paint()
       ..style = PaintingStyle.stroke //no fill
-      ..color = Colors.black
+      ..color = almostBlack
       ..strokeWidth = 3.0;
 
     // Draw time
@@ -36,23 +37,42 @@ class PiePainter extends CustomPainter {
         height: pie.width + 25);
     DateTime time = DateTime.now();
     double hour = time.hour.toDouble();
-    if (hour >= 12) {
-      hour = hour - 12;
-    }
     double minute = time.minute.toDouble();
     double second = time.second.toDouble();
+    if (isAfternoon) {
+      if (hour >= 12) {
+        hour = hour - 12;
+      } else {
+        hour = 0;
+        minute = 0;
+        second = 0;
+      }
+    } else {
+      //AM
+      if (hour >= 12) {
+        hour = 11;
+        minute = 59;
+        second = 59;
+      }
+    }
     double radianTime = (hour + minute / 60 + second / 3600) * pi / 6;
-    painter.color = Colors.black;
-    canvas.drawArc(timeArea, (3 * pi / 2) + radianTime, (2 * pi) - (radianTime),
+    painter.color = buttonColor;
+    double midnight = (3 * pi / 2);
+    canvas.drawArc(timeArea, midnight + radianTime, (2 * pi) - (radianTime),
         true, painter);
-    painter.color = Colors.red;
-    canvas.drawArc(timeArea, 3 * pi / 2, radianTime, true, painter);
+    painter.color = almostBlack;
+    canvas.drawArc(timeArea, midnight, radianTime, true, painter);
+    // End tick of the time
+    painter.color = themeColor1;
+    canvas.drawArc(
+        timeArea, midnight + radianTime - (.01), (.02), true, painter);
 
     // Draw the pie chart.
     Offset centerOffset =
         Offset(pie.radius() + buttonRadius, pie.radius() + buttonRadius);
-    painter.color = Colors.blue;
-    canvas.drawCircle(centerOffset, pie.radius(), painter);
+    painter.color = themeColor1;
+    canvas.drawCircle(centerOffset, pie.radius() - buttonRadius, painter);
+    // canvas.drawCircle(centerOffset, pie.radius(), outliner);
 
     // Draw the slices
     Rect rectArea = Rect.fromCenter(
@@ -66,9 +86,7 @@ class PiePainter extends CustomPainter {
       painter.color = slice.color;
       if (i == pie.getSelectedSliceIndex()) {
         slice.shown = true;
-        int darken = 50;
-        painter.color = Color.fromRGBO(slice.color.red - darken,
-            slice.color.green - darken, slice.color.blue - darken, 1.0);
+        painter.color = darkenColor(slice.color);
       }
 
       canvas.drawArc(
@@ -82,8 +100,30 @@ class PiePainter extends CustomPainter {
       final double textY =
           centerOffset.dy + pie.radius() * 0.6 * sin(textAngle);
 
-      _drawText(canvas, slice.task.getTaskName(), textX, textY, textAngle);
+      _drawText(canvas, slice.task.getTaskName(), textX, textY, textAngle,
+          slice.getDuration());
       i++;
+    }
+
+    // Draw Tick marks
+    final tickPaint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 2.0;
+
+    const int numTickMarks = 12;
+    const double tickLength = buttonRadius;
+
+    for (int i = 0; i < numTickMarks; i++) {
+      final double angle = (2 * pi / numTickMarks) * i;
+      final start = Offset(
+        centerOffset.dx + (pie.radius() - tickLength) * cos(angle),
+        centerOffset.dy + (pie.radius() - tickLength) * sin(angle),
+      );
+      final end = Offset(
+        centerOffset.dx + (pie.radius()) * cos(angle),
+        centerOffset.dy + (pie.radius()) * sin(angle),
+      );
+      canvas.drawLine(start, end, tickPaint);
     }
 
     // Draw Guide buttons
@@ -101,8 +141,10 @@ class PiePainter extends CustomPainter {
     }
   }
 
-  void _drawText(Canvas canvas, String text, double x, double y, double angle) {
-    TextStyle textStyle = TextStyle(color: Colors.black, fontSize: 14);
+  void _drawText(Canvas canvas, String text, double x, double y, double angle,
+      double duration) {
+    double fontSize = min(duration / .25 * 12, 36);
+    TextStyle textStyle = TextStyle(color: Colors.black, fontSize: fontSize);
     TextSpan textSpan = TextSpan(text: text, style: textStyle);
     TextPainter textPainter =
         TextPainter(text: textSpan, textDirection: TextDirection.ltr);

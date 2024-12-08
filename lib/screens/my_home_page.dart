@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:pie_agenda/display/point.dart';
+import 'package:pie_agenda/pie/diameter.dart';
 import 'package:pie_agenda/pie/slice.dart';
 import 'package:pie_agenda/pie/task.dart';
 import 'package:pie_agenda/display/dragbutton.dart';
@@ -11,13 +12,18 @@ import 'package:pie_agenda/display/piepainter.dart';
 import 'package:pie_agenda/display/clock.dart';
 
 /// These will be re-instantiated as soon as we get the width of the screen
-Pie pie = Pie(350);
+Pie aMPie = Pie();
+Pie pMPie = Pie();
+Pie pie = aMPie; //pointer
+bool isAfternoon = false;
 PiePainter painter = PiePainter(pie: pie);
 Slice selectedSlice = Slice();
 
-const Color mainBackground = Color.fromRGBO(15, 65, 152, 1);
-const Color menuBackground = Color.fromRGBO(149, 50, 149, 1);
-const Color topBackground = Color.fromRGBO(28, 111, 213, 1);
+const Color themeColor2 = Color.fromRGBO(39, 102, 169, 1); //(219,220,255)
+const Color menuBackground = Color.fromRGBO(35, 50, 218, 1); //(212,255,234)
+const Color themeColor1 = Color.fromRGBO(249, 248, 255, 1); //(238,203,255)
+const Color almostBlack = Color.fromRGBO(5, 8, 72, 1);
+const Color buttonColor = Color.fromRGBO(132, 173, 255, 1);
 
 /// Home Page Widget
 class MyHomePage extends StatefulWidget {
@@ -53,7 +59,10 @@ class MyHomePageState extends State<MyHomePage> {
       // Find the smallest of the two dimensions
       double smallestDimension = min(widgetHeight!, widgetWidth!);
       // Use the dimensions here
-      pie = Pie(smallestDimension * .9);
+      // Relies on AMPie being the default
+      Diameter.instance.pie = smallestDimension * .9;
+      aMPie = Pie();
+      pie = aMPie;
       painter = PiePainter(pie: pie);
     });
     startTimer();
@@ -72,16 +81,17 @@ class MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: mainBackground,
+        backgroundColor: themeColor1,
         appBar: AppBar(
-            backgroundColor: topBackground,
-            title: Text(widget.title),
-            bottom: const PreferredSize(
-                preferredSize: Size.fromHeight(30.0),
+            backgroundColor: themeColor2,
+            foregroundColor: themeColor1,
+            // title:Text(widget.title)
+            title: const PreferredSize(
+                preferredSize: Size.fromHeight(32.0),
                 child: Align(
-                    alignment: Alignment.centerLeft,
+                    alignment: Alignment.center,
                     child: Padding(
-                        padding: EdgeInsets.only(left: 16.0, bottom: 8.0),
+                        padding: EdgeInsets.only(bottom: 4.0),
                         child: Clock())))),
         body: GestureDetector(
           key: _gestureKey,
@@ -89,7 +99,6 @@ class MyHomePageState extends State<MyHomePage> {
             _getWidgetSize();
             // We need to get the rotation from the center that a tapped point is at
             // convert it to a double time
-            // print("$widgetWidth and height: $widgetHeight");
 
             double tapTime = DragButton.getTimeFromPoint(Point.parameterized(
                 x: details.localPosition.dx -
@@ -136,6 +145,7 @@ class MyHomePageState extends State<MyHomePage> {
       children: <Widget>[
         FloatingActionButton(
           onPressed: _showAddSliceDialog,
+          backgroundColor: buttonColor,
           tooltip: 'Add Slice',
           child: const Icon(Icons.add),
         ),
@@ -143,17 +153,44 @@ class MyHomePageState extends State<MyHomePage> {
         if (isEditing())
           FloatingActionButton(
             onPressed: _removeSelectedSlice,
+            backgroundColor: buttonColor,
             tooltip: 'Delete Slice',
             child: const Icon(Icons.delete_forever),
           ),
         const SizedBox(width: 10),
         FloatingActionButton(
           onPressed: _listSlices,
+          backgroundColor: buttonColor,
           tooltip: 'List Slices',
           child: const Icon(Icons.list),
-        )
+        ),
+        const SizedBox(width: 10),
+        if (isAfternoon)
+          FloatingActionButton(
+            backgroundColor: almostBlack,
+            foregroundColor: themeColor1,
+            onPressed: _switchTime,
+            tooltip: 'Switch to AM',
+            child: const Text("PM"),
+          ),
+        if (!isAfternoon)
+          FloatingActionButton(
+            backgroundColor: buttonColor,
+            onPressed: _switchTime,
+            tooltip: 'Switch to PM',
+            child: const Text("AM"),
+          ),
       ],
     );
+  }
+
+  void _switchTime() {
+    isAfternoon = !isAfternoon;
+    if (isAfternoon) {
+      pie = pMPie;
+    } else {
+      pie = aMPie;
+    }
   }
 
   /// Opens dialog to add a new slice to the pie
@@ -186,7 +223,7 @@ class MyHomePageState extends State<MyHomePage> {
       TextEditingController durationController,
       TextEditingController taskController) {
     return AlertDialog(
-      backgroundColor: menuBackground,
+      backgroundColor: themeColor1,
       title: const Text('Add New Slice'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -239,11 +276,12 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   void _listSlices() {
+    pie.setSelectedSliceIndex(-1);
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: menuBackground,
+          backgroundColor: themeColor1,
           title: const Text('Slices'),
           content: SingleChildScrollView(
             child: ListBody(
@@ -316,10 +354,16 @@ List<Widget> _buildPie() {
       pieAndDragButtons.add(slice.dragButtonAfter);
     }
   }
-  print(pie.selectedSliceIndex);
+  // print(pie.selectedSliceIndex);
   return pieAndDragButtons;
 }
 
 bool isEditing() {
   return pie.selectedSliceIndex > -1;
+}
+
+Color darkenColor(Color color) {
+  const int darken = 50;
+  return Color.fromRGBO(
+      color.red - darken, color.green - darken, color.blue - darken, 1.0);
 }

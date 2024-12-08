@@ -104,7 +104,7 @@ class Slice {
       dragButtonBefore.setPoint(newPosition);
     }
     _dragStartTime(dragButtonBefore.time);
-    task.setEndTime(dragButtonAfter.time);
+    _dragEndTime(dragButtonAfter.time);
     task.setDuration(task.getEndTime() - task.getStartTime());
   }
 
@@ -133,13 +133,13 @@ class Slice {
 
   static Color _generateHashedColor(double a, double b, String c) {
     // a and b are both from 0 to 12
-    a *= (128 / 12);
-    b *= (128 / 12);
-    double d = min((128 / 8) * c.length, 128);
+    a *= (78 / 12);
+    b *= (78 / 12);
+    double d = min((78 / 8) * c.length, 78);
     List<int> rgb = [
-      127 + a.toInt(), // Ensures a brighter color
-      127 + b.toInt(),
-      127 + d.toInt()
+      177 + a.toInt(), // Ensures a brighter color
+      177 + b.toInt(),
+      177 + d.toInt()
     ];
 
     // drop the smallest number of the 3
@@ -151,7 +151,7 @@ class Slice {
         numDrop = 2;
       }
     }
-    rgb[numDrop] -= 75; //this demuddles the color to be more saturated
+    rgb[numDrop] -= 125; //this demuddles the color to be more saturated
 
     return Color.fromARGB(255, rgb[0], rgb[1], rgb[2]);
   }

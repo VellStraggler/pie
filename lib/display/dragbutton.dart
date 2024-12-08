@@ -152,8 +152,8 @@ class _DragButtonState extends State<DragButton> {
                     ),
                   ),
                   Container(
-                    width: buttonRadius,
-                    height: buttonRadius,
+                    width: buttonRadius * 1.5,
+                    height: buttonRadius * 1.5,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: Colors.white,
