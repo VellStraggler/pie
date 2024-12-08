@@ -11,7 +11,7 @@ class Slice {
   DragButton dragButtonBefore;
   DragButton dragButtonAfter;
   Task task; // Default Task
-  bool showText = true; // Shown flag
+  bool shown = false; // Shown flag
   final VoidCallback? onTap;
   Color color;
 
@@ -21,7 +21,7 @@ class Slice {
         dragButtonBefore = DragButton(time: 0, shown: true),
         dragButtonAfter = DragButton(time: 1, shown: true),
         color = _generateHashedColor(0, 1, Task().getTaskName()) {
-    showText = true;
+    shown = false;
     dragButtonBefore.onDragEnd = updateToDragButtons;
     dragButtonAfter.onDragEnd = updateToDragButtons;
     // add pointers to this Slice in the dragbuttons
@@ -43,18 +43,26 @@ class Slice {
   }
 
 // Getters and Setters
+  bool isShown() {
+    return shown;
+  }
+
   /// Converts the start Time to Radians
   double getStartTimeToRadians() {
-    return _timeToRadians(getStartTime() - 3);
+    // return timeToRadians(getStartTime() - 3);
+    return timeToRadians(getStartTime());
   }
 
   /// Converts the tasks's endTime to Radians
   double getDurationToRadians() {
-    return _timeToRadians(getDuration());
+    return timeToRadians(getDuration());
   }
 
   /// Gets the task's startTime.
   double getStartTime() {
+    if (dragButtonBefore.time != task.getStartTime()) {
+      task.setStartTime(dragButtonBefore.time);
+    }
     return task.getStartTime();
   }
 
@@ -71,11 +79,32 @@ class Slice {
     return task.getTaskName();
   }
 
+  ///modifies startTime and duration
+  void _dragStartTime(double time) {
+    task.setStartTime(time);
+    dragButtonBefore.setTime(time);
+    double newDuration = task.getEndTime() - time;
+    task.setDuration(newDuration);
+  }
+
+  void _dragEndTime(double time) {
+    task.setEndTime(time);
+    dragButtonAfter.setTime(time);
+    double newDuration = time - task.getStartTime();
+    task.setDuration(newDuration);
+  }
+
   /// take the dragbutton locations as reference
   void updateToDragButtons(Point newPosition) {
     double newTime = DragButton.getTimeFromPoint(newPosition);
-    task.setStartTime(dragButtonBefore.time);
-    task.setEndTime(newTime);
+    // if its closer to endtime, it changes endtime
+    if ((getEndTime() - newTime).abs() < (getStartTime() - newTime).abs()) {
+      dragButtonAfter.setPoint(newPosition);
+    } else {
+      dragButtonBefore.setPoint(newPosition);
+    }
+    _dragStartTime(dragButtonBefore.time);
+    task.setEndTime(dragButtonAfter.time);
     task.setDuration(task.getEndTime() - task.getStartTime());
   }
 
@@ -85,14 +114,6 @@ class Slice {
     if (onTap != null) {
       onTap!();
     }
-  }
-
-  /// Converts a given time to Radians.
-  double _timeToRadians(double time) {
-    int hour = time.toInt();
-    int minute = ((time % 1) * 60).toInt();
-    double ans = (hour % 12 + minute / 60) * (2 * 3.14159265 / 12);
-    return ans;
   }
 
   // ignore: unused_element
@@ -133,5 +154,13 @@ class Slice {
     rgb[numDrop] -= 75; //this demuddles the color to be more saturated
 
     return Color.fromARGB(255, rgb[0], rgb[1], rgb[2]);
+  }
+
+  /// Converts a given time to Radians.
+  static double timeToRadians(double time) {
+    int hour = time.toInt();
+    int minute = ((time % 1) * 60).toInt();
+    double ans = (hour % 12 + (minute / 60)) * (pi / 6);
+    return ans;
   }
 }
