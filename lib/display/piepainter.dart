@@ -93,6 +93,27 @@ class PiePainter extends CustomPainter {
       i++;
     }
 
+    // Draw Tick marks
+    final tickPaint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 2.0;
+
+    const int numTickMarks = 12;
+    const double tickLength = 10.0;
+
+    for (int i = 0; i < numTickMarks; i++) {
+      final double angle = (2 * pi / numTickMarks) * i;
+      final start = Offset(
+        centerOffset.dx + (pieRadius - tickLength) * cos(angle),
+        centerOffset.dy + (pieRadius - tickLength) * sin(angle),
+      );
+      final end = Offset(
+        centerOffset.dx + pieRadius * cos(angle),
+        centerOffset.dy + pieRadius * sin(angle),
+      );
+      canvas.drawLine(start, end, tickPaint);
+    }
+    
     // Draw Guide buttons
     if (pie.selectedSliceIndex != -1) {
       for (int i = 0; i < 48; i++) {
