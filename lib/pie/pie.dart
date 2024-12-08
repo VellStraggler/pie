@@ -45,7 +45,8 @@ class Pie {
     return width / 2;
   }
 
-  /// Remove a slice from the pie chart.
+  /// Remove the selected slice from the pie chart
+  /// using the selectedSliceIndex.
   void removeSlice() {
     slices.remove(slices[selectedSliceIndex]);
     selectedSliceIndex = -1;
