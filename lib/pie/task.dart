@@ -48,7 +48,7 @@ class Task {
   }
 
   /// Set the task's _taskName.
-  void changeTaskName(String _taskName) {
+  void setTaskName(String _taskName) {
     this._taskName = _taskName;
   }
 

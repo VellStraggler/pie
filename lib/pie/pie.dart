@@ -1,9 +1,8 @@
+import 'package:pie_agenda/pie/diameter.dart';
+
 import 'slice.dart';
 import '../display/point.dart';
 import 'task.dart';
-
-const double pieDiameter = 500;
-const double pieRadius = pieDiameter / 2;
 
 class Pie {
   List<Slice> slices; // A list of slices in the pie chart
@@ -16,11 +15,13 @@ class Pie {
   /// Constructor initializes with a single slice covering the whole circle.
   Pie()
       : center = Point(), // Default center point at (0,0)
-        width = pieDiameter, // A circular boundary with radius 500
+        width = Diameter.instance.pie, // A circular boundary with radius 500
         // Initialize with one full-circle slice
-        slices = [Slice()],
+        slices = [],
         selectedSliceIndex = -1,
-        guidebuttons = false;
+        guidebuttons = false {
+    slices.add(Slice());
+  }
 
   int getSelectedSliceIndex() {
     return selectedSliceIndex;
@@ -39,7 +40,12 @@ class Pie {
     slices.add(newSlice);
   }
 
-  /// Remove a slice from the pie chart.
+  double radius() {
+    return width / 2;
+  }
+
+  /// Remove the selected slice from the pie chart
+  /// using the selectedSliceIndex.
   void removeSlice() {
     slices.remove(slices[selectedSliceIndex]);
     selectedSliceIndex = -1;

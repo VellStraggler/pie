@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:pie_agenda/display/point.dart';
+import 'package:pie_agenda/pie/diameter.dart';
 import 'package:pie_agenda/pie/slice.dart';
 import 'package:pie_agenda/pie/task.dart';
 import 'package:pie_agenda/display/dragbutton.dart';
@@ -9,14 +11,18 @@ import 'package:pie_agenda/pie/pie.dart';
 import 'package:pie_agenda/display/piepainter.dart';
 import 'package:pie_agenda/display/clock.dart';
 
-Pie pie = Pie();
+/// These will be re-instantiated as soon as we get the width of the screen
+Pie AMPie = Pie();
+Pie PMPie = Pie();
+Pie pie = AMPie; //pointer
+bool isAfternoon = false;
 PiePainter painter = PiePainter(pie: pie);
-bool _editModeOn = false;
 Slice selectedSlice = Slice();
 
-const Color mainBackground = Color.fromRGBO(15, 65, 152, 1);
-const Color menuBackground = Color.fromRGBO(255, 0, 255, 1);
-const Color topBackground = Color.fromRGBO(28, 111, 213, 1);
+const Color themeColor2 = Color.fromRGBO(39, 102, 169, 1); //(219,220,255)
+const Color menuBackground = Color.fromRGBO(35, 50, 218, 1); //(212,255,234)
+const Color themeColor1 = Color.fromRGBO(249, 248, 255, 1); //(238,203,255)
+const Color almostBlack = Color.fromRGBO(5, 8, 72, 1);
 
 /// Home Page Widget
 class MyHomePage extends StatefulWidget {
@@ -46,6 +52,18 @@ class MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    // Get the dimensions of the app ASAP here
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _getWidgetSize();
+      // Find the smallest of the two dimensions
+      double smallestDimension = min(widgetHeight!, widgetWidth!);
+      // Use the dimensions here
+      // Relies on AMPie being the default
+      Diameter.instance.pie = smallestDimension * .9;
+      AMPie = Pie();
+      pie = AMPie;
+      painter = PiePainter(pie: pie);
+    });
     startTimer();
   }
 
@@ -62,9 +80,10 @@ class MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: mainBackground,
+        backgroundColor: themeColor1,
         appBar: AppBar(
-            backgroundColor: topBackground,
+            backgroundColor: themeColor2,
+            foregroundColor: themeColor1,
             title: Text(widget.title),
             bottom: const PreferredSize(
                 preferredSize: Size.fromHeight(30.0),
@@ -79,20 +98,22 @@ class MyHomePageState extends State<MyHomePage> {
             _getWidgetSize();
             // We need to get the rotation from the center that a tapped point is at
             // convert it to a double time
-            // print("$widgetWidth and height: $widgetHeight");
 
             double tapTime = DragButton.getTimeFromPoint(Point.parameterized(
-                x: details.localPosition.dx - (widgetWidth! / 2) + pieRadius,
-                y: details.localPosition.dy - (widgetHeight! / 2) + pieRadius));
+                x: details.localPosition.dx -
+                    (widgetWidth! / 2) +
+                    (pie.width / 2),
+                y: details.localPosition.dy -
+                    (widgetHeight! / 2) +
+                    (pie.width / 2)));
             // Need to start from the corner of the pie, not the corner of the whole window
             // search through the slices for one whose endpoints are before and after this time
-            // print("tapTime is $tapTime");
             int i = 0;
             bool found = false;
             for (Slice slice in pie.slices) {
-              if (slice.getStartTime() < tapTime) {
-                if (slice.getEndTime() + .25 > tapTime) {
-                  //.25 accounts for dragbutton :O
+              if (slice.getStartTime() - .2 < tapTime) {
+                if (slice.getEndTime() + .2 > tapTime) {
+                  //.2 accounts for dragbutton :O
                   selectedSlice = slice;
                   pie.setSelectedSliceIndex(i);
                   found = true;
@@ -101,11 +122,10 @@ class MyHomePageState extends State<MyHomePage> {
               }
               i++;
             }
-            if (!found || !_editModeOn) {
+            if (!found) {
               pie.setSelectedSliceIndex(-1);
               // if one was not selected, deselect what we do have
             }
-            // print("Screen tapped at ${details.localPosition} within widget.");
             updateScreen();
           },
           child: Center(
@@ -122,23 +142,13 @@ class MyHomePageState extends State<MyHomePage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
-        Text(
-          _editModeOn ? "Edit Mode is ON " : "Edit Mode is OFF ",
-          style: const TextStyle(fontSize: 24),
-        ),
-        FloatingActionButton(
-          onPressed: _toggleEditMode,
-          tooltip: 'Toggle Edit Mode',
-          child: const Icon(Icons.edit),
-        ),
-        const SizedBox(width: 10),
         FloatingActionButton(
           onPressed: _showAddSliceDialog,
           tooltip: 'Add Slice',
           child: const Icon(Icons.add),
         ),
-        if (_editModeOn) const SizedBox(width: 10),
-        if (_editModeOn)
+        if (isEditing()) const SizedBox(width: 10),
+        if (isEditing())
           FloatingActionButton(
             onPressed: _removeSelectedSlice,
             tooltip: 'Delete Slice',
@@ -149,18 +159,34 @@ class MyHomePageState extends State<MyHomePage> {
           onPressed: _listSlices,
           tooltip: 'List Slices',
           child: const Icon(Icons.list),
-        )
+        ),
+        const SizedBox(width: 10),
+        if (isAfternoon)
+          FloatingActionButton(
+            backgroundColor: almostBlack,
+            foregroundColor: themeColor1,
+            onPressed: _switchTime,
+            tooltip: 'Switch to AM',
+            child: const Text("PM"),
+          ),
+        if (!isAfternoon)
+          FloatingActionButton(
+            backgroundColor: themeColor2,
+            onPressed: _switchTime,
+            tooltip: 'Switch to PM',
+            child: const Text("AM"),
+          ),
       ],
     );
   }
 
-  /// Let the user edit the pie.
-  void _toggleEditMode() {
-    setState(() {
-      _editModeOn = !_editModeOn; // Toggle the edit mode
-      pie.guidebuttons = _editModeOn;
-    });
-    updateScreen();
+  void _switchTime() {
+    isAfternoon = !isAfternoon;
+    if (isAfternoon) {
+      pie = PMPie;
+    } else {
+      pie = AMPie;
+    }
   }
 
   /// Opens dialog to add a new slice to the pie
@@ -181,7 +207,6 @@ class MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  // WIP
   void _removeSelectedSlice() {
     // get the last slice that was selected
     // remove it from the slices
@@ -194,7 +219,7 @@ class MyHomePageState extends State<MyHomePage> {
       TextEditingController durationController,
       TextEditingController taskController) {
     return AlertDialog(
-      backgroundColor: menuBackground,
+      backgroundColor: themeColor1,
       title: const Text('Add New Slice'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -233,6 +258,7 @@ class MyHomePageState extends State<MyHomePage> {
       setState(() {
         Task task = Task.parameterized(taskText, startTime, duration);
         pie.addSlice(task);
+        pie.selectedSliceIndex = pie.slices.length - 1;
         painter = PiePainter(pie: pie); // Update painter with new data
       });
     } else {
@@ -250,6 +276,7 @@ class MyHomePageState extends State<MyHomePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: themeColor1,
           title: const Text('Slices'),
           content: SingleChildScrollView(
             child: ListBody(
@@ -311,17 +338,21 @@ String _formatTime(double time) {
 List<Widget> _buildPie() {
   List<Widget> pieAndDragButtons = [];
   // First item is the pie painter, the rest are dragbuttons
-  // (and eventually guidebuttons too)
-
   pieAndDragButtons.add(
     CustomPaint(
-        size: const Size(
-            pieDiameter + buttonDiameter, pieDiameter + buttonDiameter),
+        size: Size(pie.width + buttonDiameter, pie.width + buttonDiameter),
         painter: painter),
   );
-  if (_editModeOn && pie.selectedSliceIndex != -1) {
-    //pieAndDragButtons.add(pie.slices[pie.selectedSliceIndex].dragButtonBefore);
-    pieAndDragButtons.add(pie.slices[pie.selectedSliceIndex].dragButtonAfter);
+  if (isEditing()) {
+    for (Slice slice in pie.slices) {
+      pieAndDragButtons.add(slice.dragButtonBefore);
+      pieAndDragButtons.add(slice.dragButtonAfter);
+    }
   }
+  // print(pie.selectedSliceIndex);
   return pieAndDragButtons;
+}
+
+bool isEditing() {
+  return pie.selectedSliceIndex > -1;
 }
