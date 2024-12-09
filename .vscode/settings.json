@@ -13,6 +13,6 @@
   "editor.defaultFormatter": "Dart-Code.dart-code",
   "diffEditor.codeLens": false,
   "[json]": {
-    "editor.defaultFormatter": "ramon-zwiers.json-format"
+    "editor.defaultFormatter": "vscode.json-language-features"
   }
 }
