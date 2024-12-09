@@ -24,7 +24,7 @@ bool _isLoading = true; // Progress indicator while the data is being loaded.
 const Color themeColor2 = Color.fromRGBO(39, 102, 169, 1); //(219,220,255)
 const Color menuBackground = Color.fromRGBO(35, 50, 218, 1); //(212,255,234)
 const Color themeColor1 = Color.fromRGBO(249, 248, 255, 1); //(238,203,255)
-const Color almostBlack = Color.fromRGBO(5, 8, 72, 1);
+const Color almostBlack = Color.fromRGBO(19, 26, 155, 1);
 const Color buttonColor = Color.fromRGBO(132, 173, 255, 1);
 
 /// Home Page Widget
@@ -82,6 +82,15 @@ class MyHomePageState extends State<MyHomePage> {
       setState(() {
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> savePie() async {
+    try {
+      await manager.savePie("AM", aMPie);
+      await manager.savePie("PM", pMPie);
+    } catch (e) {
+      print('Didn\'t save tasks:$e');
     }
   }
 
@@ -144,6 +153,7 @@ class MyHomePageState extends State<MyHomePage> {
               pie.setSelectedSliceIndex(-1);
               // if one was not selected, deselect what we do have
             }
+            savePie();
             updateScreen();
           },
           child: Center(
@@ -225,6 +235,7 @@ class MyHomePageState extends State<MyHomePage> {
   /// Removes the last slice selected from the pie.
   void _removeSelectedSlice() {
     pie.removeSlice();
+    savePie();
   }
 
   /// Dialog structure for adding a new slice.
@@ -256,6 +267,7 @@ class MyHomePageState extends State<MyHomePage> {
               taskController.text,
             );
             Navigator.of(context).pop();
+            savePie();
           },
           child: const Text('Add Slice'),
         ),

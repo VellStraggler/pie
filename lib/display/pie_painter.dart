@@ -72,7 +72,6 @@ class PiePainter extends CustomPainter {
         Offset(pie.radius() + buttonRadius, pie.radius() + buttonRadius);
     painter.color = themeColor1;
     canvas.drawCircle(centerOffset, pie.radius() - buttonRadius, painter);
-    // canvas.drawCircle(centerOffset, pie.radius(), outliner);
 
     // Draw the slices
     Rect rectArea = Rect.fromCenter(
