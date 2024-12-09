@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'dart:async';
-
 import 'package:pie_agenda/screens/my_home_page.dart';
 
 class Clock extends StatefulWidget {
@@ -30,12 +29,14 @@ class _TimeClock extends State<Clock> {
     "December",
   ];
 
+  /// Creates initial state for widget.
   @override
   void initState() {
     super.initState();
     startTimer();
   }
 
+  /// Converts time to the displayed format.
   String _formatTime(DateTime time) {
     int hour = time.hour;
     int minute = time.minute;
@@ -51,9 +52,10 @@ class _TimeClock extends State<Clock> {
       hour = 12;
     }
 
-    return '${months[intMonth - 1]} ${intDay} | ${hour.toString()}:${minute.toString().padLeft(2, '0')} $code';
+    return '${months[intMonth - 1]} $intDay | ${hour.toString()}:${minute.toString().padLeft(2, '0')} $code';
   }
 
+  /// Starts timer for referencing time.
   void startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
