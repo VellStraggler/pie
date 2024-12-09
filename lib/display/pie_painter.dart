@@ -129,7 +129,7 @@ class PiePainter extends CustomPainter {
         Point position = DragButton.getPointFromTime(i.toDouble() / 4);
         // draw guidebutton at position
         int circleSize = 12;
-        painter.color = Color.fromRGBO(158, 158, 158, .8);
+        painter.color = const Color.fromRGBO(158, 158, 158, .8);
         canvas.drawCircle(
             Offset(position.x + circleSize, position.y + circleSize),
             circleSize.toDouble() / 2,
