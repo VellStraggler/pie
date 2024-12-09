@@ -21,5 +21,5 @@ class Diameter {
   }
 
   // access/modify using this line:
-  // Diameter.instance.pie = 400.0;
+  // Diameter.instance.setPieDiameter(400.0);
 }

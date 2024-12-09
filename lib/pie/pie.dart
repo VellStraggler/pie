@@ -9,7 +9,6 @@ class Pie {
   Point center; // Center point of the pie chart
   double width; // Pie chart radius
   int selectedSliceIndex;
-  bool guidebuttons;
 
   /// Default Constructor
   /// Constructor initializes with a single slice covering the whole circle.
@@ -17,12 +16,10 @@ class Pie {
       : center = Point(), // Default center point at (0,0)
         width = Diameter.instance
             .getPieDiameter(), // A circular boundary with radius 500
+
         // Initialize with one full-circle slice
         slices = [],
-        selectedSliceIndex = -1,
-        guidebuttons = false {
-    slices.add(Slice());
-  }
+        selectedSliceIndex = -1;
 
   int getSelectedSliceIndex() {
     return selectedSliceIndex;
@@ -36,8 +33,12 @@ class Pie {
   Pie.parameterized(this.slices)
       : center = Point(),
         width = Diameter.instance.getPieDiameter(),
-        selectedSliceIndex = -1,
-        guidebuttons = false;
+        selectedSliceIndex = -1;
+
+// Getters/Setters
+  List<Slice> getSlices() {
+    return slices;
+  }
 
   /// Method to add a slice to the pie chart.
   void addSlice(Task task) {
@@ -48,23 +49,19 @@ class Pie {
     slices.add(newSlice);
   }
 
+  ///
   double radius() {
     return width / 2;
   }
 
-  /// Remove the selected slice from the pie chart
-  /// using the selectedSliceIndex.
+  /// Remove the selected slice from the pie chart.
   void removeSlice() {
+    // Uses the selectedSliceIndex.
     slices.remove(slices[selectedSliceIndex]);
     selectedSliceIndex = -1;
   }
 
-// Data Conversion
-  ///Convert Pie object to JSON.
-  Map<String, dynamic> toJson() {
-    return {'slices': slices.map((slice) => slice.toJson()).toList()};
-  }
-
+// Save Data Conversion
   /// Convert JSON to a Pie object.
   factory Pie.fromJson(Map<String, dynamic> json) {
     //assert(json is Map<String, dynamic>);

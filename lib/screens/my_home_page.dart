@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart';
@@ -12,6 +11,7 @@ import 'package:pie_agenda/display/dragbutton.dart';
 import 'package:pie_agenda/pie/pie.dart';
 import 'package:pie_agenda/display/piepainter.dart';
 import 'package:pie_agenda/display/clock.dart';
+import 'package:pie_agenda/pie/piemanager.dart';
 
 /// These will be re-instantiated as soon as we get the width of the screen
 Pie aMPie = Pie();
@@ -20,10 +20,12 @@ Pie pie = aMPie; //pointer
 bool isAfternoon = false;
 PiePainter painter = PiePainter(pie: pie);
 Slice selectedSlice = Slice();
+const filePath = 'assets/data/pie.json';
+PieManager manager = PieManager();
 
 Future<void> loadPie() async {
   try {
-    String jsonString = await rootBundle.loadString('assets/data/pie.json');
+    String jsonString = await rootBundle.loadString(filePath);
     Map<String, dynamic> jsonMap = jsonDecode(jsonString);
 
     pie = Pie.fromJson(jsonMap);

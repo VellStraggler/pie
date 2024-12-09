@@ -61,6 +61,14 @@ class Slice {
     return timeToRadians(getDuration());
   }
 
+  /// Converts a given time to Radians.
+  static double timeToRadians(double time) {
+    int hour = time.toInt();
+    int minute = ((time % 1) * 60).toInt();
+    double ans = (hour % 12 + (minute / 60)) * (pi / 6);
+    return ans;
+  }
+
   /// Gets the task's startTime.
   double getStartTime() {
     if (dragButtonBefore.time != task.getStartTime()) {
@@ -112,44 +120,6 @@ class Slice {
   }
 
 // Methods
-  /// Converts a given time to Radians.
-  double _timeToRadians(double time) {
-    int hour = time.toInt();
-    int minute = ((time % 1) * 60).toInt();
-    double ans = (hour % 12 + minute / 60) * (2 * 3.14159265 / 12);
-    return ans;
-  }
-
-  // ignore: unused_element
-  static Color _generateRandomColor() {
-    Random random = Random();
-    List<int> rgb = [
-      127 + random.nextInt(128), // Ensures a brighter color
-      127 + random.nextInt(128),
-      127 + random.nextInt(128)
-    ];
-
-    int numDrop = random.nextInt(3);
-    rgb[numDrop] -= 75; //this demuddles the color to be more saturated
-
-    return Color.fromARGB(255, rgb[0], rgb[1], rgb[2]);
-  }
-
-  /// Convert task data to Json.
-  Map<String, dynamic> toJson() {
-    return {'task': task.toJson()};
-  }
-
-  factory Slice.fromJson(Map<String, dynamic> json) {
-    Task newTask = Task.fromJson(json);
-    return Slice.parameterized(task: newTask);
-  }
-
-  @override
-  String toString() {
-    return task.toString();
-  }
-
   static Color _generateHashedColor(double a, double b, String c) {
     // a and b are both from 0 to 12
     a *= (78 / 12);
@@ -170,16 +140,24 @@ class Slice {
         numDrop = 2;
       }
     }
-    rgb[numDrop] -= 125; //this demuddles the color to be more saturated
+    rgb[numDrop] -= 125; // Saturates the color
 
     return Color.fromARGB(255, rgb[0], rgb[1], rgb[2]);
   }
 
-  /// Converts a given time to Radians.
-  static double timeToRadians(double time) {
-    int hour = time.toInt();
-    int minute = ((time % 1) * 60).toInt();
-    double ans = (hour % 12 + (minute / 60)) * (pi / 6);
-    return ans;
+// Save Data
+  /// Convert task data to Json.
+  Map<String, dynamic> toJson() {
+    return task.toJson();
+  }
+
+  factory Slice.fromJson(Map<String, dynamic> json) {
+    Task newTask = Task.fromJson(json);
+    return Slice.parameterized(task: newTask);
+  }
+
+  @override
+  String toString() {
+    return task.toString();
   }
 }

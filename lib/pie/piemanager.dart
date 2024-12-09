@@ -1,15 +1,17 @@
 import 'dart:convert';
 import 'dart:io';
+import 'slice.dart';
 import 'task.dart';
 
 class PieManager {
+  final filePath = 'assets/data/pie.json';
   List<Task> day = []; //the variable that stores the list of tasks.
 
-  Future<void> saveDay(List<Task> tasks, String filePath) async {
+  Future<void> saveDay(List<Slice> slices, String filePath) async {
     try {
       // Convert the list of Task objects to a list of JSON maps.
       List<Map<String, dynamic>> jsonTasks =
-          tasks.map((task) => task.toJson()).toList();
+          slices.map((slice) => slice.toJson()).toList();
 
       // Encode the list to a JSON string.
       String jsonString = jsonEncode(jsonTasks);

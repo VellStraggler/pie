@@ -3,6 +3,10 @@
   "cmake.ignoreCMakeListsMissing": true,
   "cSpell.ignoreWords": [
     "dragbutton",
+    "dragbuttons",
+    "guidebutton",
+    "guidebuttons",
+    "outliner",
     "piepainter"
   ],
   "editor.formatOnSave": true,

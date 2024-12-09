@@ -1,5 +1,3 @@
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-
 /// An object that stores a task's main attributes:
 /// * _taskName - The task's name.
 /// * _duration - How long a task lasts.
@@ -70,7 +68,7 @@ class Task {
     _duration = _endTime - _startTime;
   }
 
-// Data Conversion
+// Save Data Conversion
   /// Convert Task object to JSON.
   /// * String jsonString = jsonEncode(task.toJson());
   Map<String, dynamic> toJson() {
