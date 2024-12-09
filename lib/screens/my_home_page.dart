@@ -85,6 +85,15 @@ class MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<void> savePie() async {
+    try {
+      await manager.savePie("AM", aMPie);
+      await manager.savePie("PM", pMPie);
+    } catch (e) {
+      print('Didn\'t save tasks:$e');
+    }
+  }
+
   /// Creates labeled text fields for user input
   Widget _buildTextField(TextEditingController controller, String label) {
     return TextField(
@@ -225,6 +234,7 @@ class MyHomePageState extends State<MyHomePage> {
   /// Removes the last slice selected from the pie.
   void _removeSelectedSlice() {
     pie.removeSlice();
+    savePie();
   }
 
   /// Dialog structure for adding a new slice.
@@ -256,6 +266,7 @@ class MyHomePageState extends State<MyHomePage> {
               taskController.text,
             );
             Navigator.of(context).pop();
+            savePie();
           },
           child: const Text('Add Slice'),
         ),

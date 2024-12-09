@@ -66,7 +66,9 @@ class Pie {
 // Save Data Conversion
   ///Convert Pie object to JSON.
   Map<String, dynamic> toJson(String time) {
-    return {time: slices.map((slice) => slice.toJson()).toList()};
+    var json = <String, dynamic>{};
+    json[time] = slices.map((slice) => slice.toJson()).toList();
+    return json;
   }
 
   /// Convert JSON to a Pie object.
