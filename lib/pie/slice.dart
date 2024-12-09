@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:pie_agenda/display/point.dart';
 
-import '../display/dragbutton.dart';
+import '../display/drag_button.dart';
 import 'task.dart';
 
 class Slice {

@@ -10,5 +10,6 @@
     "piepainter"
   ],
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "Dart-Code.dart-code"
+  "editor.defaultFormatter": "Dart-Code.dart-code",
+  "diffEditor.codeLens": false
 }

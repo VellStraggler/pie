@@ -1,17 +1,15 @@
 import 'dart:async';
 import 'dart:math';
-import 'dart:convert';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart';
 import 'package:pie_agenda/display/point.dart';
 import 'package:pie_agenda/pie/diameter.dart';
 import 'package:pie_agenda/pie/slice.dart';
 import 'package:pie_agenda/pie/task.dart';
-import 'package:pie_agenda/display/dragbutton.dart';
+import 'package:pie_agenda/display/drag_button.dart';
 import 'package:pie_agenda/pie/pie.dart';
-import 'package:pie_agenda/display/piepainter.dart';
+import 'package:pie_agenda/display/pie_painter.dart';
 import 'package:pie_agenda/display/clock.dart';
-import 'package:pie_agenda/pie/piemanager.dart';
+import 'package:pie_agenda/pie/pie_manager.dart';
 
 /// These will be re-instantiated as soon as we get the width of the screen
 Pie aMPie = Pie();
@@ -21,17 +19,10 @@ bool isAfternoon = false;
 PiePainter painter = PiePainter(pie: pie);
 Slice selectedSlice = Slice();
 const filePath = 'assets/data/pie.json';
-PieManager manager = PieManager();
+final PieManager manager = PieManager();
 
 Future<void> loadPie() async {
-  try {
-    String jsonString = await rootBundle.loadString(filePath);
-    Map<String, dynamic> jsonMap = jsonDecode(jsonString);
-
-    pie = Pie.fromJson(jsonMap);
-  } catch (e) {
-    print("No valid pie found");
-  }
+  aMPie = await manager.loadPie();
 }
 
 const Color themeColor2 = Color.fromRGBO(39, 102, 169, 1); //(219,220,255)
@@ -143,6 +134,7 @@ class MyHomePageState extends State<MyHomePage> {
               pie.setSelectedSliceIndex(-1);
               // if one was not selected, deselect what we do have
             }
+
             updateScreen();
           },
           child: Center(
@@ -229,7 +221,6 @@ class MyHomePageState extends State<MyHomePage> {
 
   /// Removes the last slice selected from the pie.
   void _removeSelectedSlice() {
-    //print(pie.toJson());
     pie.removeSlice();
   }
 
@@ -293,6 +284,7 @@ class MyHomePageState extends State<MyHomePage> {
 
   /// List the Tasks for the current Pie
   void _listSlices() {
+    print(aMPie.toJson());
     pie.setSelectedSliceIndex(-1);
     showDialog(
       context: context,

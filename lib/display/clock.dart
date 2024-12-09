@@ -51,7 +51,7 @@ class _TimeClock extends State<Clock> {
       hour = 12;
     }
 
-    return '${months[intMonth - 1]} ${intDay} | ${hour.toString()}:${minute.toString().padLeft(2, '0')} $code';
+    return '${months[intMonth - 1]} $intDay | ${hour.toString()}:${minute.toString().padLeft(2, '0')} $code';
   }
 
   void startTimer() {

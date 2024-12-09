@@ -1,71 +1,71 @@
 /// An object that stores a task's main attributes:
-/// * _taskName - The task's name.
-/// * _duration - How long a task lasts.
-/// * _startTime - When a task starts.
-/// * _endTime - When a task ends.
+/// * taskName - The task's name.
+/// * duration - How long a task lasts.
+/// * startTime - When a task starts.
+/// * endTime - When a task ends.
 class Task {
   // This is the data of a task/slice. This must be able to be stored in .json
-  String _taskName;
-  double _duration;
-  double _startTime;
-  double _endTime;
+  String taskName;
+  double duration;
+  double startTime;
+  double endTime;
 
   /// Default Constructor for a Task object.
   Task()
-      : _taskName = "NewTask",
-        _startTime = 0,
-        _endTime = 1,
-        _duration = 1;
+      : taskName = "NewTask",
+        startTime = 0,
+        endTime = 1,
+        duration = 1;
 
   /// Parameterized Task Constructor.
   /// Time Syntax is as such:
   /// * 1.25 = 1:30
   /// * 0.5 = 12:30
-  Task.parameterized(this._taskName, this._startTime, this._duration)
-      : _endTime = _duration + _startTime;
+  Task.parameterized(this.taskName, this.startTime, this.duration)
+      : endTime = duration + startTime;
 
 // Getters and Setters
   /// Returns the task's name.
   String getTaskName() {
-    return _taskName;
+    return taskName;
   }
 
   /// Returns the task's duration
   double getDuration() {
-    return _duration;
+    return duration;
   }
 
   /// Returns the task's startTime
   double getStartTime() {
-    return _startTime;
+    return startTime;
   }
 
   /// Returns the task's endTime.
   double getEndTime() {
-    return _startTime + _duration;
+    return startTime + duration;
   }
 
-  /// Set the task's _taskName.
-  void setTaskName(String _taskName) {
-    this._taskName = _taskName;
+  /// Set the task's taskName.
+  void setTaskName(String taskName) {
+    this.taskName = taskName;
   }
 
-  /// Set the tasks's _duration.
-  void setDuration(double _duration) {
-    this._duration = _duration;
+  /// Set the tasks's duration.
+  void setDuration(double duration) {
+    this.duration = duration;
   }
 
-  /// Set the task's _startTime.
-  void setStartTime(double _startTime) {
-    assert(_startTime < _endTime, "_startTime must be before _endTime.");
-    this._startTime = _startTime;
+  /// Set the task's startTime.
+  void setStartTime(double startTime) {
+    assert(startTime < endTime, "startTime must be before endTime.");
+    this.startTime = startTime;
   }
 
-  /// Set the task's _endTime.
-  void setEndTime(double _endTime) {
-    assert(_endTime > _startTime, "endTime must be after _startTime.");
-    this._endTime = _endTime;
-    _duration = _endTime - _startTime;
+  /// Set the task's endTime.
+  void setEndTime(double endTime) {
+    assert(endTime > startTime, "endTime must be after startTime.");
+    this.endTime = endTime;
+    duration = endTime - startTime;
   }
 
 // Save Data Conversion
@@ -73,20 +73,20 @@ class Task {
   /// * String jsonString = jsonEncode(task.toJson());
   Map<String, dynamic> toJson() {
     return {
-      '_taskName': _taskName,
-      '_startTime': _startTime,
-      '_duration': _duration,
+      'taskName': taskName,
+      'startTime': startTime,
+      'duration': duration,
     };
   }
 
   /// Convert JSON to a Task object.
   /// * Task taskFromJson = Task.fromJson(jsonDecode(jsonString));
   factory Task.fromJson(Map<String, dynamic> json) {
-    return Task.parameterized(json['_taskName'] as String,
-        json['_startTime'] as double, json['_duration'] as double);
+    return Task.parameterized(json['taskName'] as String,
+        json['startTime'] as double, json['duration'] as double);
   }
   @override
   String toString() {
-    return "$_taskName, $_duration, $_startTime, $_endTime";
+    return "$taskName, $duration, $startTime, $endTime";
   }
 }

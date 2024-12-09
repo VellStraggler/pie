@@ -1,11 +1,9 @@
 {  
     "slices": [
-        {
-            "task": {
+            {
                 "_taskName": "Sample Task 2",
                 "_startTime": 4.0,
                 "_duration": 2.0
             }
-        }
     ]
 }
