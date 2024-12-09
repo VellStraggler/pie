@@ -1,7 +1,5 @@
 // ignore_for_file: prefer_const_constructors_in_immutables, prefer_const_constructors
-
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:pie_agenda/pie/diameter.dart';
 import 'package:pie_agenda/pie/pie.dart';
@@ -63,7 +61,7 @@ class DragButton extends StatefulWidget {
   }
 
   static double _radius() {
-    return (Diameter.instance.pie / 2);
+    return (Diameter.instance.getPieDiameter() / 2);
   }
 
   static double getTimeFromPoint(Point point) {
@@ -166,6 +164,7 @@ class _DragButtonState extends State<DragButton> {
     );
   }
 
+  /// Find closest snap point.
   static Point getNearestSnapPoint(
       Point currentPosition, DragUpdateDetails details) {
     Point current = Point.parameterized(
@@ -176,6 +175,7 @@ class _DragButtonState extends State<DragButton> {
     return newPoint;
   }
 
+  /// Get
   static Point getRoundedSnapPoint(Point current) {
     double time = DragButton.getTimeFromPoint(current);
     time = (time * 4).round() / 4;

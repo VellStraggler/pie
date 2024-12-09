@@ -1,7 +1,5 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:flutter/material.dart';
-import 'package:pie_agenda/display/dragbutton.dart';
+import 'package:pie_agenda/display/drag_button.dart';
 import 'package:pie_agenda/pie/pie.dart';
 import 'package:pie_agenda/pie/slice.dart';
 import 'dart:math';
@@ -72,20 +70,19 @@ class PiePainter extends CustomPainter {
         Offset(pie.radius() + buttonRadius, pie.radius() + buttonRadius);
     painter.color = themeColor1;
     canvas.drawCircle(centerOffset, pie.radius() - buttonRadius, painter);
-    // canvas.drawCircle(centerOffset, pie.radius(), outliner);
 
     // Draw the slices
     Rect rectArea = Rect.fromCenter(
         center: centerOffset, width: pie.width, height: pie.width);
     int i = 0;
     for (Slice slice in pie.slices) {
-      slice.shown = false;
+      slice.setShownText(false);
       double start = slice.getStartTimeToRadians() - Slice.timeToRadians(3);
       // This offset of 3 has never made sense, and it only applies to the start time
       double duration = slice.getDurationToRadians();
       painter.color = slice.color;
       if (i == pie.getSelectedSliceIndex()) {
-        slice.shown = true;
+        slice.setShownText(true);
         painter.color = darkenColor(slice.color);
       }
 
@@ -132,7 +129,7 @@ class PiePainter extends CustomPainter {
         Point position = DragButton.getPointFromTime(i.toDouble() / 4);
         // draw guidebutton at position
         int circleSize = 12;
-        painter.color = Color.fromRGBO(158, 158, 158, .8);
+        painter.color = const Color.fromRGBO(158, 158, 158, .8);
         canvas.drawCircle(
             Offset(position.x + circleSize, position.y + circleSize),
             circleSize.toDouble() / 2,

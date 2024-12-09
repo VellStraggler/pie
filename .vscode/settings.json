@@ -3,8 +3,16 @@
   "cmake.ignoreCMakeListsMissing": true,
   "cSpell.ignoreWords": [
     "dragbutton",
+    "dragbuttons",
+    "guidebutton",
+    "guidebuttons",
+    "outliner",
     "piepainter"
   ],
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "Dart-Code.dart-code"
+  "editor.defaultFormatter": "Dart-Code.dart-code",
+  "diffEditor.codeLens": false,
+  "[json]": {
+    "editor.defaultFormatter": "ramon-zwiers.json-format"
+  }
 }
