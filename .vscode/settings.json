@@ -11,5 +11,8 @@
   ],
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "Dart-Code.dart-code",
-  "diffEditor.codeLens": false
+  "diffEditor.codeLens": false,
+  "[json]": {
+    "editor.defaultFormatter": "ramon-zwiers.json-format"
+  }
 }

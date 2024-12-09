@@ -1,26 +1,27 @@
 import 'dart:convert';
 import 'dart:io';
-import 'slice.dart';
-import 'task.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:pie_agenda/pie/pie.dart';
 
 class PieManager {
   final filePath = 'assets/data/pie.json';
-  List<Task> day = []; //the variable that stores the list of tasks.
 
-  Future<void> saveDay(List<Slice> slices, String filePath) async {
+  Future<void> savePie(String time, Pie pie) async {
     try {
+      final file = File(filePath);
+      String jsonString = await file.readAsString();
+      Map<String, dynamic> existingData = jsonDecode(jsonString);
+
       // Convert the list of Task objects to a list of JSON maps.
-      List<Map<String, dynamic>> jsonTasks =
-          slices.map((slice) => slice.toJson()).toList();
+      Map<String, dynamic> newData = pie.toJson(time);
+
+      existingData[time] = newData[time];
 
       // Encode the list to a JSON string.
-      String jsonString = jsonEncode(jsonTasks);
+      String updatedJsonString = jsonEncode(existingData);
 
       // Write the JSON string to the specified file.
-      final file = File(filePath);
-      await file.writeAsString(jsonString);
+      await file.writeAsString(updatedJsonString);
       print('Tasks saved successfully!');
     } catch (e) {
       print('Failed to save tasks: $e');
@@ -51,6 +52,7 @@ class PieManager {
         jsonMap[time] is List,
         '"$time" should be a List.',
       );
+      //
 
       // Convert JSON to Pie object
       Pie pie = Pie.fromJson(jsonMap, time);
@@ -70,6 +72,7 @@ class PieManager {
           slice.getEndTime() > slice.getStartTime() && slice.getEndTime() <= 24,
           'Slice endTime should be greater than startTime and at most 24.',
         );
+        //
       }
       print("Pie data loaded successfully from $filePath.");
       return pie;

@@ -20,16 +20,11 @@ PiePainter painter = PiePainter(pie: pie);
 Slice selectedSlice = Slice();
 const filePath = 'assets/data/pie.json';
 final PieManager manager = PieManager();
-
-Future<void> loadPie() async {
-  aMPie = await manager.loadPie("AM");
-  pMPie = await manager.loadPie("PM");
-}
-
+bool _isLoading = true; // Progress indicator while the data is being loaded.
 const Color themeColor2 = Color.fromRGBO(39, 102, 169, 1); //(219,220,255)
 const Color menuBackground = Color.fromRGBO(35, 50, 218, 1); //(212,255,234)
 const Color themeColor1 = Color.fromRGBO(249, 248, 255, 1); //(238,203,255)
-const Color almostBlack = Color.fromRGBO(12, 18, 125, 1);
+const Color almostBlack = Color.fromRGBO(19, 26, 155, 1);
 const Color buttonColor = Color.fromRGBO(132, 173, 255, 1);
 
 /// Home Page Widget
@@ -71,10 +66,32 @@ class MyHomePageState extends State<MyHomePage> {
       aMPie = Pie();
       pie = aMPie;
       painter = PiePainter(pie: pie);
+      loadPie();
     });
     startTimer();
-    loadPie();
-    updateScreen();
+  }
+
+  Future<void> loadPie() async {
+    try {
+      aMPie = await manager.loadPie("AM");
+      pMPie = await manager.loadPie("PM");
+      pie = isAfternoon ? pMPie : aMPie;
+      painter = PiePainter(pie: pie); // Update painter with new pie
+      _isLoading = false;
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> savePie() async {
+    try {
+      await manager.savePie("AM", aMPie);
+      await manager.savePie("PM", pMPie);
+    } catch (e) {
+      print('Didn\'t save tasks:$e');
+    }
   }
 
   /// Creates labeled text fields for user input
@@ -136,7 +153,7 @@ class MyHomePageState extends State<MyHomePage> {
               pie.setSelectedSliceIndex(-1);
               // if one was not selected, deselect what we do have
             }
-
+            savePie();
             updateScreen();
           },
           child: Center(
@@ -149,6 +166,7 @@ class MyHomePageState extends State<MyHomePage> {
         floatingActionButton: _buildFloatingActionButtons());
   }
 
+  /// Creates the buttons for editing the chart.
   Widget _buildFloatingActionButtons() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
@@ -175,21 +193,14 @@ class MyHomePageState extends State<MyHomePage> {
           child: const Icon(Icons.list),
         ),
         const SizedBox(width: 10),
-        if (isAfternoon)
-          FloatingActionButton(
-            backgroundColor: almostBlack,
-            foregroundColor: themeColor1,
-            onPressed: _switchTime,
-            tooltip: 'Switch to AM',
-            child: const Text("PM"),
-          ),
-        if (!isAfternoon)
-          FloatingActionButton(
-            backgroundColor: buttonColor,
-            onPressed: _switchTime,
-            tooltip: 'Switch to PM',
-            child: const Text("AM"),
-          ),
+        //if (isAfternoon)
+        FloatingActionButton(
+          backgroundColor: isAfternoon ? almostBlack : buttonColor,
+          foregroundColor: isAfternoon ? themeColor1 : almostBlack,
+          onPressed: _switchTime,
+          tooltip: isAfternoon ? 'Switch to AM' : 'Switch to PM',
+          child: Text(isAfternoon ? "PM" : "AM"),
+        ),
       ],
     );
   }
@@ -203,7 +214,7 @@ class MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  /// Opens dialog to add a new slice to the pie
+  /// Opens dialog to add a new slice to the pie.
   void _showAddSliceDialog() {
     final startTimeController = TextEditingController();
     final endTimeController = TextEditingController();
@@ -224,9 +235,10 @@ class MyHomePageState extends State<MyHomePage> {
   /// Removes the last slice selected from the pie.
   void _removeSelectedSlice() {
     pie.removeSlice();
+    savePie();
   }
 
-  /// Dialog structure for adding a new slice
+  /// Dialog structure for adding a new slice.
   Widget _buildAddSliceDialog(
       TextEditingController startController,
       TextEditingController durationController,
@@ -255,6 +267,7 @@ class MyHomePageState extends State<MyHomePage> {
               taskController.text,
             );
             Navigator.of(context).pop();
+            savePie();
           },
           child: const Text('Add Slice'),
         ),
@@ -284,9 +297,10 @@ class MyHomePageState extends State<MyHomePage> {
         MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
   }
 
-  /// List the Tasks for the current Pie
+  /// List the Tasks for the current Pie.
   void _listSlices() {
     print(aMPie.toJson('AM'));
+    print(pMPie.toJson('PM'));
     pie.setSelectedSliceIndex(-1);
     showDialog(
       context: context,
