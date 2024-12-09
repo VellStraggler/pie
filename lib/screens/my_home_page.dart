@@ -209,7 +209,8 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   /// Creates labeled text fields for user input
-  Widget _buildTextField(TextEditingController controller, String label, [String hintText = ""]) {
+  Widget _buildTextField(TextEditingController controller, String label,
+      [String hintText = ""]) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
@@ -246,8 +247,10 @@ class MyHomePageState extends State<MyHomePage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _buildTextField(startTimeController, 'Start Time (HH:MM)', 'E.g., 6:30'),
-                _buildTextField(durationController, 'Duration (HH:MM)', 'E.g., 6:30'),
+                _buildTextField(
+                    startTimeController, 'Start Time (HH:MM)', 'E.g., 6:30'),
+                _buildTextField(
+                    durationController, 'Duration (HH:MM)', 'E.g., 6:30'),
                 _buildTextField(taskController, 'Task Description'),
               ],
             ),
@@ -259,11 +262,17 @@ class MyHomePageState extends State<MyHomePage> {
             ),
             ElevatedButton(
               onPressed: () {
-                final startTime =
-                    parseTime(startTimeController.text);
-                final duration = parseTime(durationController.text);
+                final startTime = parseTime(startTimeController.text);
+                double durationA = parseTime(durationController.text);
                 final taskText = taskController.text.trim();
-                if (startTime >= 0 && duration >= 0 && taskText.isNotEmpty) {
+                if (startTime + durationA == 12) {
+                  durationA -= .01;
+                }
+                final duration = durationA;
+                if (startTime >= 0 &&
+                    duration >= 0 &&
+                    taskText.isNotEmpty &&
+                    startTime + duration <= 12) {
                   setState(() {
                     final task =
                         Task.parameterized(taskText, startTime, duration);
