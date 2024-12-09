@@ -96,15 +96,6 @@ class MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  /// Creates labeled text fields for user input
-  Widget _buildTextField(TextEditingController controller, String label) {
-    return TextField(
-      controller: controller,
-      decoration: InputDecoration(labelText: label),
-      keyboardType: TextInputType.number,
-    );
-  }
-
   /// Builds the display for the Home Page.
   @override
   Widget build(BuildContext context) {
@@ -217,19 +208,81 @@ class MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  /// Opens dialog to add a new slice to the pie.
-  void _showAddSliceDialog() {
-    final startTimeController = TextEditingController();
-    final endTimeController = TextEditingController();
-    final taskController = TextEditingController();
+  /// Creates labeled text fields for user input
+  Widget _buildTextField(TextEditingController controller, String label) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(labelText: label),
+        keyboardType: TextInputType.number,
+        validator: (value) {
+          if (label != 'Task Description' &&
+              (double.tryParse(value ?? '') == null)) {
+            return 'Please enter a valid number';
+          }
+          if (label == 'Task Description' &&
+              (value == null || value.trim().isEmpty)) {
+            return 'Task description cannot be empty';
+          }
+          return null;
+        },
+      ),
+    );
+  }
 
+  /// Creates form to add a new slice to the pie.
+  void _showAddSliceDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return _buildAddSliceDialog(
-          startTimeController,
-          endTimeController,
-          taskController,
+        final startTimeController = TextEditingController();
+        final durationController = TextEditingController();
+        final taskController = TextEditingController();
+        return AlertDialog(
+          backgroundColor: themeColor1,
+          title: const Text('Add New Slice'),
+          content: Form(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildTextField(startTimeController, 'Start Time'),
+                _buildTextField(durationController, 'Duration'),
+                _buildTextField(taskController, 'Task Description'),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final startTime =
+                    double.tryParse(startTimeController.text) ?? -1;
+                final duration = double.tryParse(durationController.text) ?? -1;
+                final taskText = taskController.text.trim();
+                if (startTime >= 0 && duration >= 0 && taskText.isNotEmpty) {
+                  setState(() {
+                    final task =
+                        Task.parameterized(taskText, startTime, duration);
+                    pie.addSlice(task);
+                    pie.selectedSliceIndex = pie.slices.length - 1;
+                    painter = PiePainter(pie: pie);
+                  });
+                  savePie();
+                  Navigator.of(context).pop();
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('Invalid input. Please try again.')),
+                  );
+                }
+              },
+              child: const Text('Add Slice'),
+            ),
+          ],
         );
       },
     );
@@ -239,65 +292,6 @@ class MyHomePageState extends State<MyHomePage> {
   void _removeSelectedSlice() {
     pie.removeSlice();
     savePie();
-  }
-
-  /// Dialog structure for adding a new slice.
-  Widget _buildAddSliceDialog(
-      TextEditingController startController,
-      TextEditingController durationController,
-      TextEditingController taskController) {
-    return AlertDialog(
-      backgroundColor: themeColor1,
-      title: const Text('Add New Slice'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildTextField(startController, 'Start Time'),
-          _buildTextField(durationController, 'Duration'),
-          _buildTextField(taskController, 'Task Description'),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
-        ),
-        TextButton(
-          onPressed: () {
-            _addUserSlice(
-              startController.text,
-              durationController.text,
-              taskController.text,
-            );
-            Navigator.of(context).pop();
-            savePie();
-          },
-          child: const Text('Add Slice'),
-        ),
-      ],
-    );
-  }
-
-  /// Validates input and adds a new slice if valid.
-  void _addUserSlice(String startText, String endText, String taskText) {
-    final startTime = double.tryParse(startText) ?? 0;
-    final duration = double.tryParse(endText) ?? 0;
-
-    if (startTime >= 0 && duration >= 0 && taskText.isNotEmpty) {
-      setState(() {
-        Task task = Task.parameterized(taskText, startTime, duration);
-        pie.addSlice(task);
-        pie.selectedSliceIndex = pie.slices.length - 1;
-        painter = PiePainter(pie: pie); // Update painter with new data
-      });
-    } else {
-      print("Invalid input for start, end time, or empty task");
-    }
-  }
-
-  Offset windowSize() {
-    return Offset(
-        MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
   }
 
   /// List the Tasks for the current Pie.
