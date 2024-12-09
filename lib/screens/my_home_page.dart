@@ -22,7 +22,8 @@ const filePath = 'assets/data/pie.json';
 final PieManager manager = PieManager();
 
 Future<void> loadPie() async {
-  aMPie = await manager.loadPie();
+  aMPie = await manager.loadPie("AM");
+  pMPie = await manager.loadPie("PM");
 }
 
 const Color themeColor2 = Color.fromRGBO(39, 102, 169, 1); //(219,220,255)
@@ -284,7 +285,7 @@ class MyHomePageState extends State<MyHomePage> {
 
   /// List the Tasks for the current Pie
   void _listSlices() {
-    print(aMPie.toJson());
+    print(aMPie.toJson('AM'));
     pie.setSelectedSliceIndex(-1);
     showDialog(
       context: context,

@@ -1,9 +1,16 @@
 {  
-    "slices": [
+    "AM": [
             {
-                "_taskName": "Sample Task 2",
-                "_startTime": 4.0,
-                "_duration": 2.0
+                "taskName": "Sample Task 2",
+                "startTime": 4.0,
+                "duration": 2.0
             }
+    ],
+    "PM":[
+        {
+            "taskName": "Sample Task 3",
+                "startTime": 6.0,
+                "duration": 1.0
+        }
     ]
 }

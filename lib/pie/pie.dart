@@ -63,14 +63,14 @@ class Pie {
 
 // Save Data Conversion
   ///Convert Pie object to JSON.
-  Map<String, dynamic> toJson() {
-    return {'slices': slices.map((slice) => slice.toJson()).toList()};
+  Map<String, dynamic> toJson(String time) {
+    return {time: slices.map((slice) => slice.toJson()).toList()};
   }
 
   /// Convert JSON to a Pie object.
-  factory Pie.fromJson(Map<String, dynamic> json) {
+  factory Pie.fromJson(Map<String, dynamic> json, String time) {
     //assert(json is Map<String, dynamic>);
-    var jsonSlices = json['slices'] as List;
+    var jsonSlices = json[time] as List;
     List<Slice> sliceList =
         jsonSlices.map((slice) => Slice.fromJson(slice)).toList();
     return Pie.parameterized(sliceList);

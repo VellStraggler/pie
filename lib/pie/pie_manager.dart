@@ -28,7 +28,7 @@ class PieManager {
   }
 
   /// Loads a json file and returns a list of tasks.
-  Future<Pie> loadPie() async {
+  Future<Pie> loadPie(String time) async {
     try {
       // Load the JSON file as a string
       String jsonString = await rootBundle.loadString(filePath);
@@ -44,19 +44,18 @@ class PieManager {
 
       // Ensure 'slices' key exists and is a List
       assert(
-        jsonMap.containsKey('slices'),
-        'JSON does not contain the required "slices" key.',
+        jsonMap.containsKey(time),
+        'JSON does not contain the required "$time" key.',
       );
       assert(
-        jsonMap['slices'] is List,
-        '"slices" should be a List.',
+        jsonMap[time] is List,
+        '"$time" should be a List.',
       );
 
       // Convert JSON to Pie object
-      Pie pie = Pie.fromJson(jsonMap);
+      Pie pie = Pie.fromJson(jsonMap, time);
 
       // Ensure Pie contains slices
-
       // Validate each Slice
       for (var slice in pie.slices) {
         assert(
