@@ -21,10 +21,12 @@ class Pie {
         slices = [],
         selectedSliceIndex = -1;
 
+  /// Returns the current slice index
   int getSelectedSliceIndex() {
     return selectedSliceIndex;
   }
 
+  /// Sets the selected slice.
   void setSelectedSliceIndex(int i) {
     selectedSliceIndex = i;
   }
@@ -49,7 +51,7 @@ class Pie {
     slices.add(newSlice);
   }
 
-  ///
+  /// Returns the Pie's radius.
   double radius() {
     return width / 2;
   }

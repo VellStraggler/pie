@@ -52,13 +52,13 @@ class Task {
 
   /// Set the tasks's duration.
   void setDuration(double duration) {
-    this.duration = duration;
+    this.duration = double.parse(duration.toStringAsFixed(2));
   }
 
   /// Set the task's startTime.
   void setStartTime(double startTime) {
     assert(startTime < endTime, "startTime must be before endTime.");
-    this.startTime = startTime;
+    this.startTime = double.parse(startTime.toStringAsFixed(2));
   }
 
   /// Set the task's endTime.
