@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'dart:async';
-
 import 'package:pie_agenda/screens/my_home_page.dart';
 
 class Clock extends StatefulWidget {
@@ -51,7 +50,7 @@ class _TimeClock extends State<Clock> {
       hour = 12;
     }
 
-    return '${months[intMonth - 1]} ${intDay} | ${hour.toString()}:${minute.toString().padLeft(2, '0')} $code';
+    return '${months[intMonth - 1]} $intDay | ${hour.toString()}:${minute.toString().padLeft(2, '0')} $code';
   }
 
   void startTimer() {

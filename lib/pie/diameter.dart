@@ -8,8 +8,18 @@ class Diameter {
   static final Diameter instance = Diameter._();
 
   // The modifiable variable
-  double pie = 350.0;
+  double pieDiameter = 350.0;
+
+  /// Get the Pie Diameter.
+  double getPieDiameter() {
+    return pieDiameter;
+  }
+
+  /// Set the Pie Diameter.
+  void setPieDiameter(double pieDiameter) {
+    this.pieDiameter = pieDiameter;
+  }
 
   // access/modify using this line:
-  // Diameter.instance.pie = 400.0;
+  // Diameter.instance.setPieDiameter(400.0);
 }

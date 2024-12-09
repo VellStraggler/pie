@@ -1,0 +1,16 @@
+{  
+    "AM": [
+            {
+                "taskName": "Sample Task 2",
+                "startTime": 4.0,
+                "duration": 2.0
+            }
+    ],
+    "PM":[
+        {
+            "taskName": "Sample Task 3",
+                "startTime": 6.0,
+                "duration": 1.0
+        }
+    ]
+}

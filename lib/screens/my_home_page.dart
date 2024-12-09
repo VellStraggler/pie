@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:pie_agenda/display/point.dart';
 import 'package:pie_agenda/pie/diameter.dart';
 import 'package:pie_agenda/pie/slice.dart';
 import 'package:pie_agenda/pie/task.dart';
-import 'package:pie_agenda/display/dragbutton.dart';
+import 'package:pie_agenda/display/drag_button.dart';
 import 'package:pie_agenda/pie/pie.dart';
-import 'package:pie_agenda/display/piepainter.dart';
+import 'package:pie_agenda/display/pie_painter.dart';
 import 'package:pie_agenda/display/clock.dart';
+import 'package:pie_agenda/pie/pie_manager.dart';
 
 /// These will be re-instantiated as soon as we get the width of the screen
 Pie aMPie = Pie();
@@ -18,7 +18,9 @@ Pie pie = aMPie; //pointer
 bool isAfternoon = false;
 PiePainter painter = PiePainter(pie: pie);
 Slice selectedSlice = Slice();
-
+const filePath = 'assets/data/pie.json';
+final PieManager manager = PieManager();
+bool _isLoading = true; // Progress indicator while the data is being loaded.
 const Color themeColor2 = Color.fromRGBO(39, 102, 169, 1); //(219,220,255)
 const Color menuBackground = Color.fromRGBO(35, 50, 218, 1); //(212,255,234)
 const Color themeColor1 = Color.fromRGBO(249, 248, 255, 1); //(238,203,255)
@@ -60,12 +62,27 @@ class MyHomePageState extends State<MyHomePage> {
       double smallestDimension = min(widgetHeight!, widgetWidth!);
       // Use the dimensions here
       // Relies on AMPie being the default
-      Diameter.instance.pie = smallestDimension * .9;
+      Diameter.instance.setPieDiameter(smallestDimension * .9);
       aMPie = Pie();
       pie = aMPie;
       painter = PiePainter(pie: pie);
+      loadPie();
     });
     startTimer();
+  }
+
+  Future<void> loadPie() async {
+    try {
+      aMPie = await manager.loadPie("AM");
+      pMPie = await manager.loadPie("PM");
+      pie = isAfternoon ? pMPie : aMPie;
+      painter = PiePainter(pie: pie); // Update painter with new pie
+      _isLoading = false;
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   /// Creates labeled text fields for user input
@@ -139,6 +156,7 @@ class MyHomePageState extends State<MyHomePage> {
         floatingActionButton: _buildFloatingActionButtons());
   }
 
+  /// Creates the buttons for editing the chart.
   Widget _buildFloatingActionButtons() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
@@ -165,21 +183,14 @@ class MyHomePageState extends State<MyHomePage> {
           child: const Icon(Icons.list),
         ),
         const SizedBox(width: 10),
-        if (isAfternoon)
-          FloatingActionButton(
-            backgroundColor: almostBlack,
-            foregroundColor: themeColor1,
-            onPressed: _switchTime,
-            tooltip: 'Switch to AM',
-            child: const Text("PM"),
-          ),
-        if (!isAfternoon)
-          FloatingActionButton(
-            backgroundColor: buttonColor,
-            onPressed: _switchTime,
-            tooltip: 'Switch to PM',
-            child: const Text("AM"),
-          ),
+        //if (isAfternoon)
+        FloatingActionButton(
+          backgroundColor: isAfternoon ? almostBlack : buttonColor,
+          foregroundColor: isAfternoon ? themeColor1 : almostBlack,
+          onPressed: _switchTime,
+          tooltip: isAfternoon ? 'Switch to AM' : 'Switch to PM',
+          child: Text(isAfternoon ? "PM" : "AM"),
+        ),
       ],
     );
   }
@@ -193,7 +204,7 @@ class MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  /// Opens dialog to add a new slice to the pie
+  /// Opens dialog to add a new slice to the pie.
   void _showAddSliceDialog() {
     final startTimeController = TextEditingController();
     final endTimeController = TextEditingController();
@@ -211,13 +222,12 @@ class MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  /// Removes the last slice selected from the pie.
   void _removeSelectedSlice() {
-    // get the last slice that was selected
-    // remove it from the slices
     pie.removeSlice();
   }
 
-  /// Dialog structure for adding a new slice
+  /// Dialog structure for adding a new slice.
   Widget _buildAddSliceDialog(
       TextEditingController startController,
       TextEditingController durationController,
@@ -275,7 +285,10 @@ class MyHomePageState extends State<MyHomePage> {
         MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
   }
 
+  /// List the Tasks for the current Pie.
   void _listSlices() {
+    print(aMPie.toJson('AM'));
+    print(pMPie.toJson('PM'));
     pie.setSelectedSliceIndex(-1);
     showDialog(
       context: context,
@@ -341,8 +354,10 @@ String _formatTime(double time) {
 
 /// Build the PiePainter and the DragButtons being used in the program.
 List<Widget> _buildPie() {
-  List<Widget> pieAndDragButtons = [];
   // First item is the pie painter, the rest are dragbuttons
+  // (and eventually guidebuttons too)
+  List<Widget> pieAndDragButtons = [];
+
   pieAndDragButtons.add(
     CustomPaint(
         size: Size(pie.width + buttonDiameter, pie.width + buttonDiameter),

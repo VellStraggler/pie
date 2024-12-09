@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:pie_agenda/display/point.dart';
 
-import '../display/dragbutton.dart';
+import '../display/drag_button.dart';
 import 'task.dart';
 
 class Slice {
@@ -11,17 +11,16 @@ class Slice {
   DragButton dragButtonBefore;
   DragButton dragButtonAfter;
   Task task; // Default Task
-  bool shown = false; // Shown flag
-  final VoidCallback? onTap;
+  bool showText = true; // Shown flag
   Color color;
 
   /// Default Constructor
-  Slice({this.onTap})
+  Slice()
       : task = Task(),
         dragButtonBefore = DragButton(time: 0, shown: true),
         dragButtonAfter = DragButton(time: 1, shown: true),
         color = _generateHashedColor(0, 1, Task().getTaskName()) {
-    shown = false;
+    showText = false;
     dragButtonBefore.onDragEnd = updateToDragButtons;
     dragButtonAfter.onDragEnd = updateToDragButtons;
     // add pointers to this Slice in the dragbuttons
@@ -30,7 +29,6 @@ class Slice {
   /// Parameterized Constructor
   Slice.parameterized({
     required this.task,
-    this.onTap,
   })  : color = _generateHashedColor(
             task.getStartTime(), task.getEndTime(), task.getTaskName()),
         dragButtonAfter = DragButton(
@@ -43,8 +41,13 @@ class Slice {
   }
 
 // Getters and Setters
-  bool isShown() {
-    return shown;
+  bool getShownText() {
+    return showText;
+  }
+
+  /// Set showText variable.
+  void setShownText(bool showText) {
+    this.showText = showText;
   }
 
   /// Converts the start Time to Radians
@@ -56,6 +59,14 @@ class Slice {
   /// Converts the tasks's endTime to Radians
   double getDurationToRadians() {
     return timeToRadians(getDuration());
+  }
+
+  /// Converts a given time to Radians.
+  static double timeToRadians(double time) {
+    int hour = time.toInt();
+    int minute = ((time % 1) * 60).toInt();
+    double ans = (hour % 12 + (minute / 60)) * (pi / 6);
+    return ans;
   }
 
   /// Gets the task's startTime.
@@ -109,28 +120,6 @@ class Slice {
   }
 
 // Methods
-  // Handle Taps
-  void handleTap() {
-    if (onTap != null) {
-      onTap!();
-    }
-  }
-
-  // ignore: unused_element
-  static Color _generateRandomColor() {
-    Random random = Random();
-    List<int> rgb = [
-      127 + random.nextInt(128), // Ensures a brighter color
-      127 + random.nextInt(128),
-      127 + random.nextInt(128)
-    ];
-
-    int numDrop = random.nextInt(3);
-    rgb[numDrop] -= 75; //this demuddles the color to be more saturated
-
-    return Color.fromARGB(255, rgb[0], rgb[1], rgb[2]);
-  }
-
   static Color _generateHashedColor(double a, double b, String c) {
     // a and b are both from 0 to 12
     a *= (78 / 12);
@@ -151,16 +140,24 @@ class Slice {
         numDrop = 2;
       }
     }
-    rgb[numDrop] -= 125; //this demuddles the color to be more saturated
+    rgb[numDrop] -= 125; // Saturates the color
 
     return Color.fromARGB(255, rgb[0], rgb[1], rgb[2]);
   }
 
-  /// Converts a given time to Radians.
-  static double timeToRadians(double time) {
-    int hour = time.toInt();
-    int minute = ((time % 1) * 60).toInt();
-    double ans = (hour % 12 + (minute / 60)) * (pi / 6);
-    return ans;
+// Save Data
+  /// Convert task data to Json.
+  Map<String, dynamic> toJson() {
+    return task.toJson();
+  }
+
+  factory Slice.fromJson(Map<String, dynamic> json) {
+    Task newTask = Task.fromJson(json);
+    return Slice.parameterized(task: newTask);
+  }
+
+  @override
+  String toString() {
+    return task.toString();
   }
 }
