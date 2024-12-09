@@ -6,6 +6,7 @@ import 'package:pie_agenda/pie/pie.dart';
 class PieManager {
   final filePath = 'assets/data/pie.json';
 
+  /// Save the Pie to JSON file.
   Future<void> savePie(String time, Pie pie) async {
     try {
       final file = File(filePath);
@@ -28,7 +29,7 @@ class PieManager {
     }
   }
 
-  /// Loads a json file and returns a list of tasks.
+  /// Loads a JSON file and returns a list of tasks.
   Future<Pie> loadPie(String time) async {
     try {
       // Load the JSON file as a string

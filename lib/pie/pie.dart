@@ -1,5 +1,4 @@
 import 'package:pie_agenda/pie/diameter.dart';
-
 import 'slice.dart';
 import '../display/point.dart';
 import 'task.dart';
@@ -8,7 +7,7 @@ class Pie {
   List<Slice> slices; // A list of slices in the pie chart
   Point center; // Center point of the pie chart
   double width; // Pie chart radius
-  int selectedSliceIndex;
+  int selectedSliceIndex; // The current selected slice's index.
 
   /// Default Constructor
   /// Constructor initializes with a single slice covering the whole circle.

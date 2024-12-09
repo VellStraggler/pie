@@ -11,15 +11,14 @@ class Diameter {
   double pieDiameter = 350.0;
 
   /// Get the Pie Diameter.
+  /// * Diameter.instance.getPieDiameter();
   double getPieDiameter() {
     return pieDiameter;
   }
 
   /// Set the Pie Diameter.
+  /// * Diameter.instance.setPieDiameter(400.0);
   void setPieDiameter(double pieDiameter) {
     this.pieDiameter = pieDiameter;
   }
-
-  // access/modify using this line:
-  // Diameter.instance.setPieDiameter(400.0);
 }

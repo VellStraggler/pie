@@ -71,6 +71,7 @@ class MyHomePageState extends State<MyHomePage> {
     startTimer();
   }
 
+  /// Loads aMPie and pMPie from JSON file.
   Future<void> loadPie() async {
     try {
       aMPie = await manager.loadPie("AM");
@@ -85,6 +86,7 @@ class MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  /// Saves aMPie and pMPie to JSON file.
   Future<void> savePie() async {
     try {
       await manager.savePie("AM", aMPie);
@@ -205,6 +207,7 @@ class MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  /// Changes time between AM and PM.
   void _switchTime() {
     isAfternoon = !isAfternoon;
     if (isAfternoon) {

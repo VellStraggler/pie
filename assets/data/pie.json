@@ -1,1 +1,1 @@
-{"AM":[{"taskName":"Task 1","startTime":0.0,"duration":3.0}],"PM":[{"taskName":"Sample Task 3","startTime":6.0,"duration":3.0}]}
+{"AM":[{"taskName":"Task 1","startTime":0.0,"duration":3.0}],"PM":[{"taskName":"Sample Task 3","startTime":6.0,"duration":3.0},{"taskName":"New","startTime":4.0,"duration":2.0}]}
