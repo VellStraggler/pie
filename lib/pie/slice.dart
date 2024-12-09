@@ -11,8 +11,7 @@ class Slice {
   DragButton dragButtonBefore;
   DragButton dragButtonAfter;
   Task task; // Default Task
-  bool shown = false; // Shown flag
-  final VoidCallback? onTap;
+  bool showText = true; // Shown flag
   Color color;
 
   /// Default Constructor
@@ -21,7 +20,7 @@ class Slice {
         dragButtonBefore = DragButton(time: 0, shown: true),
         dragButtonAfter = DragButton(time: 1, shown: true),
         color = _generateHashedColor(0, 1, Task().getTaskName()) {
-    shown = false;
+    showText = false;
     dragButtonBefore.onDragEnd = updateToDragButtons;
     dragButtonAfter.onDragEnd = updateToDragButtons;
     // add pointers to this Slice in the dragbuttons
@@ -42,8 +41,13 @@ class Slice {
   }
 
 // Getters and Setters
-  bool isShown() {
-    return shown;
+  bool getShownText() {
+    return showText;
+  }
+
+  /// Set showText variable.
+  void setShownText(bool showText) {
+    this.showText = showText;
   }
 
   /// Converts the start Time to Radians
@@ -108,13 +112,6 @@ class Slice {
   }
 
 // Methods
-  // Handle Taps
-  void handleTap() {
-    if (onTap != null) {
-      onTap!();
-    }
-  }
-
   /// Converts a given time to Radians.
   double _timeToRadians(double time) {
     int hour = time.toInt();

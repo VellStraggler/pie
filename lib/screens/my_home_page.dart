@@ -73,7 +73,7 @@ class MyHomePageState extends State<MyHomePage> {
       double smallestDimension = min(widgetHeight!, widgetWidth!);
       // Use the dimensions here
       // Relies on AMPie being the default
-      Diameter.instance.pie = smallestDimension * .9;
+      Diameter.instance.setPieDiameter(smallestDimension * .9);
       aMPie = Pie();
       pie = aMPie;
       painter = PiePainter(pie: pie);

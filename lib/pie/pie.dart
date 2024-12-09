@@ -15,7 +15,8 @@ class Pie {
   /// Constructor initializes with a single slice covering the whole circle.
   Pie()
       : center = Point(), // Default center point at (0,0)
-        width = Diameter.instance.pie, // A circular boundary with radius 500
+        width = Diameter.instance
+            .getPieDiameter(), // A circular boundary with radius 500
         // Initialize with one full-circle slice
         slices = [],
         selectedSliceIndex = -1,
@@ -34,7 +35,7 @@ class Pie {
   /// Parameterized Constructor
   Pie.parameterized(this.slices)
       : center = Point(),
-        width = pieDiameter,
+        width = Diameter.instance.getPieDiameter(),
         selectedSliceIndex = -1,
         guidebuttons = false;
 

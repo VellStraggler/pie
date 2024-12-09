@@ -79,13 +79,13 @@ class PiePainter extends CustomPainter {
         center: centerOffset, width: pie.width, height: pie.width);
     int i = 0;
     for (Slice slice in pie.slices) {
-      slice.shown = false;
+      slice.setShownText(false);
       double start = slice.getStartTimeToRadians() - Slice.timeToRadians(3);
       // This offset of 3 has never made sense, and it only applies to the start time
       double duration = slice.getDurationToRadians();
       painter.color = slice.color;
       if (i == pie.getSelectedSliceIndex()) {
-        slice.shown = true;
+        slice.setShownText(true);
         painter.color = darkenColor(slice.color);
       }
 

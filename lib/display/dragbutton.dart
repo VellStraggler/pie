@@ -63,7 +63,7 @@ class DragButton extends StatefulWidget {
   }
 
   static double _radius() {
-    return (Diameter.instance.pie / 2);
+    return (Diameter.instance.getPieDiameter() / 2);
   }
 
   static double getTimeFromPoint(Point point) {
