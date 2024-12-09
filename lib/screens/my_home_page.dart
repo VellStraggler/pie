@@ -209,12 +209,12 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   /// Creates labeled text fields for user input
-  Widget _buildTextField(TextEditingController controller, String label) {
+  Widget _buildTextField(TextEditingController controller, String label, [String hintText = ""]) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
         controller: controller,
-        decoration: InputDecoration(labelText: label),
+        decoration: InputDecoration(labelText: label, hintText: hintText),
         keyboardType: TextInputType.number,
         validator: (value) {
           if (label != 'Task Description' &&
@@ -246,8 +246,8 @@ class MyHomePageState extends State<MyHomePage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _buildTextField(startTimeController, 'Start Time'),
-                _buildTextField(durationController, 'Duration'),
+                _buildTextField(startTimeController, 'Start Time (HH:MM)', 'E.g., 6:30'),
+                _buildTextField(durationController, 'Duration (HH:MM)', 'E.g., 6:30'),
                 _buildTextField(taskController, 'Task Description'),
               ],
             ),
@@ -260,8 +260,8 @@ class MyHomePageState extends State<MyHomePage> {
             ElevatedButton(
               onPressed: () {
                 final startTime =
-                    double.tryParse(startTimeController.text) ?? -1;
-                final duration = double.tryParse(durationController.text) ?? -1;
+                    parseTime(startTimeController.text);
+                final duration = parseTime(durationController.text);
                 final taskText = taskController.text.trim();
                 if (startTime >= 0 && duration >= 0 && taskText.isNotEmpty) {
                   setState(() {
@@ -325,6 +325,22 @@ class MyHomePageState extends State<MyHomePage> {
         );
       },
     );
+  }
+
+  double parseTime(String timeString) {
+    try {
+      final parts = timeString.split(':');
+      if (parts.length != 2) return -1;
+
+      final hours = int.parse(parts[0]);
+      final minutes = int.parse(parts[1]);
+
+      if (hours < 0 || minutes < 0 || minutes >= 60) return -1;
+
+      return hours + (minutes / 60.0); // Convert to fractional hours
+    } catch (e) {
+      return -1; // Return -1 for invalid input
+    }
   }
 
   void updateScreen() {
