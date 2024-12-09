@@ -29,7 +29,7 @@ Future<void> loadPie() async {
 const Color themeColor2 = Color.fromRGBO(39, 102, 169, 1); //(219,220,255)
 const Color menuBackground = Color.fromRGBO(35, 50, 218, 1); //(212,255,234)
 const Color themeColor1 = Color.fromRGBO(249, 248, 255, 1); //(238,203,255)
-const Color almostBlack = Color.fromRGBO(5, 8, 72, 1);
+const Color almostBlack = Color.fromRGBO(12, 18, 125, 1);
 const Color buttonColor = Color.fromRGBO(132, 173, 255, 1);
 
 /// Home Page Widget
@@ -74,6 +74,7 @@ class MyHomePageState extends State<MyHomePage> {
     });
     startTimer();
     loadPie();
+    updateScreen();
   }
 
   /// Creates labeled text fields for user input
