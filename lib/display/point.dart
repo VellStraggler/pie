@@ -8,7 +8,7 @@ class Point {
         y = 0;
 
   /// Parameterized Constructor
-  Point.parameterized({required this.x, required this.y});
+  Point.parameterized({required this.x, required this.y}) {}
 
   /// Set the Point values
   void setPoint(double newX, double newY) {
@@ -16,15 +16,22 @@ class Point {
     y = newY;
   }
 
-  /// Move X axis
-  double moveXAmount(double addToX) {
-    x += addToX;
+  /// Return Point Values
+  double getX() {
     return x;
   }
 
-  /// Move Y axis
-  double moveYAmount(double addToY) {
-    y += addToY;
+  double getY() {
     return y;
+  }
+
+  /// Move X axis
+  void setX(double x) {
+    this.x = x;
+  }
+
+  /// Move Y axis
+  void setY(double y) {
+    this.y = y;
   }
 }
