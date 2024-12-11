@@ -117,9 +117,10 @@ class _DragButtonState extends State<DragButton> {
 
   @override
   Widget build(BuildContext context) {
+    currentPosition = widget.point;
     return Positioned(
-      left: currentPosition.x.toDouble(),
-      top: currentPosition.y.toDouble(),
+      left: currentPosition.x,
+      top: currentPosition.y,
       child: GestureDetector(
         onPanUpdate: (details) {
           // Keep the Dragbutton stuck on the edge of the circle

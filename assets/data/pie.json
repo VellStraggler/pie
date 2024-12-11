@@ -1,19 +1,9 @@
 {
     "AM": [
         {
-            "taskName": "Class",
-            "startTime": 9.0,
-            "duration": 2.0
-        },
-        {
-            "taskName": "Break",
-            "startTime": 11.0,
-            "duration": 0.5
-        },
-        {
             "taskName": "Workout",
-            "startTime": 6.25,
-            "duration": 0.5
+            "startTime": 0.25,
+            "duration": 3.0
         }
     ],
     "PM": [
@@ -41,6 +31,11 @@
             "taskName": "Tutoring",
             "startTime": 3.25,
             "duration": 1.0
+        },
+        {
+            "taskName": "dinner",
+            "startTime": 0.0,
+            "duration": 12.0
         }
     ]
 }
