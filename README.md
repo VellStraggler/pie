@@ -41,8 +41,8 @@ We found these websites useful in developing this software:
 * [Flutter](https://api.flutter.dev/flutter/animation/ReverseAnimation/addListener.html)
 * [Flutter](https://pub.dev/documentation/flutter_polygon_clipper/latest/)
 * [Codelabs](https://codelabs.developers.google.com/codelabs/flutter-codelab-first#0)
-* [Flutter Widgets] (https://www.youtube.com/watch?v=YXvIxmmUoHU)
-* [Flutter Design Layout] (https://docs.flutter.dev/ui/layout/tutorial)
+* [Flutter Widgets](https://www.youtube.com/watch?v=YXvIxmmUoHU)
+* [Flutter Design Layout](https://docs.flutter.dev/ui/layout/tutorial)
 
 ## Future Work
 
