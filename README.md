@@ -13,35 +13,41 @@ To learn how to code an app that helps keep a daily agenda.
 
 Steps to build and/or run the software:
 
-1. You must use the command "flutter run" to run the project, not the play button
-2. Chose the device you wish to run the app on (Web or Mobile, Web is preffered and has a cleaner look)
+1. **Clone the repository:** 
+    - Navigate to where you want to save the project
+    - Enter `git clone https://github.com/VellStraggler/pie` in the terminal.
+2. **Install Dart/Flutter**
+3. **Navigate to the Project:** In the terminal, enter `cd "address\to\saved\project\pie"`
+    - Alternatively, open the project folder in an IDE.
+4. **Run the Project:** Enter `flutter run` in the terminal.
+    - Chose the device you wish to run the app on:
+        * Web - Looks clean, but will not save your changes
+        * Desktop - Saves your tasks and changes toa JSON file.
 
-Instructions for using the software:
+## Instructions for using the software:
 
-1. Once open you can chose between the AM and PM pie using the button in the bottom right
-2. Add tasks by pressing the + button and inputing the Start Time, Duration, and the Task Name
-3. Adjust tasks by clicking on the task and dragging the white buttons on the edge of the slice.
-4. You can delete slices by selescting a slice and clikcing the delete button
-5. If you wish to see the tasks in a list view click the list view button
+1. **Choose Time of Day:** Alternate between AM and PM by using the button in the bottom right corner.
+2. **Add Tasks:** Press the + button and input the Start Time, Duration, and the Task Name.
+3. **Adjust Tasks** Click on the task and dragging the white buttons on the edge of the slice to change the start and end times.
+4. **Delete Tasks** Select a slice and select the delete button (trash can icon)
+5. **View Tasks** Select the list view button to see what tasks you've made.
 
 ## Development Environment 
-
 To recreate the development environment, you need the following software and/or libraries with the specified versions:
 
-* Download your IDE of choice (XCode, Visual Studio Code, Android Studio).
-* Download and install flutter on your IDE of choice.
-* If using Visual Studio Code, also isntall Android Studio.
-* If needed, set up a phone emulator.
-* Install Git on your IDE of choice.
+* [Visual Studio Code](https://code.visualstudio.com/Download)
+    * Use your Windows10/11 IDE of choice (XCode, Visual Studio Code, Android Studio).
+    * If using Visual Studio Code, also install Android Studio.
+    * Set up a phone emulator if needed.
+* [Install Flutter](https://docs.flutter.dev/get-started/install).
+* [Install Git](https://git-scm.com/downloads)
 
 ## Useful Websites to Learn More
 
 We found these websites useful in developing this software:
-
-* [Flutter](https://api.flutter.dev/flutter/animation/ReverseAnimation/addListener.html)
-* [Flutter](https://pub.dev/documentation/flutter_polygon_clipper/latest/)
-* [Codelabs](https://codelabs.developers.google.com/codelabs/flutter-codelab-first#0)
-* [Flutter Widgets](https://www.youtube.com/watch?v=YXvIxmmUoHU)
+* [Flutter Documentation](https://api.flutter.dev/index.html)
+* [Codelabs Tutorial](https://codelabs.developers.google.com/codelabs/flutter-codelab-first#0)
+* [Flutter Widgets You Should Learn](https://www.youtube.com/watch?v=YXvIxmmUoHU)
 * [Flutter Design Layout](https://docs.flutter.dev/ui/layout/tutorial)
 
 ## Future Work

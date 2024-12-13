@@ -1,5 +1,4 @@
 {
-  "cmake.sourceDirectory": "C:/Users/joshu/Desktop/Fall 2024/WDD-330 Web Frontend II/pie/windows",
   "cmake.ignoreCMakeListsMissing": true,
   "cSpell.ignoreWords": [
     "dragbutton",
@@ -12,7 +11,4 @@
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "Dart-Code.dart-code",
   "diffEditor.codeLens": false,
-  "[json]": {
-    "editor.defaultFormatter": "ramon-zwiers.json-format"
-  }
 }
