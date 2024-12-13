@@ -44,9 +44,10 @@ We found these websites useful in developing this software:
 
 The following items we plan to fix, improve, and/or add to this project in the future:
 
+* [ ] Allow user to tap anywhere to deselect slices
 * [ ] Stop tasks from overlapping
 * [ ] Allow saving on chrome
-* [ ] Increase performance
+* [ ] Increase performance: [X]saving after tapping, not while holding, [ ]modify drawing to not overlap itself
 * [ ] Limit to 2 drag buttons
 * [ ] Add animations such as for loading / pie-switching
 * [ ] Allow entire slice to be dragged

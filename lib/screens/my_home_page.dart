@@ -14,18 +14,20 @@ import 'package:pie_agenda/pie/pie_manager.dart';
 /// These will be re-instantiated as soon as we get the width of the screen
 Pie aMPie = Pie();
 Pie pMPie = Pie();
-Pie pie = aMPie; //pointer
+Pie pie = aMPie;
+//pie is a pointer to the current pie chart you're viewing (AM or PM)
 bool isAfternoon = false;
 PiePainter painter = PiePainter(pie: pie);
 Slice selectedSlice = Slice();
 const filePath = 'assets/data/pie.json';
 final PieManager manager = PieManager();
 bool _isLoading = true; // Progress indicator while the data is being loaded.
-const Color themeColor2 = Color.fromRGBO(39, 102, 169, 1); //(219,220,255)
-const Color menuBackground = Color.fromRGBO(35, 50, 218, 1); //(212,255,234)
-const Color themeColor1 = Color.fromRGBO(249, 248, 255, 1); //(238,203,255)
-const Color almostBlack = Color.fromRGBO(19, 26, 155, 1);
-const Color buttonColor = Color.fromRGBO(132, 173, 255, 1);
+
+const Color themeColor2 = Color.fromRGBO(39, 102, 169, 1); // cerulean
+const Color menuBackground = Color.fromRGBO(35, 50, 218, 1); // blue
+const Color themeColor1 = Color.fromRGBO(249, 248, 255, 1); // white
+const Color almostBlack = Color.fromRGBO(19, 26, 155, 1); // dark blue
+const Color buttonColor = Color.fromRGBO(132, 173, 255, 1); // light blue
 
 /// Home Page Widget
 class MyHomePage extends StatefulWidget {
@@ -43,6 +45,9 @@ class MyHomePageState extends State<MyHomePage> {
   double? widgetHeight;
   double? widgetWidth;
 
+  /// Used to reference the true width and height of the application,
+  /// which is added after the application and its modules are
+  /// instantiated
   void _getWidgetSize() {
     final RenderBox renderBox =
         _gestureKey.currentContext!.findRenderObject() as RenderBox;
@@ -104,7 +109,7 @@ class MyHomePageState extends State<MyHomePage> {
         appBar: AppBar(
             backgroundColor: themeColor2,
             foregroundColor: themeColor1,
-            // title:Text(widget.title)
+            // title:Text(widget.title) // To be replaced by app logo in corner
             title: const PreferredSize(
                 preferredSize: Size.fromHeight(32.0),
                 child: Align(
@@ -126,10 +131,10 @@ class MyHomePageState extends State<MyHomePage> {
                 y: details.localPosition.dy -
                     (widgetHeight! / 2) +
                     (pie.width / 2)));
-            // Need to start from the corner of the pie, not the corner of the whole window
-            // search through the slices for one whose endpoints are before and after this time
+            // Goes up to the middle of the screen, and then back to the corner of the pie chart
             int i = 0;
             bool found = false;
+            // search through the slices for one whose endpoints are before and after this time
             for (Slice slice in pie.slices) {
               if (slice.getStartTime() - .2 < tapTime) {
                 if (slice.getEndTime() + .2 > tapTime) {
@@ -146,8 +151,12 @@ class MyHomePageState extends State<MyHomePage> {
               pie.setSelectedSliceIndex(-1);
               // if one was not selected, deselect what we do have
             }
-            savePie();
+
             updateScreen();
+          },
+          onTapUp: (details) {
+            // savePie only when user lets go
+            savePie();
           },
           child: Center(
             child: Stack(
@@ -159,7 +168,7 @@ class MyHomePageState extends State<MyHomePage> {
         floatingActionButton: _buildFloatingActionButtons());
   }
 
-  /// Creates the buttons for editing the chart.
+  /// Creates the bottom-right buttons for editing the chart.
   Widget _buildFloatingActionButtons() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
@@ -170,6 +179,7 @@ class MyHomePageState extends State<MyHomePage> {
           tooltip: 'Add Slice',
           child: const Icon(Icons.add),
         ),
+        // 10 pixels between each button
         if (isEditing()) const SizedBox(width: 10),
         if (isEditing())
           FloatingActionButton(
@@ -266,6 +276,7 @@ class MyHomePageState extends State<MyHomePage> {
                 double durationA = parseTime(durationController.text);
                 final taskText = taskController.text.trim();
                 if (startTime + durationA == 12) {
+                  // 12:00 defaults to 0:00, so this avoids a full-day slice bug
                   durationA -= .01;
                 }
                 final duration = durationA;
@@ -314,6 +325,7 @@ class MyHomePageState extends State<MyHomePage> {
         return AlertDialog(
           backgroundColor: themeColor1,
           title: const Text('Slices'),
+          // scrollable when there are enough tasks
           content: SingleChildScrollView(
             child: ListBody(
               children: pie.slices.map((slice) {
@@ -353,6 +365,8 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   void updateScreen() {
+    // update screen by literally remaking the painter
+    // probably part of why app is so glitchy
     setState(() {
       painter = PiePainter(pie: pie);
     });
