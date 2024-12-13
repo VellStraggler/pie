@@ -399,6 +399,7 @@ List<Widget> _buildPie() {
   );
   if (isEditing()) {
     for (Slice slice in pie.slices) {
+      slice.dragButtonBefore.createState();
       pieAndDragButtons.add(slice.dragButtonBefore);
       pieAndDragButtons.add(slice.dragButtonAfter);
     }
