@@ -25,12 +25,12 @@ class Point {
     return y;
   }
 
-  /// Move X axis
+  /// Set X axis
   void setX(double x) {
     this.x = x;
   }
 
-  /// Move Y axis
+  /// Set Y axis
   void setY(double y) {
     this.y = y;
   }

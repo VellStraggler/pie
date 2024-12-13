@@ -176,7 +176,7 @@ class _DragButtonState extends State<DragButton> {
     return newPoint;
   }
 
-  /// Get
+  /// Find the closest designated point the button can snap to
   static Point getRoundedSnapPoint(Point current) {
     double time = DragButton.getTimeFromPoint(current);
     time = (time * 4).round() / 4;
