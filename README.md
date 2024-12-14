@@ -22,7 +22,7 @@ Steps to build and/or run the software:
 4. **Run the Project:** Enter `flutter run` in the terminal.
     - Chose the device you wish to run the app on:
         * Web - Looks clean, but will not save your changes
-        * Desktop - Saves your tasks and changes toa JSON file.
+        * Desktop - Saves your tasks and changes to a JSON file.
 
 ## Instructions for using the software:
 
