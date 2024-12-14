@@ -61,7 +61,7 @@ class Slice {
 
   /// Converts a given time to Radians.
   static double timeToRadians(double time) {
-    int hour = time.toInt();
+    int hour = time.toInt().floor();
     int minute = ((time % 1) * 60).toInt();
     double ans = (hour % 12 + (minute / 60)) * (pi / 6);
     return ans;
@@ -112,6 +112,23 @@ class Slice {
     } else {
       dragButtonBefore.setPoint(newPosition);
     }
+    // edge case: times are equal
+    if (dragButtonBefore.time > dragButtonAfter.time - .25 &&
+        dragButtonBefore.time < dragButtonAfter.time + .25) {
+      if (newTime == dragButtonAfter.time) {
+        dragButtonAfter.time += .25;
+      } else {
+        dragButtonBefore.time -= .25;
+      }
+    }
+    // edge case: 12 o'clock
+    if (dragButtonAfter.time >= 12) {
+      dragButtonAfter.time = 11.99;
+    }
+    if (dragButtonBefore.time > 11.75) {
+      dragButtonBefore.time = 0.01;
+    }
+
     _dragStartTime(dragButtonBefore.time);
     _dragEndTime(dragButtonAfter.time);
     task.setDuration(task.getEndTime() - task.getStartTime());

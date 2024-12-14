@@ -34,9 +34,9 @@ class PiePainter extends CustomPainter {
         width: pie.width + 25,
         height: pie.width + 25);
     DateTime time = DateTime.now();
-    double hour = time.hour.toDouble();
-    double minute = time.minute.toDouble();
-    double second = time.second.toDouble();
+    int hour = time.hour;
+    int minute = time.minute;
+    int second = time.second;
     if (isAfternoon) {
       if (hour >= 12) {
         hour = hour - 12;
@@ -140,6 +140,8 @@ class PiePainter extends CustomPainter {
 
   void _drawText(Canvas canvas, String text, double x, double y, double angle,
       double duration) {
+    // max fontSize of 36
+    // should be changed to accounts for length of text
     double fontSize = min(duration / .25 * 12, 36);
     TextStyle textStyle = TextStyle(color: Colors.black, fontSize: fontSize);
     TextSpan textSpan = TextSpan(text: text, style: textStyle);
@@ -157,7 +159,6 @@ class PiePainter extends CustomPainter {
     textPainter.paint(canvas,
         Offset(x, y) - Offset(textPainter.width / 2, textPainter.height / 2));
     canvas.restore();
-    //textPainter.paint(canvas, Offset(x,y) - Offset(textPainter.width / 2, textPainter.height / 2));
   }
 
   @override

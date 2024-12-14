@@ -15,11 +15,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Pie Agenda',
-      theme: ThemeData(
-        // press "r" in console to reload while running
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      // press "r" in console to reload while running
+      // completely ignore theme (maybe change this)
+      theme: ThemeData(),
       home: const MyHomePage(title: 'Pie Agenda'),
       debugShowCheckedModeBanner: false,
     );
