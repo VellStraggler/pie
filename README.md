@@ -42,6 +42,28 @@ To recreate the development environment, you need the following software and/or 
 * [Install Flutter](https://docs.flutter.dev/get-started/install).
 * [Install Git](https://git-scm.com/downloads)
 
+## Software Features
+* [x] Display a pie chart of the tasks for the day for 12 hours.
+* [x] Ability to add tasks to pie chart
+* [x] Hold and drag task edges to adjust times
+* [x] Tap to edit a task
+* [x] Delete Tasks
+* [x] AM & PM Pie Charts
+* [x] Date is shown in the corner
+* [x] See a list of the tasks with their start and end time
+* [X] Save and Load Tasks
+* [ ] Edit Task Name
+
+## Reflections
+### What Went Well:
+1.  Had very good attendance and we didn't lose any team members along the way
+2.  Strong and constant communication over Discord and in class
+3.  Worked hard to accomplish our specific tasks and were able to accomplish most of what we were hoping
+### What can be improved upon:
+1. Understanding GitHub and ensuring that we can work on the project together without overriding someone else work. We could do better at this by learning more about GitHub and ensuring tasks are separated so that we are not working on the same code at the same time.
+2. Organization of code and modularization of classes. We hope to improve on this by creating a strong design layout before approaching the project
+3. Ensuring that performance is optimized and that there are no unneeded functions running. We could improve on this by implementing peer code review to ensure that each function is optimal and necessary.
+
 ## Useful Websites to Learn More
 
 We found these websites useful in developing this software:
