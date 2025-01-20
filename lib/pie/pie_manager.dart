@@ -1,15 +1,24 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/services.dart' show rootBundle;
+// import 'package:flutter/services.dart' show rootBundle;
+import 'package:path_provider/path_provider.dart';
 import 'package:pie_agenda/pie/pie.dart';
 
+/// Handles file saving and reading.
 class PieManager {
-  final filePath = 'assets/data/pie.json';
+  final filePathPlain = 'assets/data/pie.json';
 
-  /// Save the Pie to JSON file.
+  Future<File> _getLocalFile() async {
+    // return fileName;
+    final directory = await getApplicationDocumentsDirectory();
+    return File('${directory.path}/$filePathPlain');
+  }
+
+  /// Save the Pie to JSON file in Android-assigned directory
   Future<void> savePie(String time, Pie pie) async {
     try {
-      final file = File(filePath);
+      createPieFileIfNotPresent();
+      final file = await _getLocalFile();
       String jsonString = await file.readAsString();
       Map<String, dynamic> existingData = jsonDecode(jsonString);
 
@@ -29,11 +38,42 @@ class PieManager {
     }
   }
 
+  /// Check if file exists, and make it if it does not
+  void createPieFileIfNotPresent() async {
+    // Get file path
+    final file = await _getLocalFile();
+
+    // Check directory
+    print("File path: ${file.path} ${file.existsSync()}");
+
+    // Supposedly this method only creates the file if it doesn't exist
+    // and will create all additional directories as needed
+    await file.create(exclusive: false, recursive: true);
+    if (!await file.exists()) {
+      // Create default content
+      final defaultContent = jsonEncode({
+        "AM": [
+          {"taskName": "Example", "startTime": 1.0, "duration": 1.0}
+        ],
+        "PM": [
+          {"taskName": "Example", "startTime": 1.0, "duration": 1.0}
+        ]
+      });
+
+      // Write the default content to the file path
+      await file.writeAsString(defaultContent);
+    }
+  }
+
   /// Loads a JSON file and returns a list of tasks.
   Future<Pie> loadPie(String time) async {
     try {
+      createPieFileIfNotPresent();
+      final file = await _getLocalFile();
+
       // Load the JSON file as a string
-      String jsonString = await rootBundle.loadString(filePath);
+      // String jsonString = await rootBundle.loadString(filePath);
+      String jsonString = await file.readAsString();
 
       // Ensure the JSON string is not empty
       assert(
@@ -75,7 +115,7 @@ class PieManager {
         );
         //
       }
-      print("Pie data loaded successfully from $filePath.");
+      print("Pie data loaded successfully from $filePathPlain.");
       return pie;
     } catch (e, stackTrace) {
       // Enhanced error logging with stack trace

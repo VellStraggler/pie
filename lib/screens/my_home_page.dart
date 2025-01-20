@@ -10,6 +10,9 @@ import 'package:pie_agenda/pie/pie.dart';
 import 'package:pie_agenda/display/pie_painter.dart';
 import 'package:pie_agenda/display/clock.dart';
 import 'package:pie_agenda/pie/pie_manager.dart';
+import 'package:logger/logger.dart';
+
+final logger = Logger();
 
 /// These will be re-instantiated as soon as we get the width of the screen
 Pie aMPie = Pie();
@@ -19,9 +22,9 @@ Pie pie = aMPie;
 bool isAfternoon = false;
 PiePainter painter = PiePainter(pie: pie);
 Slice selectedSlice = Slice();
-const filePath = 'assets/data/pie.json';
+
+// manager holds file storage path
 final PieManager manager = PieManager();
-bool _isLoading = true; // Progress indicator while the data is being loaded.
 
 const Color themeColor2 = Color.fromRGBO(39, 102, 169, 1); // cerulean
 const Color menuBackground = Color.fromRGBO(35, 50, 218, 1); // blue
@@ -83,11 +86,8 @@ class MyHomePageState extends State<MyHomePage> {
       pMPie = await manager.loadPie("PM");
       pie = isAfternoon ? pMPie : aMPie;
       painter = PiePainter(pie: pie); // Update painter with new pie
-      _isLoading = false;
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+      setState(() {});
     }
   }
 
@@ -273,13 +273,21 @@ class MyHomePageState extends State<MyHomePage> {
             ElevatedButton(
               onPressed: () {
                 final startTime = parseTime(startTimeController.text);
-                double durationA = parseTime(durationController.text);
-                final taskText = taskController.text.trim();
+                // tasks must be at least 15 minutes in length
+                double durationA =
+                    max(0.25, parseTime(durationController.text));
+                var taskText = taskController.text.trim();
                 if (startTime + durationA == 12) {
                   // 12:00 defaults to 0:00, so this avoids a full-day slice bug
                   durationA -= .01;
                 }
                 final duration = durationA;
+
+                // Create a default slice if the user has entered nothing in
+                if (taskText.isEmpty) {
+                  taskText = "Default Task";
+                }
+
                 if (startTime >= 0 &&
                     duration >= 0 &&
                     taskText.isNotEmpty &&
@@ -348,7 +356,12 @@ class MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  /// Takes string inputs and returns their apparent time.
+  /// Nothing entered is the same as a 0 entered.
   double parseTime(String timeString) {
+    if (timeString.isEmpty) {
+      return 0.0;
+    }
     try {
       final parts = timeString.split(':');
       if (parts.length != 2) return -1;

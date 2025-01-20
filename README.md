@@ -20,9 +20,10 @@ Steps to build and/or run the software:
 3. **Navigate to the Project:** In the terminal, enter `cd "address\to\saved\project\pie"`
     - Alternatively, open the project folder in an IDE.
 4. **Run the Project:** Enter `flutter run` in the terminal.
-    - Chose the device you wish to run the app on:
-        * Web - Looks clean, but will not save your changes
-        * Desktop - Saves your tasks and changes to a JSON file.
+    - Choose the device you wish to run the app on:
+        * Web - Do not use this one except for testing. No saving.
+        * Desktop - Saves your tasks and changes to a JSON file. 
+        * Phone - Plug your phone in with USB debugging turned on. This will install the app to your phone and save automatically
 
 ## Instructions for using the software:
 
