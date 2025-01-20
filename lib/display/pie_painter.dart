@@ -140,9 +140,18 @@ class PiePainter extends CustomPainter {
 
   void _drawText(Canvas canvas, String text, double x, double y, double angle,
       double duration) {
+    // Reference the pie's diameter to know the maximum font size this text can be.
+    var maxWidth = pie.radius() - 40;
+
     // max fontSize of 36
     // should be changed to accounts for length of text
     double fontSize = min(duration / .25 * 12, 36);
+    var estTextWidth = fontSize * text.length * 0.6;
+
+    if (estTextWidth > maxWidth) {
+      fontSize = maxWidth / (text.length * 0.6);
+    }
+
     TextStyle textStyle = TextStyle(color: Colors.black, fontSize: fontSize);
     TextSpan textSpan = TextSpan(text: text, style: textStyle);
     TextPainter textPainter =
