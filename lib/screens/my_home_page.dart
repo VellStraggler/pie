@@ -219,14 +219,21 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   /// Creates labeled text fields for user input
+  /// assumes TextInputType by the hint (0:00 includes a ":" and therefore
+  /// accepts numbers with ":" as an option)
   Widget _buildTextField(TextEditingController controller, String label,
       [String hintText = ""]) {
+    TextInputType textInputType = TextInputType.text;
+    if (hintText.contains(":")) {
+      textInputType =
+          TextInputType.datetime; //  (decimal: false, signed: true);
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
         controller: controller,
         decoration: InputDecoration(labelText: label, hintText: hintText),
-        keyboardType: TextInputType.number,
+        keyboardType: textInputType,
         validator: (value) {
           if (label != 'Task Description' &&
               (double.tryParse(value ?? '') == null)) {
