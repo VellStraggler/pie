@@ -130,7 +130,10 @@ class MyHomePageState extends State<MyHomePage> {
               "${tappedPoint.toString()} ${distanceToCenter.toStringAsFixed(2)}");
           // sqrt((x1-x2)^2 + (y1-y2)^2)
           if (distanceToCenter > pie.radius()) {
-            pie.setSelectedSliceIndex(-1);
+            if (distanceToCenter > pie.radius() + borderWidth) {
+              pie.setSelectedSliceIndex(-1);
+            }
+            // else you've pressed in the dragbutton ring. Don't deselect or change your slice
           } else {
             // convert it to a double time
             double tapTime = DragButton.getTimeFromPoint(tappedPoint);
