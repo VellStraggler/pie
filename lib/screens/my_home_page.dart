@@ -70,7 +70,7 @@ class MyHomePageState extends State<MyHomePage> {
       double smallestDimension = min(widgetHeight!, widgetWidth!);
       // Use the dimensions here
       // Relies on AMPie being the default
-      Diameter.instance.setPieDiameter(smallestDimension * .9);
+      Diameter.instance.setPieDiameter(smallestDimension * .8);
       aMPie = Pie();
       pie = aMPie;
       painter = PiePainter(pie: pie);
@@ -104,34 +104,37 @@ class MyHomePageState extends State<MyHomePage> {
   /// Builds the display for the Home Page.
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: themeColor1,
-        appBar: AppBar(
-            backgroundColor: themeColor2,
-            foregroundColor: themeColor1,
-            // title:Text(widget.title) // To be replaced by app logo in corner
-            title: const PreferredSize(
-                preferredSize: Size.fromHeight(32.0),
-                child: Align(
-                    alignment: Alignment.center,
-                    child: Padding(
-                        padding: EdgeInsets.only(bottom: 4.0),
-                        child: Clock())))),
-        body: GestureDetector(
-          key: _gestureKey,
-          onTapDown: (details) {
-            _getWidgetSize();
-            // We need to get the rotation from the center that a tapped point is at
+    return GestureDetector(
+        key: _gestureKey,
+        onTapDown: (details) {
+          _getWidgetSize();
+          // We need to get the rotation from the center that a tapped point is at
+          // Goes up to the middle of the screen, and then back to the corner of the pie chart
+          print("${widgetWidth!} ${widgetHeight!} ${pie.width}");
+          int unknownOffset = 26;
+          Point tappedPoint = Point.parameterized(
+              x: details.localPosition.dx -
+                  (widgetWidth! / 2) +
+                  (pie.width / 2),
+              y: details.localPosition.dy -
+                  (widgetHeight! / 2 + unknownOffset) +
+                  (pie.width / 2));
+          // if you tap outside the pie chart, it deselects instead
+          double distanceToCenter = sqrt(
+              pow(details.localPosition.dx - (widgetWidth! / 2), 2) +
+                  pow(
+                      details.localPosition.dy -
+                          ((widgetHeight! / 2 + unknownOffset)),
+                      2));
+          print(
+              "${tappedPoint.toString()} ${distanceToCenter.toStringAsFixed(2)}");
+          // sqrt((x1-x2)^2 + (y1-y2)^2)
+          if (distanceToCenter > pie.radius()) {
+            pie.setSelectedSliceIndex(-1);
+          } else {
             // convert it to a double time
-
-            double tapTime = DragButton.getTimeFromPoint(Point.parameterized(
-                x: details.localPosition.dx -
-                    (widgetWidth! / 2) +
-                    (pie.width / 2),
-                y: details.localPosition.dy -
-                    (widgetHeight! / 2) +
-                    (pie.width / 2)));
-            // Goes up to the middle of the screen, and then back to the corner of the pie chart
+            double tapTime = DragButton.getTimeFromPoint(tappedPoint);
+            print("tapped at ${tapTime.toString()}");
             int i = 0;
             bool found = false;
             // search through the slices for one whose endpoints are before and after this time
@@ -151,21 +154,33 @@ class MyHomePageState extends State<MyHomePage> {
               pie.setSelectedSliceIndex(-1);
               // if one was not selected, deselect what we do have
             }
+          }
 
-            updateScreen();
-          },
-          onTapUp: (details) {
-            // savePie only when user lets go
-            savePie();
-          },
-          child: Center(
-            child: Stack(
+          updateScreen();
+        },
+        onTapUp: (details) {
+          // savePie only when user lets go
+          savePie();
+        },
+        child: Scaffold(
+            backgroundColor: themeColor1,
+            appBar: AppBar(
+                backgroundColor: themeColor2,
+                foregroundColor: themeColor1,
+                // title:Text(widget.title) // To be replaced by app logo in corner
+                title: const PreferredSize(
+                    preferredSize: Size.fromHeight(32.0),
+                    child: Align(
+                        alignment: Alignment.center,
+                        child: Padding(
+                            padding: EdgeInsets.only(bottom: 4.0),
+                            child: Clock())))),
+            body: Center(
+                child: Stack(
               alignment: Alignment.center,
               children: _buildPie(),
-            ),
-          ),
-        ),
-        floatingActionButton: _buildFloatingActionButtons());
+            )),
+            floatingActionButton: _buildFloatingActionButtons()));
   }
 
   /// Creates the bottom-right buttons for editing the chart.

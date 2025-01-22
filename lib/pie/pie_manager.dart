@@ -32,7 +32,7 @@ class PieManager {
 
       // Write the JSON string to the specified file.
       await file.writeAsString(updatedJsonString);
-      print('Tasks saved successfully!');
+      // print('Tasks saved successfully!');
     } catch (e) {
       print('Failed to save tasks: $e');
     }
@@ -44,7 +44,7 @@ class PieManager {
     final file = await _getLocalFile();
 
     // Check directory
-    print("File path: ${file.path} ${file.existsSync()}");
+    // print("File path: ${file.path} ${file.existsSync()}");
 
     // Supposedly this method only creates the file if it doesn't exist
     // and will create all additional directories as needed
