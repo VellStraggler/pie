@@ -7,12 +7,18 @@ import 'package:pie_agenda/display/point.dart';
 import 'package:pie_agenda/screens/my_home_page.dart';
 
 const double line = 1 / 6;
+const int borderWidth = 12;
+const int dragButtonOffset = buttonRadius ~/ 2;
 
 /// Creates the pie displayed on screen.
 class PiePainter extends CustomPainter {
   final Pie pie;
 
   PiePainter({super.repaint, required this.pie});
+
+  int getOffset() {
+    return buttonRadius.toInt();
+  }
 
   // This is called EVERY time the setState trigger goes off.
   @override
@@ -29,8 +35,7 @@ class PiePainter extends CustomPainter {
 
     // Draw time
     Rect timeArea = Rect.fromCenter(
-        center:
-            Offset(pie.radius() + buttonRadius, pie.radius() + buttonRadius),
+        center: Offset(pie.radius() + getOffset(), pie.radius() + getOffset()),
         width: pie.width + 25,
         height: pie.width + 25);
     DateTime time = DateTime.now();
@@ -65,11 +70,13 @@ class PiePainter extends CustomPainter {
     canvas.drawArc(
         timeArea, midnight + radianTime - (.01), (.02), true, painter);
 
-    // Draw the pie chart.
+    // Create offset for pie and slices
     Offset centerOffset =
-        Offset(pie.radius() + buttonRadius, pie.radius() + buttonRadius);
+        Offset(pie.radius() + getOffset(), pie.radius() + getOffset());
+
+    // Draw the pie chart.
     painter.color = themeColor1;
-    canvas.drawCircle(centerOffset, pie.radius() - buttonRadius, painter);
+    canvas.drawCircle(centerOffset, pie.radius() - borderWidth, painter);
 
     // Draw the slices
     Rect rectArea = Rect.fromCenter(
@@ -108,7 +115,7 @@ class PiePainter extends CustomPainter {
       ..strokeWidth = 2.0;
 
     const int numTickMarks = 12;
-    const double tickLength = buttonRadius;
+    const int tickLength = borderWidth;
 
     for (int i = 0; i < numTickMarks; i++) {
       final double angle = (2 * pi / numTickMarks) * i;
@@ -126,13 +133,13 @@ class PiePainter extends CustomPainter {
     // Draw Guide buttons
     if (pie.selectedSliceIndex != -1) {
       for (int i = 0; i < 48; i++) {
-        Point position = DragButton.getPointFromTime(i.toDouble() / 4);
+        Point position = DragButton.getPointFromTime(i / 4);
         // draw guidebutton at position
-        int circleSize = 12;
+        int circleSize = borderWidth;
         painter.color = const Color.fromRGBO(158, 158, 158, .8);
         canvas.drawCircle(
-            Offset(position.x + circleSize, position.y + circleSize),
-            circleSize.toDouble() / 2,
+            Offset(position.x + getOffset(), position.y + getOffset()),
+            circleSize / 2,
             painter);
       }
     }

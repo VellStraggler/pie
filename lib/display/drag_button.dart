@@ -7,7 +7,7 @@ import 'dart:async';
 import 'package:pie_agenda/display/point.dart';
 import 'package:pie_agenda/pie/slice.dart';
 
-const double buttonRadius = 12;
+const double buttonRadius = 20;
 const double buttonDiameter = buttonRadius * 2;
 
 // ignore: must_be_immutable
@@ -61,7 +61,7 @@ class DragButton extends StatefulWidget {
   }
 
   static double _radius() {
-    return (Diameter.instance.getPieDiameter() / 2);
+    return ((Diameter.instance.getPieDiameter()) / 2);
   }
 
   static double getTimeFromPoint(Point point) {

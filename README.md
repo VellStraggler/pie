@@ -14,8 +14,8 @@ To create a usable, professional, and easy-to-use application that helps keep a 
 Steps to build and/or run the software:
 
 1. **Clone the repository:** 
-    - Navigate to where you want to save the project
-    - Enter `git clone https://github.com/VellStraggler/pie` in the terminal.
+    - Navigate to where you want to save the project in your terminal
+    - Enter `git clone https://github.com/VellStraggler/pie`
 2. **Install Dart/Flutter**
 3. **Navigate to the Project:** In the terminal, enter `cd "address\to\saved\project\pie"`
     - Alternatively, open the project folder in an IDE.
@@ -55,26 +55,7 @@ To recreate the development environment, you need the following software and/or 
 * [X] Save and Load Tasks
 * [ ] Edit Task Name
 
-## Reflections
-### What Went Well:
-1.  Had very good attendance and we didn't lose any team members along the way
-2.  Strong and constant communication over Discord and in class
-3.  Worked hard to accomplish our specific tasks and were able to accomplish most of what we were hoping
-### What can be improved upon:
-1. Understanding GitHub and ensuring that we can work on the project together without overriding someone else work. We could do better at this by learning more about GitHub and ensuring tasks are separated so that we are not working on the same code at the same time.
-2. Organization of code and modularization of classes. We hope to improve on this by creating a strong design layout before approaching the project
-3. Ensuring that performance is optimized and that there are no unneeded functions running. We could improve on this by implementing peer code review to ensure that each function is optimal and necessary.
-
-## Useful Websites to Learn More
-
-We found these websites useful in developing this software:
-* [Flutter Documentation](https://api.flutter.dev/index.html)
-* [Codelabs Tutorial](https://codelabs.developers.google.com/codelabs/flutter-codelab-first#0)
-* [Flutter Widgets You Should Learn](https://www.youtube.com/watch?v=YXvIxmmUoHU)
-* [Flutter Design Layout](https://docs.flutter.dev/ui/layout/tutorial)
-
 ## Future Work
-
 The following items we plan to fix, improve, and/or add to this project in the future:
 
 * [X] Allow user to tap anywhere to deselect slices
@@ -104,3 +85,22 @@ widget homescreen (what does this mean)
 * [X] Improve text sizing and centering
 * [ ] Notifications
 * [ ] Theme changing
+* [ ] Allow it to run in the background when minimized
+
+## Reflections
+### What Went Well:
+1.  Had very good attendance and we didn't lose any team members along the way
+2.  Strong and constant communication over Discord and in class
+3.  Worked hard to accomplish our specific tasks and were able to accomplish most of what we were hoping
+### What can be improved upon:
+1. Understanding GitHub and ensuring that we can work on the project together without overriding someone else work. We could do better at this by learning more about GitHub and ensuring tasks are separated so that we are not working on the same code at the same time.
+2. Organization of code and modularization of classes. We hope to improve on this by creating a strong design layout before approaching the project
+3. Ensuring that performance is optimized and that there are no unneeded functions running. We could improve on this by implementing peer code review to ensure that each function is optimal and necessary.
+
+## Useful Websites to Learn More
+
+We found these websites useful in developing this software:
+* [Flutter Documentation](https://api.flutter.dev/index.html)
+* [Codelabs Tutorial](https://codelabs.developers.google.com/codelabs/flutter-codelab-first#0)
+* [Flutter Widgets You Should Learn](https://www.youtube.com/watch?v=YXvIxmmUoHU)
+* [Flutter Design Layout](https://docs.flutter.dev/ui/layout/tutorial)
