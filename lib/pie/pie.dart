@@ -25,6 +25,10 @@ class Pie {
     return selectedSliceIndex;
   }
 
+  Slice getSelectedSlice() {
+    return slices[selectedSliceIndex];
+  }
+
   /// Sets the selected slice.
   void setSelectedSliceIndex(int i) {
     selectedSliceIndex = i;

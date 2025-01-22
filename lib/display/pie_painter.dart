@@ -131,16 +131,24 @@ class PiePainter extends CustomPainter {
     }
 
     // Draw Guide buttons
+    // only around the Drag Buttons
     if (pie.selectedSliceIndex != -1) {
       int circleSize = borderWidth;
       painter.color = const Color.fromRGBO(158, 158, 158, .8);
+      Slice ss = pie.getSelectedSlice();
+      double start = ss.getStartTime();
+      double end = ss.getEndTime();
       for (int i = 0; i < 48; i++) {
-        Point position = DragButton.getPointFromTime(i / 4);
-        // draw guidebutton at position
-        canvas.drawCircle(
-            Offset(position.x + getOffset(), position.y + getOffset()),
-            circleSize / 2,
-            painter);
+        double time = i / 4;
+        if ((time > start - 1 && time < start + 1) ||
+            (time > end - 1 && time < end + 1)) {
+          Point position = DragButton.getPointFromTime(time);
+          // draw guidebutton at position
+          canvas.drawCircle(
+              Offset(position.x + getOffset(), position.y + getOffset()),
+              circleSize / 2,
+              painter);
+        }
       }
     }
     // Write Time outside of pie
