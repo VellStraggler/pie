@@ -111,7 +111,7 @@ class MyHomePageState extends State<MyHomePage> {
           // We need to get the rotation from the center that a tapped point is at
           // Goes up to the middle of the screen, and then back to the corner of the pie chart
           print("${widgetWidth!} ${widgetHeight!} ${pie.width}");
-          int unknownOffset = 26;
+          int unknownOffset = borderWidth * 2;
           Point tappedPoint = Point.parameterized(
               x: details.localPosition.dx -
                   (widgetWidth! / 2) +
@@ -451,9 +451,11 @@ List<Widget> _buildPie() {
   );
   if (isEditing()) {
     for (Slice slice in pie.slices) {
-      slice.dragButtonBefore.createState();
-      pieAndDragButtons.add(slice.dragButtonBefore);
-      pieAndDragButtons.add(slice.dragButtonAfter);
+      if (slice.equals(selectedSlice)) {
+        slice.dragButtonBefore.createState();
+        pieAndDragButtons.add(slice.dragButtonBefore);
+        pieAndDragButtons.add(slice.dragButtonAfter);
+      }
     }
   }
   // print(pie.selectedSliceIndex);

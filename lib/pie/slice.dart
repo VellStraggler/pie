@@ -43,6 +43,12 @@ class Slice {
     return showText;
   }
 
+  bool equals(Slice other) {
+    return getStartTime() == other.getStartTime() &&
+        getDuration() == other.getDuration() &&
+        task == other.task;
+  }
+
   /// Set showText variable.
   void setShownText(bool showText) {
     this.showText = showText;

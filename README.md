@@ -62,10 +62,10 @@ The following items we plan to fix, improve, and/or add to this project in the f
 * [ ] Stop tasks from overlapping
 * [ ] Increase performance: [X]saving after tapping, not while holding
 * [X] modify drawing to not overlap itself
-* [ ] Limit to 2 drag buttons
+* [X] Limit to 2 drag buttons
 * [ ] Add animations such as for loading / pie-switching
 * [ ] Allow entire slice to be dragged
-* [ ] widen click area for drag buttons
+* [X] widen click area for drag buttons
 * [ ] allow double-tap editing
 * [ ] allow military time task adding
 * [ ] add time to markers 
