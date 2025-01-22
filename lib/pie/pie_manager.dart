@@ -97,6 +97,10 @@ class PieManager {
 
       // Convert JSON to Pie object
       Pie pie = Pie.fromJson(jsonMap, time);
+      // set afternoon-ness
+      if (time == "PM") {
+        pie.pM = true;
+      }
 
       // Ensure Pie contains slices
       // Validate each Slice

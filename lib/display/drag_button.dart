@@ -53,21 +53,25 @@ class DragButton extends StatefulWidget {
 
   /// Determine where on the edge of the circle the button should be positioned
   static getPointFromTime(double time) {
+    return getPointFromTimeAndRadius(time, _radius());
+  }
+
+  static getPointFromTimeAndRadius(double time, int radius) {
     double theta = (-pi * time / 6.0) + (pi / 2.0);
-    double x = (_radius() * cos(theta)) + _radius();
-    double y = -(_radius() * sin(theta)) + _radius();
+    double x = (radius * cos(theta)) + radius;
+    double y = -(radius * sin(theta)) + radius;
 
     return Point.parameterized(x: x, y: y);
   }
 
-  static double _radius() {
-    return ((Diameter.instance.getPieDiameter()) / 2);
+  static int _radius() {
+    return (Diameter.instance.getPieDiameter()) ~/ 2;
   }
 
   static double getTimeFromPoint(Point point) {
     // Calculate the center of the circle
-    double centerX = _radius();
-    double centerY = _radius();
+    int centerX = _radius();
+    int centerY = _radius();
     // Calculate the vector from the center to the given point
     double deltaX = point.x - centerX;
     double deltaY = point.y - centerY;

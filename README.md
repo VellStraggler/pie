@@ -68,7 +68,7 @@ The following items we plan to fix, improve, and/or add to this project in the f
 * [X] widen click area for drag buttons
 * [ ] allow double-tap editing
 * [ ] allow military time task adding
-* [ ] add time to markers 
+* [X] add time to markers 
 * [ ] have time follow held dragbutton
 * [ ] have a + and - button to change duration
 * [ ] undo button

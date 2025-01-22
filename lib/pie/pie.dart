@@ -8,10 +8,10 @@ class Pie {
   Point center; // Center point of the pie chart
   double width; // Pie chart radius
   int selectedSliceIndex; // The current selected slice's index.
+  bool pM;
 
-  /// Default Constructor
-  /// Constructor initializes with a single slice covering the whole circle.
-  Pie()
+  /// Initializes with a single slice covering the whole circle.
+  Pie({this.pM = false})
       : center = Point(), // Default center point at (0,0)
         width = Diameter.instance
             .getPieDiameter(), // A circular boundary with radius 500
@@ -31,7 +31,7 @@ class Pie {
   }
 
   /// Parameterized Constructor
-  Pie.parameterized(this.slices)
+  Pie.parameterized(this.slices, {this.pM = false})
       : center = Point(),
         width = Diameter.instance.getPieDiameter(),
         selectedSliceIndex = -1;

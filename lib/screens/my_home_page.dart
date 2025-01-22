@@ -16,7 +16,7 @@ final logger = Logger();
 
 /// These will be re-instantiated as soon as we get the width of the screen
 Pie aMPie = Pie();
-Pie pMPie = Pie();
+Pie pMPie = Pie(pM: true);
 Pie pie = aMPie;
 //pie is a pointer to the current pie chart you're viewing (AM or PM)
 bool isAfternoon = false;

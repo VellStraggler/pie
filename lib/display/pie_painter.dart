@@ -104,7 +104,7 @@ class PiePainter extends CustomPainter {
       final double textY =
           centerOffset.dy + pie.radius() * 0.6 * sin(textAngle);
 
-      _drawText(canvas, slice.task.getTaskName(), textX, textY, textAngle,
+      _drawSliceText(canvas, slice.task.getTaskName(), textX, textY, textAngle,
           slice.getDuration());
       i++;
     }
@@ -132,34 +132,59 @@ class PiePainter extends CustomPainter {
 
     // Draw Guide buttons
     if (pie.selectedSliceIndex != -1) {
+      int circleSize = borderWidth;
+      painter.color = const Color.fromRGBO(158, 158, 158, .8);
       for (int i = 0; i < 48; i++) {
         Point position = DragButton.getPointFromTime(i / 4);
         // draw guidebutton at position
-        int circleSize = borderWidth;
-        painter.color = const Color.fromRGBO(158, 158, 158, .8);
         canvas.drawCircle(
             Offset(position.x + getOffset(), position.y + getOffset()),
             circleSize / 2,
             painter);
       }
     }
+    // Write Time outside of pie
+    int timeOffset = 28;
+    double fontSize = 18;
+    // include all but 12 o' clock
+    for (int time = 1; time < 12; time++) {
+      Point position = DragButton.getPointFromTimeAndRadius(
+          time.toDouble(), (pie.radius() + timeOffset).toInt());
+      _drawText(canvas, time.toString(), position.x - (fontSize / 3),
+          position.y - (fontSize / 3), 0, fontSize, Colors.grey);
+    }
+    Point twelve = DragButton.getPointFromTimeAndRadius(
+        0.0, (pie.radius() + timeOffset).toInt());
+    String twelveText = "noon";
+    if (pie.pM) {
+      twelveText = "midnight";
+    }
+    _drawText(canvas, twelveText, twelve.x - (fontSize / 3),
+        twelve.y - (fontSize / 3), 0, fontSize, Colors.grey);
   }
 
-  void _drawText(Canvas canvas, String text, double x, double y, double angle,
-      double duration) {
+  void _drawSliceText(Canvas canvas, String text, double x, double y,
+      double angle, double duration) {
     // Reference the pie's diameter to know the maximum font size this text can be.
-    var maxWidth = pie.radius() - 40;
+    double maxWidth = pie.radius() - 40;
 
     // max fontSize of 36
     // should be changed to accounts for length of text
     double fontSize = min(duration / .25 * 12, 36);
-    var estTextWidth = fontSize * text.length * 0.6;
+    double estTextWidth = fontSize * text.length * 0.6;
 
     if (estTextWidth > maxWidth) {
       fontSize = maxWidth / (text.length * 0.6);
     }
+    _drawText(canvas, text, x, y, angle, fontSize, Colors.black);
+  }
 
-    TextStyle textStyle = TextStyle(color: Colors.black, fontSize: fontSize);
+  void _drawText(Canvas canvas, String text, double x, double y, double angle,
+      double fontSize, Color color) {
+    TextStyle textStyle = TextStyle(
+      color: color,
+      fontSize: fontSize,
+    );
     TextSpan textSpan = TextSpan(text: text, style: textStyle);
     TextPainter textPainter =
         TextPainter(text: textSpan, textDirection: TextDirection.ltr);
