@@ -77,14 +77,30 @@ We found these websites useful in developing this software:
 
 The following items we plan to fix, improve, and/or add to this project in the future:
 
-* [ ] Allow user to tap anywhere to deselect slices
+* [X] Allow user to tap anywhere to deselect slices
 * [ ] Stop tasks from overlapping
-* [ ] Allow saving on chrome
-* [ ] Increase performance: [X]saving after tapping, not while holding, [ ]modify drawing to not overlap itself
+* [ ] Increase performance: [X]saving after tapping, not while holding
+* [X] modify drawing to not overlap itself
 * [ ] Limit to 2 drag buttons
 * [ ] Add animations such as for loading / pie-switching
 * [ ] Allow entire slice to be dragged
+* [ ] widen click area for drag buttons
+* [ ] allow double-tap editing
+* [ ] allow military time task adding
+* [ ] add time to markers 
+* [ ] have time follow held dragbutton
+* [ ] have a + and - button to change duration
+* [ ] undo button
+* [ ] future tasks brighter, old tasks duller/grayer, fading
+* [ ] Allow transparency when editing tasks
+* [ ] task buttons: start task, finish task
+* [ ] lets you know how long it actually took
+* [ ] improve base colors 
+widget homescreen (what does this mean)
+* [ ] fill space with details about current task
+* [ ] import tasks from other calendar apps
+* [ ] Swipe top bar to change day 
 * [ ] Put AM/PM button in the center of the pie
-* [ ] Improve text sizing and centering
+* [X] Improve text sizing and centering
 * [ ] Notifications
 * [ ] Theme changing
