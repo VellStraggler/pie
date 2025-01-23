@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pie_agenda/display/point.dart';
 import 'package:pie_agenda/pie/diameter.dart';
 import 'package:pie_agenda/pie/slice.dart';
@@ -126,28 +127,28 @@ class MyHomePageState extends State<MyHomePage> {
                       details.localPosition.dy -
                           ((widgetHeight! / 2 + unknownOffset)),
                       2));
-          print(
-              "${tappedPoint.toString()} ${distanceToCenter.toStringAsFixed(2)}");
+          // print("${tappedPoint.toString()} ${distanceToCenter.toStringAsFixed(2)}");
           // sqrt((x1-x2)^2 + (y1-y2)^2)
-          if (distanceToCenter > pie.radius()) {
-            if (distanceToCenter > pie.radius() + borderWidth) {
+          if (distanceToCenter > pie.radius() - buttonRadius) {
+            if (distanceToCenter > pie.radius() + buttonRadius) {
               pie.setSelectedSliceIndex(-1);
             }
             // else you've pressed in the dragbutton ring. Don't deselect or change your slice
           } else {
             // convert it to a double time
             double tapTime = DragButton.getTimeFromPoint(tappedPoint);
-            print("tapped at ${tapTime.toString()}");
+            // print("tapped at ${tapTime.toString()}");
             int i = 0;
             bool found = false;
             // search through the slices for one whose endpoints are before and after this time
             for (Slice slice in pie.slices) {
-              if (slice.getStartTime() - .2 < tapTime) {
-                if (slice.getEndTime() + .2 > tapTime) {
+              if (slice.getStartTime() < tapTime) {
+                if (slice.getEndTime() > tapTime) {
                   //.2 accounts for dragbutton :O
                   selectedSlice = slice;
                   pie.setSelectedSliceIndex(i);
                   found = true;
+                  _vibrateWithAudio(1);
                   break;
                 }
               }
@@ -184,6 +185,24 @@ class MyHomePageState extends State<MyHomePage> {
               children: _buildPie(),
             )),
             floatingActionButton: _buildFloatingActionButtons()));
+  }
+
+  void _vibrateWithAudio(int level) {
+    /// Produces vibrations and a click sound when called. Does not work on Windows.
+    switch (level) {
+      case (1):
+        HapticFeedback.lightImpact();
+        break;
+      case (2):
+        HapticFeedback.mediumImpact();
+        break;
+      case (3):
+        HapticFeedback.heavyImpact();
+        break;
+      default:
+        HapticFeedback.selectionClick();
+    }
+    SystemSound.play(SystemSoundType.click);
   }
 
   /// Creates the bottom-right buttons for editing the chart.
@@ -228,6 +247,7 @@ class MyHomePageState extends State<MyHomePage> {
 
   /// Changes time between AM and PM.
   void _switchTime() {
+    _vibrateWithAudio(3);
     isAfternoon = !isAfternoon;
     if (isAfternoon) {
       pie = pMPie;
@@ -269,6 +289,7 @@ class MyHomePageState extends State<MyHomePage> {
 
   /// Creates form to add a new slice to the pie.
   void _showAddSliceDialog() {
+    _vibrateWithAudio(1);
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -343,6 +364,7 @@ class MyHomePageState extends State<MyHomePage> {
 
   /// Removes the last slice selected from the pie.
   void _removeSelectedSlice() {
+    _vibrateWithAudio(2);
     pie.removeSlice();
     savePie();
   }
