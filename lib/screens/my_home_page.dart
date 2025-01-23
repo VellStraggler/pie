@@ -24,6 +24,9 @@ bool isAfternoon = false;
 PiePainter painter = PiePainter(pie: pie);
 Slice selectedSlice = Slice();
 
+// make this a global var so we can update at any point from anywhere
+List<Widget> pieAndDragButtons = [];
+
 // manager holds file storage path
 final PieManager manager = PieManager();
 
@@ -86,9 +89,11 @@ class MyHomePageState extends State<MyHomePage> {
       aMPie = await manager.loadPie("AM");
       pMPie = await manager.loadPie("PM");
       pie = isAfternoon ? pMPie : aMPie;
-      painter = PiePainter(pie: pie); // Update painter with new pie
+      updateScreen(); // Update painter with new pie
     } catch (e) {
-      setState(() {});
+      setState(() {
+        updateScreen();
+      });
     }
   }
 
@@ -182,7 +187,7 @@ class MyHomePageState extends State<MyHomePage> {
             body: Center(
                 child: Stack(
               alignment: Alignment.center,
-              children: _buildPie(),
+              children: _getPieAndDragButtons(),
             )),
             floatingActionButton: _buildFloatingActionButtons()));
   }
@@ -203,6 +208,7 @@ class MyHomePageState extends State<MyHomePage> {
         HapticFeedback.selectionClick();
     }
     SystemSound.play(SystemSoundType.click);
+    print("sound and haptics happened here! Level: $level");
   }
 
   /// Creates the bottom-right buttons for editing the chart.
@@ -210,14 +216,6 @@ class MyHomePageState extends State<MyHomePage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
-        FloatingActionButton(
-          onPressed: _showAddSliceDialog,
-          backgroundColor: buttonColor,
-          tooltip: 'Add Slice',
-          child: const Icon(Icons.add),
-        ),
-        // 10 pixels between each button
-        if (isEditing()) const SizedBox(width: 10),
         if (isEditing())
           FloatingActionButton(
             onPressed: _removeSelectedSlice,
@@ -225,6 +223,22 @@ class MyHomePageState extends State<MyHomePage> {
             tooltip: 'Delete Slice',
             child: const Icon(Icons.delete_forever),
           ),
+        if (isEditing()) const SizedBox(width: 10),
+        if (isEditing())
+          FloatingActionButton(
+            onPressed: _editSelectedSlice,
+            backgroundColor: buttonColor,
+            tooltip: 'Edit Slice',
+            child: const Icon(Icons.edit),
+          ), //this ^ replaces that v
+        if (!isEditing())
+          FloatingActionButton(
+            onPressed: _showAddSliceDialog,
+            backgroundColor: buttonColor,
+            tooltip: 'Add Slice',
+            child: const Icon(Icons.add),
+          ),
+        // 10 pixels between each button
         const SizedBox(width: 10),
         FloatingActionButton(
           onPressed: _listSlices,
@@ -263,8 +277,7 @@ class MyHomePageState extends State<MyHomePage> {
       [String hintText = ""]) {
     TextInputType textInputType = TextInputType.text;
     if (hintText.contains(":")) {
-      textInputType =
-          TextInputType.datetime; //  (decimal: false, signed: true);
+      textInputType = TextInputType.number; //  (decimal: false, signed: true);
     }
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -287,6 +300,8 @@ class MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  void _editSelectedSlice() {}
+
   /// Creates form to add a new slice to the pie.
   void _showAddSliceDialog() {
     _vibrateWithAudio(1);
@@ -303,10 +318,10 @@ class MyHomePageState extends State<MyHomePage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _buildTextField(
-                    startTimeController, 'Start Time (HH:MM)', 'E.g., 6:30'),
-                _buildTextField(
-                    durationController, 'Duration (HH:MM)', 'E.g., 6:30'),
+                _buildTextField(startTimeController, 'Start Time',
+                    'E.g. 6:30 or 10 (hours) or 1130'),
+                _buildTextField(durationController, 'Duration (HH:MM)',
+                    'E.g. 6:30 or 10 (hours) or 1130'),
                 _buildTextField(taskController, 'Task Description'),
               ],
             ),
@@ -319,7 +334,7 @@ class MyHomePageState extends State<MyHomePage> {
             ElevatedButton(
               onPressed: () {
                 final startTime = parseTime(startTimeController.text);
-                // tasks must be at least 15 minutes in length
+                // tasks must be at least 15 minutes in length, or 0.25 hours
                 double durationA =
                     max(0.25, parseTime(durationController.text));
                 var taskText = taskController.text.trim();
@@ -342,8 +357,8 @@ class MyHomePageState extends State<MyHomePage> {
                     final task =
                         Task.parameterized(taskText, startTime, duration);
                     pie.addSlice(task);
-                    pie.selectedSliceIndex = pie.slices.length - 1;
-                    painter = PiePainter(pie: pie);
+                    pie.selectedSliceIndex = -1; //pie.slices.length - 1;
+                    updateScreen();
                   });
                   savePie();
                   Navigator.of(context).pop();
@@ -371,15 +386,15 @@ class MyHomePageState extends State<MyHomePage> {
 
   /// List the Tasks for the current Pie.
   void _listSlices() {
+    pie.setSelectedSliceIndex(-1);
     print(aMPie.toJson('AM'));
     print(pMPie.toJson('PM'));
-    pie.setSelectedSliceIndex(-1);
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: themeColor1,
-          title: const Text('Slices'),
+          title: const Text('Tasks Today'),
           // scrollable when there are enough tasks
           content: SingleChildScrollView(
             child: ListBody(
@@ -387,7 +402,7 @@ class MyHomePageState extends State<MyHomePage> {
                 return ListTile(
                   title: Text(slice.getTaskName()),
                   subtitle: Text(
-                      'Start: ${_formatTime(slice.getStartTime())}, End: ${_formatTime(slice.getEndTime())}'),
+                      '${_formatTime(slice.getStartTime())} to ${_formatTime(slice.getEndTime())}'),
                 );
               }).toList(),
             ),
@@ -404,24 +419,33 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   /// Takes string inputs and returns their apparent time.
-  /// Nothing entered is the same as a 0 entered.
+  /// Nothing entered defaults to 0.
   double parseTime(String timeString) {
+    // remove colon, we don't need it
+    timeString.replaceAll(RegExp(r'[^0-9]'), '');
+    double digs = 0;
     if (timeString.isEmpty) {
-      return 0.0;
+      return 0;
     }
     try {
-      final parts = timeString.split(':');
-      if (parts.length != 2) return -1;
-
-      final hours = int.parse(parts[0]);
-      final minutes = int.parse(parts[1]);
-
-      if (hours < 0 || minutes < 0 || minutes >= 60) return -1;
-
-      return hours + (minutes / 60.0); // Convert to fractional hours
+      digs = double.parse(timeString);
     } catch (e) {
-      return -1; // Return -1 for invalid input
+      return -1; //Error
     }
+    if (digs < 12) {
+      return digs;
+      //hour only
+    }
+    if (digs == 12) {
+      return 0;
+    }
+    if (digs < 100) {
+      return digs / 60;
+      // minutes only
+    }
+    final hours = digs ~/ 100;
+    final minutes = digs % 100 / 60;
+    return hours + minutes;
   }
 
   void updateScreen() {
@@ -429,11 +453,14 @@ class MyHomePageState extends State<MyHomePage> {
     // probably part of why app is so glitchy
     setState(() {
       painter = PiePainter(pie: pie);
+      _buildPie();
     });
   }
 
   void startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    // 100 is too quick. Deletes the delete button before the delete button
+    // deletes what it's deleting
+    _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
       updateScreen();
     });
   }
@@ -460,11 +487,16 @@ String _formatTime(double time) {
   return timeOfDay;
 }
 
+List<Widget> _getPieAndDragButtons() {
+  _buildPie();
+  return pieAndDragButtons;
+}
+
 /// Build the PiePainter and the DragButtons being used in the program.
 List<Widget> _buildPie() {
   // First item is the pie painter, the rest are dragbuttons
   // (and eventually guidebuttons too)
-  List<Widget> pieAndDragButtons = [];
+  pieAndDragButtons = [];
 
   pieAndDragButtons.add(
     CustomPaint(
@@ -485,6 +517,7 @@ List<Widget> _buildPie() {
 }
 
 bool isEditing() {
+  /// checks if there is a current selected slice
   return pie.selectedSliceIndex > -1;
 }
 
