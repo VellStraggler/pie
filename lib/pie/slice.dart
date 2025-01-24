@@ -169,7 +169,7 @@ class Slice {
     }
     // We can get the distance to the next one using the distance to the previous one
     double distanceToPrev = sqrt(pow(time / 3 - prevSegment, 2));
-    int nextSegment = prevSegment + 1;
+    int nextSegment = min(prevSegment + 1, 4);
     double distanceToNext = 1 - distanceToPrev;
     var c1 = [0, 0, 0];
     // distance units are 1 per 3 hours, so this reflects as a percentage weight

@@ -97,6 +97,12 @@ class PiePainter extends CustomPainter {
       }
       painter.color = avgColor;
 
+      // change text to be white if background is dark enough
+      bool blackText = true;
+      if (avgColor.blue + avgColor.green + avgColor.red < (127 * 3)) {
+        blackText = false;
+      }
+
       canvas.drawArc(
           rectArea, start, duration, true, painter); //Angles are in radians.
 
@@ -109,7 +115,7 @@ class PiePainter extends CustomPainter {
           centerOffset.dy + pie.radius() * 0.6 * sin(textAngle);
 
       _drawSliceText(canvas, slice.task.getTaskName(), textX, textY, textAngle,
-          slice.getDuration());
+          slice.getDuration(), blackText);
       i++;
     }
 
@@ -176,7 +182,7 @@ class PiePainter extends CustomPainter {
   }
 
   void _drawSliceText(Canvas canvas, String text, double x, double y,
-      double angle, double duration) {
+      double angle, double duration, bool blackText) {
     // Reference the pie's diameter to know the maximum font size this text can be.
     double maxWidth = pie.radius() - 40;
 
@@ -188,7 +194,11 @@ class PiePainter extends CustomPainter {
     if (estTextWidth > maxWidth) {
       fontSize = maxWidth / (text.length * 0.6);
     }
-    _drawText(canvas, text, x, y, angle, fontSize, Colors.black);
+    if (blackText) {
+      _drawText(canvas, text, x, y, angle, fontSize, Colors.black);
+    } else {
+      _drawText(canvas, text, x, y, angle, fontSize, Colors.white);
+    }
   }
 
   void _drawText(Canvas canvas, String text, double x, double y, double angle,
