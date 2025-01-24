@@ -87,11 +87,15 @@ class PiePainter extends CustomPainter {
       double start = slice.getStartTimeToRadians() - Slice.timeToRadians(3);
       // This offset of 3 has never made sense, and it only applies to the start time
       double duration = slice.getDurationToRadians();
-      painter.color = slice.color;
+      // painter.color = slice.color;
+      var color1 = Slice.colorFromTime(slice.getStartTime(), isAfternoon);
+      var color2 = Slice.colorFromTime(slice.getEndTime(), isAfternoon);
+      var avgColor = Slice.averageColor(color1, color2);
       if (i == pie.getSelectedSliceIndex()) {
         slice.setShownText(true);
-        painter.color = darkenColor(slice.color);
+        // painter.color = darkenColor(avgColor);
       }
+      painter.color = avgColor;
 
       canvas.drawArc(
           rectArea, start, duration, true, painter); //Angles are in radians.

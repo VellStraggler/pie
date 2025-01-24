@@ -164,7 +164,6 @@ class MyHomePageState extends State<MyHomePage> {
               // if one was not selected, deselect what we do have
             }
           }
-
           updateScreen();
         },
         onTapUp: (details) {
