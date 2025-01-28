@@ -93,7 +93,7 @@ class PiePainter extends CustomPainter {
       var avgColor = Slice.averageColor(color1, color2);
       if (i == pie.getSelectedSliceIndex()) {
         slice.setShownText(true);
-        // painter.color = darkenColor(avgColor);
+        avgColor = darkenColor(avgColor);
       }
       painter.color = avgColor;
 

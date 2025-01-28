@@ -76,7 +76,7 @@ The following items we plan to fix, improve, and/or add to this project in the f
 * [ ] Allow transparency when editing tasks
 * [ ] task buttons: start task, finish task
 * [ ] lets you know how long it actually took
-* [ ] improve base colors 
+* [X] improve base colors 
 widget homescreen (what does this mean)
 * [ ] fill space with details about current task
 * [ ] import tasks from other calendar apps

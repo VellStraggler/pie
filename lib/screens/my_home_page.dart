@@ -11,9 +11,6 @@ import 'package:pie_agenda/pie/pie.dart';
 import 'package:pie_agenda/display/pie_painter.dart';
 import 'package:pie_agenda/display/clock.dart';
 import 'package:pie_agenda/pie/pie_manager.dart';
-import 'package:logger/logger.dart';
-
-final logger = Logger();
 
 /// These will be re-instantiated as soon as we get the width of the screen
 Pie aMPie = Pie();
@@ -24,7 +21,7 @@ bool isAfternoon = false;
 PiePainter painter = PiePainter(pie: pie);
 Slice selectedSlice = Slice();
 
-// make this a global var so we can update at any point from anywhere
+// this is a global var so we can update at any point from anywhere
 List<Widget> pieAndDragButtons = [];
 
 // manager holds file storage path
@@ -107,41 +104,60 @@ class MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  /// Builds the display for the Home Page.
+  /// Builds the display for the Home Page, which is all stored in
+  /// the GestureDetector widget
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
         key: _gestureKey,
         onTapDown: (details) {
+          // Update the widget size
           _getWidgetSize();
-          // We need to get the rotation from the center that a tapped point is at
           // Goes up to the middle of the screen, and then back to the corner of the pie chart
           print("${widgetWidth!} ${widgetHeight!} ${pie.width}");
-          int unknownOffset = borderWidth * 2;
+          // Calculate the point that the user has tapped.
+          int borderWidthOffset = borderWidth * 2;
           Point tappedPoint = Point.parameterized(
               x: details.localPosition.dx -
                   (widgetWidth! / 2) +
                   (pie.width / 2),
               y: details.localPosition.dy -
-                  (widgetHeight! / 2 + unknownOffset) +
+                  (widgetHeight! / 2 + borderWidthOffset) +
                   (pie.width / 2));
-          // if you tap outside the pie chart, it deselects instead
+          // Calculate the distance tapped from the center
+          // Assumes the pie is centered
+          // sqrt((x1-x2)^2 + (y1-y2)^2)
           double distanceToCenter = sqrt(
               pow(details.localPosition.dx - (widgetWidth! / 2), 2) +
                   pow(
                       details.localPosition.dy -
-                          ((widgetHeight! / 2 + unknownOffset)),
+                          ((widgetHeight! / 2 + borderWidthOffset)),
                       2));
           // print("${tappedPoint.toString()} ${distanceToCenter.toStringAsFixed(2)}");
-          // sqrt((x1-x2)^2 + (y1-y2)^2)
-          if (distanceToCenter > pie.radius() - buttonRadius) {
-            if (distanceToCenter > pie.radius() + buttonRadius) {
-              pie.setSelectedSliceIndex(-1);
+
+          // convert it to a double time
+          double tapTime = DragButton.getTimeFromPoint(tappedPoint);
+
+          // if you tap outside the pie chart, it deselects the selected slice
+          // UNLESS you tapped close enough to a dragbutton
+          double padding = .05;
+          if (distanceToCenter >
+              pie.radius() - (buttonRadius + (padding * 100))) {
+            if (distanceToCenter >
+                pie.radius() + (buttonRadius + (padding * 100))) {
+              Slice selectedSlice = pie.getSelectedSlice();
+              // make sure you aren't trying to interact with a dragButton
+              if ((selectedSlice.getStartTime() - padding < tapTime &&
+                      selectedSlice.getStartTime() + padding > tapTime) ||
+                  (selectedSlice.getEndTime() - padding < tapTime &&
+                      selectedSlice.getEndTime() + padding > tapTime)) {
+                // You've now tapped a dragbutton. Do not deselect
+              } else {
+                pie.setSelectedSliceIndex(-1);
+              }
             }
             // else you've pressed in the dragbutton ring. Don't deselect or change your slice
           } else {
-            // convert it to a double time
-            double tapTime = DragButton.getTimeFromPoint(tappedPoint);
             // print("tapped at ${tapTime.toString()}");
             int i = 0;
             bool found = false;
