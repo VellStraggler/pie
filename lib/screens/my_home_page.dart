@@ -126,16 +126,16 @@ class MyHomePageState extends State<MyHomePage> {
         onTapDown: (details) {
           // Update the widget size
           _getWidgetSize();
-          print("height: ${widgetHeight!}, width: ${widgetWidth!}");
+          // print("height: ${widgetHeight!}, width: ${widgetWidth!}");
 
           Point tappedPoint = _getTappedPoint(details);
-          print(tappedPoint.toString());
+          // print(tappedPoint.toString());
 
           double tappedDistToCenter = _getTappedDistToCenter(details);
-          print("dist: $tappedDistToCenter");
+          // print("dist: $tappedDistToCenter");
 
           double tapTime = DragButton.getTimeFromPoint(tappedPoint);
-          print(tapTime.toString());
+          // print(tapTime.toString());
 
           // if you tap outside the pie chart, it deselects the selected slice
           // UNLESS you tapped close enough to a dragbutton

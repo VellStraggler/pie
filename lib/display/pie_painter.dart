@@ -113,7 +113,12 @@ class PiePainter extends CustomPainter {
           centerOffset.dx + pie.radius() * 0.6 * cos(textAngle);
       final double textY =
           centerOffset.dy + pie.radius() * 0.6 * sin(textAngle);
-
+      // FOR DEBUGGING:
+      // if (pie.selectedSliceIndex != -1) {
+      //   if (slice.equals(pie.getSelectedSlice())) {
+      //     print(textAngle);
+      //   }
+      // }
       _drawSliceText(canvas, slice.task.getTaskName(), textX, textY, textAngle,
           slice.getDuration(), blackText);
       i++;
@@ -185,6 +190,9 @@ class PiePainter extends CustomPainter {
       double angle, double duration, bool blackText) {
     // Reference the pie's diameter to know the maximum font size this text can be.
     double maxWidth = pie.radius() - 40;
+    if (duration > 3) {
+      maxWidth += (pow(duration - 3, 1.5) * 5);
+    }
 
     // max fontSize of 36
     // should be changed to accounts for length of text
@@ -194,6 +202,26 @@ class PiePainter extends CustomPainter {
     if (estTextWidth > maxWidth) {
       fontSize = maxWidth / (text.length * 0.6);
     }
+
+    // angle ranges from -pi/2 to 3pi/2
+    // at a certain duration, we don't need to angle the text
+    if (duration < 2 && duration > 1.5) {
+      if (angle < 0 || (angle > (pi / 2) && angle < pi)) {
+        angle += ((duration - 1.5));
+        if (angle > (pi / 2) && angle < pi) {
+          angle = max(angle, 0);
+        } else {
+          angle = min(angle, 0);
+        }
+      } else {
+        angle -= ((duration - 1.5));
+        angle = max(angle, 0);
+      }
+    }
+    if (duration >= 2) {
+      angle = 0;
+    }
+
     if (blackText) {
       _drawText(canvas, text, x, y, angle, fontSize, Colors.black);
     } else {
