@@ -19,7 +19,6 @@ Pie pie = aMPie;
 //pie is a pointer to the current pie chart you're viewing (AM or PM)
 bool isAfternoon = false;
 PiePainter painter = PiePainter(pie: pie);
-Slice selectedSlice = Slice();
 
 // this is a global var so we can update at any point from anywhere
 List<Widget> pieAndDragButtons = [];
@@ -27,6 +26,8 @@ List<Widget> pieAndDragButtons = [];
 // manager holds file storage path
 final PieManager manager = PieManager();
 
+const double padding = .05;
+const int borderWidthOffset = borderWidth * 2;
 const Color themeColor2 = Color.fromRGBO(39, 102, 169, 1); // cerulean
 const Color menuBackground = Color.fromRGBO(35, 50, 218, 1); // blue
 const Color themeColor1 = Color.fromRGBO(249, 248, 255, 1); // white
@@ -113,63 +114,33 @@ class MyHomePageState extends State<MyHomePage> {
         onTapDown: (details) {
           // Update the widget size
           _getWidgetSize();
-          // Goes up to the middle of the screen, and then back to the corner of the pie chart
-          print("${widgetWidth!} ${widgetHeight!} ${pie.width}");
-          // Calculate the point that the user has tapped.
-          int borderWidthOffset = borderWidth * 2;
-          Point tappedPoint = Point.parameterized(
-              x: details.localPosition.dx -
-                  (widgetWidth! / 2) +
-                  (pie.width / 2),
-              y: details.localPosition.dy -
-                  (widgetHeight! / 2 + borderWidthOffset) +
-                  (pie.width / 2));
-          // Calculate the distance tapped from the center
-          // Assumes the pie is centered
-          // sqrt((x1-x2)^2 + (y1-y2)^2)
-          double distanceToCenter = sqrt(
-              pow(details.localPosition.dx - (widgetWidth! / 2), 2) +
-                  pow(
-                      details.localPosition.dy -
-                          ((widgetHeight! / 2 + borderWidthOffset)),
-                      2));
-          // print("${tappedPoint.toString()} ${distanceToCenter.toStringAsFixed(2)}");
 
-          // convert it to a double time
+          Point tappedPoint = _getTappedPoint(details);
+
+          double tappedDistToCenter = _getTappedDistToCenter(details);
+
           double tapTime = DragButton.getTimeFromPoint(tappedPoint);
 
           // if you tap outside the pie chart, it deselects the selected slice
           // UNLESS you tapped close enough to a dragbutton
-          double padding = .05;
-          if (distanceToCenter >
-              pie.radius() - (buttonRadius + (padding * 100))) {
-            if (distanceToCenter >
-                pie.radius() + (buttonRadius + (padding * 100))) {
-              Slice selectedSlice = pie.getSelectedSlice();
+          if (_tappedOutsideRadius(tappedDistToCenter)) {
+            if (_tappedInsideLargerRadius(tappedDistToCenter)) {
               // make sure you aren't trying to interact with a dragButton
-              if ((selectedSlice.getStartTime() - padding < tapTime &&
-                      selectedSlice.getStartTime() + padding > tapTime) ||
-                  (selectedSlice.getEndTime() - padding < tapTime &&
-                      selectedSlice.getEndTime() + padding > tapTime)) {
-                // You've now tapped a dragbutton. Do not deselect
-              } else {
+              if (!_tappedDragButton(tapTime)) {
                 pie.setSelectedSliceIndex(-1);
               }
             }
             // else you've pressed in the dragbutton ring. Don't deselect or change your slice
           } else {
-            // print("tapped at ${tapTime.toString()}");
             int i = 0;
             bool found = false;
             // search through the slices for one whose endpoints are before and after this time
             for (Slice slice in pie.slices) {
               if (slice.getStartTime() < tapTime) {
                 if (slice.getEndTime() > tapTime) {
-                  //.2 accounts for dragbutton :O
-                  selectedSlice = slice;
                   pie.setSelectedSliceIndex(i);
                   found = true;
-                  _vibrateWithAudio(1);
+                  vibrateWithAudio(1);
                   break;
                 }
               }
@@ -207,7 +178,49 @@ class MyHomePageState extends State<MyHomePage> {
             floatingActionButton: _buildFloatingActionButtons()));
   }
 
-  void _vibrateWithAudio(int level) {
+  /// Outside the radius includes the ring that DragButtons appear on
+  bool _tappedOutsideRadius(tappedDistToCenter) {
+    return (tappedDistToCenter >
+        pie.radius() - (buttonRadius + (padding * 100)));
+  }
+
+  /// This includes the ring that DragButtons appear on
+  bool _tappedInsideLargerRadius(tappedDistToCenter) {
+    return (tappedDistToCenter >
+        pie.radius() + (buttonRadius + (padding * 100)));
+  }
+
+  bool _tappedDragButton(tapTime) {
+    Slice selectedSlice = pie.getSelectedSlice();
+    return ((selectedSlice.getStartTime() - padding < tapTime &&
+            selectedSlice.getStartTime() + padding > tapTime) ||
+        (selectedSlice.getEndTime() - padding < tapTime &&
+            selectedSlice.getEndTime() + padding > tapTime));
+  }
+
+  /// Takes the literal tapped position and subtracts the area
+  /// around the pie chart to get a position that's usable for
+  /// pie-related calculations
+  Point _getTappedPoint(TapDownDetails details) {
+    return Point.parameterized(
+        x: details.localPosition.dx - (widgetWidth! / 2) + (pie.width / 2),
+        y: details.localPosition.dy -
+            (widgetHeight! / 2 + borderWidthOffset) +
+            (pie.width / 2));
+  }
+
+  /// Calculate the distance tapped from the center.
+  /// Assumes the pie is centered.
+  /// sqrt((x1-x2)^2 + (y1-y2)^2)
+  double _getTappedDistToCenter(TapDownDetails details) {
+    return sqrt(pow(details.localPosition.dx - (widgetWidth! / 2), 2) +
+        pow(
+            details.localPosition.dy -
+                ((widgetHeight! / 2 + borderWidthOffset)),
+            2));
+  }
+
+  void vibrateWithAudio(int level) {
     /// Produces vibrations and a click sound when called. Does not work on Windows.
     switch (level) {
       case (1):
@@ -276,7 +289,7 @@ class MyHomePageState extends State<MyHomePage> {
 
   /// Changes time between AM and PM.
   void _switchTime() {
-    _vibrateWithAudio(3);
+    vibrateWithAudio(3);
     isAfternoon = !isAfternoon;
     if (isAfternoon) {
       pie = pMPie;
@@ -319,7 +332,7 @@ class MyHomePageState extends State<MyHomePage> {
 
   /// Creates form to add a new slice to the pie.
   void _showAddSliceDialog() {
-    _vibrateWithAudio(1);
+    vibrateWithAudio(1);
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -394,7 +407,7 @@ class MyHomePageState extends State<MyHomePage> {
 
   /// Removes the last slice selected from the pie.
   void _removeSelectedSlice() {
-    _vibrateWithAudio(2);
+    vibrateWithAudio(2);
     pie.removeSlice();
     savePie();
   }
@@ -511,33 +524,20 @@ List<Widget> _getPieAndDragButtons() {
 List<Widget> _buildPie() {
   // First item is the pie painter, the rest are dragbuttons
   // (and eventually guidebuttons too)
-  pieAndDragButtons = [];
-
-  pieAndDragButtons.add(
+  pieAndDragButtons = [
     CustomPaint(
         size: Size(pie.width + buttonDiameter, pie.width + buttonDiameter),
-        painter: painter),
-  );
+        painter: painter)
+  ];
+
   if (isEditing()) {
-    for (Slice slice in pie.slices) {
-      if (slice.equals(selectedSlice)) {
-        slice.dragButtonBefore.createState();
-        pieAndDragButtons.add(slice.dragButtonBefore);
-        pieAndDragButtons.add(slice.dragButtonAfter);
-      }
-    }
+    pieAndDragButtons.add(pie.getSelectedSlice().dragButtonBefore);
+    pieAndDragButtons.add(pie.getSelectedSlice().dragButtonAfter);
   }
-  // print(pie.selectedSliceIndex);
   return pieAndDragButtons;
 }
 
 bool isEditing() {
   /// checks if there is a current selected slice
   return pie.selectedSliceIndex > -1;
-}
-
-Color darkenColor(Color color) {
-  const int darken = 50;
-  return Color.fromRGBO(
-      color.red - darken, color.green - darken, color.blue - darken, 1.0);
 }

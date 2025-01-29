@@ -229,4 +229,10 @@ class PiePainter extends CustomPainter {
     // Return true if the painting should be updated, otherwise false
     return true;
   }
+
+  Color darkenColor(Color color) {
+    const int darken = 50;
+    return Color.fromRGBO(max(color.red - darken, 0),
+        max(0, color.green - darken), max(0, color.blue - darken), 1.0);
+  }
 }
