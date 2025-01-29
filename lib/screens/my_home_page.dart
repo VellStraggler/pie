@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:vibration/vibration.dart';
 import 'package:pie_agenda/display/point.dart';
 import 'package:pie_agenda/pie/diameter.dart';
 import 'package:pie_agenda/pie/slice.dart';
@@ -11,6 +13,7 @@ import 'package:pie_agenda/pie/pie.dart';
 import 'package:pie_agenda/display/pie_painter.dart';
 import 'package:pie_agenda/display/clock.dart';
 import 'package:pie_agenda/pie/pie_manager.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 /// These will be re-instantiated as soon as we get the width of the screen
 Pie aMPie = Pie();
@@ -19,6 +22,7 @@ Pie pie = aMPie;
 //pie is a pointer to the current pie chart you're viewing (AM or PM)
 bool isAfternoon = false;
 PiePainter painter = PiePainter(pie: pie);
+final player = AudioPlayer();
 
 // this is a global var so we can update at any point from anywhere
 List<Widget> pieAndDragButtons = [];
@@ -27,7 +31,10 @@ List<Widget> pieAndDragButtons = [];
 final PieManager manager = PieManager();
 
 const double padding = .05;
-const int borderWidthOffset = borderWidth * 2;
+int unknownOffset = 53; //borderWidth * 2;
+// With height 852 and width 411, offset is 53
+// With height 682 and width 1265.6, offset is 26
+// Width changes nothing, but device type does???
 const Color themeColor2 = Color.fromRGBO(39, 102, 169, 1); // cerulean
 const Color menuBackground = Color.fromRGBO(35, 50, 218, 1); // blue
 const Color themeColor1 = Color.fromRGBO(249, 248, 255, 1); // white
@@ -65,6 +72,11 @@ class MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    if (Platform.isWindows) {
+      unknownOffset = 26; //otherwise, treats it as Android
+    }
+    player.setSource(AssetSource('data/tap.wav'));
+
     // Get the dimensions of the app ASAP here
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _getWidgetSize();
@@ -114,12 +126,16 @@ class MyHomePageState extends State<MyHomePage> {
         onTapDown: (details) {
           // Update the widget size
           _getWidgetSize();
+          print("height: ${widgetHeight!}, width: ${widgetWidth!}");
 
           Point tappedPoint = _getTappedPoint(details);
+          print(tappedPoint.toString());
 
           double tappedDistToCenter = _getTappedDistToCenter(details);
+          print("dist: $tappedDistToCenter");
 
           double tapTime = DragButton.getTimeFromPoint(tappedPoint);
+          print(tapTime.toString());
 
           // if you tap outside the pie chart, it deselects the selected slice
           // UNLESS you tapped close enough to a dragbutton
@@ -205,7 +221,7 @@ class MyHomePageState extends State<MyHomePage> {
     return Point.parameterized(
         x: details.localPosition.dx - (widgetWidth! / 2) + (pie.width / 2),
         y: details.localPosition.dy -
-            (widgetHeight! / 2 + borderWidthOffset) +
+            (widgetHeight! / 2 + unknownOffset) +
             (pie.width / 2));
   }
 
@@ -214,9 +230,7 @@ class MyHomePageState extends State<MyHomePage> {
   /// sqrt((x1-x2)^2 + (y1-y2)^2)
   double _getTappedDistToCenter(TapDownDetails details) {
     return sqrt(pow(details.localPosition.dx - (widgetWidth! / 2), 2) +
-        pow(
-            details.localPosition.dy -
-                ((widgetHeight! / 2 + borderWidthOffset)),
+        pow(details.localPosition.dy - ((widgetHeight! / 2 + unknownOffset)),
             2));
   }
 
@@ -224,19 +238,23 @@ class MyHomePageState extends State<MyHomePage> {
     /// Produces vibrations and a click sound when called. Does not work on Windows.
     switch (level) {
       case (1):
-        HapticFeedback.lightImpact();
+        Vibration.vibrate(duration: 50);
         break;
       case (2):
-        HapticFeedback.mediumImpact();
+        Vibration.vibrate(duration: 100);
         break;
       case (3):
-        HapticFeedback.heavyImpact();
+        Vibration.vibrate(duration: 150);
         break;
       default:
-        HapticFeedback.selectionClick();
+        Vibration.vibrate(duration: 50);
     }
-    SystemSound.play(SystemSoundType.click);
+    // playPopSound();
     print("sound and haptics happened here! Level: $level");
+  }
+
+  Future<void> playPopSound() async {
+    await player.play(AssetSource('data/tap.wav'));
   }
 
   /// Creates the bottom-right buttons for editing the chart.
@@ -289,7 +307,7 @@ class MyHomePageState extends State<MyHomePage> {
 
   /// Changes time between AM and PM.
   void _switchTime() {
-    vibrateWithAudio(3);
+    vibrateWithAudio(2);
     isAfternoon = !isAfternoon;
     if (isAfternoon) {
       pie = pMPie;
@@ -385,6 +403,7 @@ class MyHomePageState extends State<MyHomePage> {
                     final task =
                         Task.parameterized(taskText, startTime, duration);
                     pie.addSlice(task);
+                    vibrateWithAudio(3);
                     pie.selectedSliceIndex = -1; //pie.slices.length - 1;
                     updateScreen();
                   });
@@ -407,7 +426,7 @@ class MyHomePageState extends State<MyHomePage> {
 
   /// Removes the last slice selected from the pie.
   void _removeSelectedSlice() {
-    vibrateWithAudio(2);
+    vibrateWithAudio(3);
     pie.removeSlice();
     savePie();
   }

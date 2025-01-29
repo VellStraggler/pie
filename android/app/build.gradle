@@ -7,7 +7,8 @@ plugins {
 
 android {
     namespace = "com.example.pie_agenda"
-    compileSdk = flutter.compileSdkVersion
+    // compileSdk = flutter.compileSdkVersion
+    compileSdk = 35
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
