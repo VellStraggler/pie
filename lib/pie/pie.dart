@@ -39,6 +39,11 @@ class Pie {
       oldSlice.dragButtonAfter.shown = false;
     }
     selectedSliceIndex = i;
+    if (selectedSliceIndex != -1) {
+      Slice oldSlice = slices[selectedSliceIndex];
+      oldSlice.dragButtonBefore.shown = true;
+      oldSlice.dragButtonAfter.shown = true;
+    }
   }
 
   /// Parameterized Constructor

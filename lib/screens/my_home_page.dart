@@ -36,11 +36,12 @@ int unknownOffset = 53; //borderWidth * 2;
 // With height 852 and width 411, offset is 53
 // With height 682 and width 1265.6, offset is 26
 // Width changes nothing, but device type does???
-const Color themeColor2 = Color.fromRGBO(39, 102, 169, 1); // cerulean
-const Color menuBackground = Color.fromRGBO(35, 50, 218, 1); // blue
-const Color themeColor1 = Color.fromRGBO(249, 248, 255, 1); // white
 const Color almostBlack = Color.fromRGBO(19, 26, 155, 1); // dark blue
-const Color buttonColor = Color.fromRGBO(132, 173, 255, 1); // light blue
+const Color themeColor2 = Color.fromRGBO(54, 124, 255, 1); // cerulean
+const Color otherColor = Color.fromRGBO(104, 174, 255, 1); // blue
+const Color offWhite = Color.fromRGBO(185, 215, 255, 1);
+const Color themeColor1 = Color.fromRGBO(249, 248, 255, 1); // white
+const Color buttonColor = offWhite;
 
 /// Home Page Widget
 class MyHomePage extends StatefulWidget {
@@ -113,10 +114,7 @@ class MyHomePageState extends State<MyHomePage> {
       pie.width = Diameter.instance.pieDiameter;
       // update all slice dragButtons as this wasn't automatic
       for (Slice slice in pie.slices) {
-        slice.dragButtonBefore =
-            DragButton(time: slice.getStartTime(), shown: true);
-        slice.dragButtonAfter =
-            DragButton(time: slice.getEndTime(), shown: true);
+        slice.reloadDragButtons();
       }
     }
   }

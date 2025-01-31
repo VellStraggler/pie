@@ -52,6 +52,13 @@ class Slice {
     dragButtonAfter.onDragEnd = updateToDragButtons;
   }
 
+  void reloadDragButtons() {
+    dragButtonBefore = DragButton(time: getStartTime(), shown: true);
+    dragButtonAfter = DragButton(time: getEndTime(), shown: true);
+    dragButtonBefore.onDragEnd = updateToDragButtons;
+    dragButtonAfter.onDragEnd = updateToDragButtons;
+  }
+
 // Getters and Setters
   bool getShownText() {
     return showText;

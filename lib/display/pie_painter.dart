@@ -11,6 +11,7 @@ const double line = 1 / 6;
 const int borderWidth = 12;
 const int dragButtonOffset = buttonRadius ~/ 2;
 const double textOffsetMult = 0.6;
+const double centerDiam = 24;
 const Color shadow = Color.fromRGBO(35, 35, 144, 0.7);
 
 /// Creates the pie displayed on screen.
@@ -63,7 +64,7 @@ class PiePainter extends CustomPainter {
     }
     double timeFormatted = hour + ((minute * 60 + second) / 3600);
     double timeInRadians = timeFormatted * pi / 6;
-    painter.color = buttonColor;
+    painter.color = themeColor2;
     double midnightTimeInRadians = (3 * pi / 2);
     canvas.drawArc(timeArea, midnightTimeInRadians + timeInRadians,
         (2 * pi) - (timeInRadians), true, painter);
@@ -76,7 +77,7 @@ class PiePainter extends CustomPainter {
         Offset(pie.radius() + getOffset(), pie.radius() + getOffset());
 
     // Draw the pie chart.
-    painter.color = themeColor1;
+    painter.color = offWhite;
     canvas.drawCircle(centerOffset, pie.radius() - borderWidth, painter);
 
     // Draw the slices
@@ -84,6 +85,8 @@ class PiePainter extends CustomPainter {
     // Define the radius and centerpoint for all slices
     Rect rectArea = Rect.fromCenter(
         center: centerOffset, width: pie.width, height: pie.width);
+    Rect tinyRectArea = Rect.fromCenter(
+        center: centerOffset, width: centerDiam + 6, height: centerDiam + 6);
     // Keep a list of the rotated text for printing later
     List<RotatedText> rTextList = [];
     int i = 0;
@@ -110,25 +113,20 @@ class PiePainter extends CustomPainter {
       // Draw the given slice
       canvas.drawArc(
           rectArea, start, duration, true, painter); //Angles are in radians.
+      // Draw an outline that goes around the small circle of the clock hands
+      painter.color = themeColor2;
+      canvas.drawArc(tinyRectArea, start, duration, true, painter);
 
       // Draw outline of slices
+      if (slice.getEndTime() < timeFormatted) {
+        outliner.color = almostBlack;
+      } else {
+        outliner.color = themeColor2;
+      }
       canvas.drawArc(rectArea, start, duration, true, outliner);
 
       RotatedText rText = RotatedText(slice, centerOffset);
       rTextList.add(rText);
-      // final double textAngle = start + duration / 2;
-      // final double textX =
-      //     centerOffset.dx + pie.radius() * textOffsetMult * cos(textAngle);
-      // final double textY =
-      //     centerOffset.dy + pie.radius() * textOffsetMult * sin(textAngle);
-      // FOR DEBUGGING:
-      // if (pie.selectedSliceIndex != -1) {
-      //   if (slice.equals(pie.getSelectedSlice())) {
-      //     print(textAngle);
-      //   }
-      // }
-      // _drawSliceText(canvas, slice.task.getTaskName(), textX, textY, textAngle,
-      //     slice.getDuration(), hasBlackText(slice));
       i++;
     }
 
@@ -136,28 +134,6 @@ class PiePainter extends CustomPainter {
     painter.color = shadow;
     canvas.drawArc(
         rectArea, midnightTimeInRadians, timeInRadians, true, painter);
-    // // redraw the text of the slice that the current time inhabits
-    // if (currentSliceByTime != null) {
-    //   double start =
-    //       currentSliceByTime.getStartTimeToRadians() - Slice.timeToRadians(3);
-    //   if (start < 0) {
-    //     start += (2 * pi);
-    //   }
-    //   final double textAngle =
-    //       start + currentSliceByTime.getDurationToRadians() / 2;
-    //   final double textX =
-    //       centerOffset.dx + pie.radius() * textOffsetMult * cos(textAngle);
-    //   final double textY =
-    //       centerOffset.dy + pie.radius() * textOffsetMult * sin(textAngle);
-    //   _drawSliceText(
-    //       canvas,
-    //       currentSliceByTime.task.getTaskName(),
-    //       textX,
-    //       textY,
-    //       textAngle,
-    //       currentSliceByTime.getDuration(),
-    //       hasBlackText(currentSliceByTime));
-    // }
 
     // Draw Tick marks
     final tickPaint = Paint()
@@ -166,7 +142,6 @@ class PiePainter extends CustomPainter {
 
     const int numTickMarks = 12;
     const int tickLength = borderWidth;
-
     for (int i = 0; i < numTickMarks; i++) {
       final double angle = (2 * pi / numTickMarks) * i;
       final start = Offset(
@@ -181,7 +156,6 @@ class PiePainter extends CustomPainter {
     }
 
     // Draw Clock Hands as triangles
-    double centerDiam = 24;
     final double hourAngle = (timeFormatted - 3) * (2 * pi / numTickMarks);
     final double minuteAngle =
         ((timeFormatted % 1) * 12 - 3) * (2 * pi / numTickMarks);
@@ -342,12 +316,11 @@ class PiePainter extends CustomPainter {
         max(0, color.green - darken), max(0, color.blue - darken), 1.0);
   }
 
-  static Color lightenColor(Color color) {
-    const int lighten = -50;
+  static Color lightenColor(Color color, {int amount = 50}) {
     return Color.fromRGBO(
-        min(color.red - lighten, 255),
-        min(255, color.green - lighten),
-        min(255, color.blue - lighten),
+        min(255, color.red + amount),
+        min(255, color.green + amount),
+        min(255, color.blue + amount),
         color.opacity);
   }
 
