@@ -32,7 +32,7 @@ class Slice {
       : task = Task(),
         dragButtonBefore = DragButton(time: 0, shown: true),
         dragButtonAfter = DragButton(time: 1, shown: true),
-        color = _generateHashedColor(0, 1, Task().getTaskName()) {
+        color = Colors.white {
     showText = false;
     dragButtonBefore.onDragEnd = updateToDragButtons;
     dragButtonAfter.onDragEnd = updateToDragButtons;
@@ -42,8 +42,7 @@ class Slice {
   /// Parameterized Constructor
   Slice.parameterized({
     required this.task,
-  })  : color = _generateHashedColor(
-            task.getStartTime(), task.getEndTime(), task.getTaskName()),
+  })  : color = Colors.white,
         dragButtonAfter = DragButton(
           time: task.getEndTime(),
           shown: true,
@@ -182,36 +181,6 @@ class Slice {
     }
     // Add the values together
     return Color.fromRGBO(c1[0], c1[1], c1[2], .9);
-  }
-
-  static Color averageColor(Color a, Color b) {
-    return Color.fromRGBO((a.red + b.red) ~/ 2, (a.green + b.green) ~/ 2,
-        (a.blue + b.blue) ~/ 2, .9);
-  }
-
-  static Color _generateHashedColor(double a, double b, String c) {
-    // a and b are both from 0 to 12
-    a *= (78 / 12);
-    b *= (78 / 12);
-    double d = min((78 / 8) * c.length, 78);
-    List<int> rgb = [
-      177 + a.toInt(), // Ensures a brighter color
-      177 + b.toInt(),
-      177 + d.toInt()
-    ];
-
-    // drop the smallest number of the 3
-    int numDrop = 0;
-    if (b <= a) {
-      if (b <= d) {
-        numDrop = 1;
-      } else {
-        numDrop = 2;
-      }
-    }
-    rgb[numDrop] -= 125; // Saturates the color
-
-    return Color.fromARGB(255, rgb[0], rgb[1], rgb[2]);
   }
 
 // Save Data

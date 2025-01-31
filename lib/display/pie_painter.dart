@@ -98,7 +98,7 @@ class PiePainter extends CustomPainter {
       // painter.color = slice.color;
       var color1 = Slice.colorFromTime(slice.getStartTime(), isAfternoon);
       var color2 = Slice.colorFromTime(slice.getEndTime(), isAfternoon);
-      var avgColor = Slice.averageColor(color1, color2);
+      var avgColor = averageColor(color1, color2);
       if (i == pie.getSelectedSliceIndex()) {
         slice.setShownText(true);
         avgColor = darkenColor(avgColor);
@@ -213,8 +213,12 @@ class PiePainter extends CustomPainter {
       if (hasBlackText(rText.slice)) {
         color = Colors.black;
       }
-      if (rText.slice.getEndTime() < timeInRadians + midnightTimeInRadians) {
-        color = Slice.averageColor(color, shadow);
+      // don't know why its .3 off
+      if (rText.slice.getEndTime() - .3 <
+          timeInRadians + midnightTimeInRadians) {
+        print(
+            "${rText.slice.getEndTime()} < ${timeInRadians + midnightTimeInRadians}");
+        color = averageColor(color, shadow);
       }
       _drawSliceText(canvas, rText.slice.task.getTaskName(), rText.textX,
           rText.textY, rText.textAngle, rText.slice.getDuration(), color);
@@ -336,18 +340,23 @@ class PiePainter extends CustomPainter {
     return true;
   }
 
-  Color darkenColor(Color color) {
+  static Color darkenColor(Color color) {
     const int darken = 50;
     return Color.fromRGBO(max(color.red - darken, 0),
         max(0, color.green - darken), max(0, color.blue - darken), 1.0);
   }
 
-  Color lightenColor(Color color) {
+  static Color lightenColor(Color color) {
     const int lighten = -50;
     return Color.fromRGBO(
         min(color.red - lighten, 255),
         min(255, color.green - lighten),
         min(255, color.blue - lighten),
         color.opacity);
+  }
+
+  static Color averageColor(Color a, Color b) {
+    return Color.fromRGBO((a.red + b.red) ~/ 2, (a.green + b.green) ~/ 2,
+        (a.blue + b.blue) ~/ 2, .9);
   }
 }
