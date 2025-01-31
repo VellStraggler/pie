@@ -17,8 +17,9 @@ import 'package:audioplayers/audioplayers.dart';
 /// These will be re-instantiated as soon as we get the width of the screen
 Pie aMPie = Pie();
 Pie pMPie = Pie(pM: true);
+
+/// A pointer to the current pie chart being viewed (AM or PM)
 Pie pie = aMPie;
-//pie is a pointer to the current pie chart you're viewing (AM or PM)
 bool isAfternoon = false;
 PiePainter painter = PiePainter(pie: pie);
 final player = AudioPlayer();
@@ -84,9 +85,18 @@ class MyHomePageState extends State<MyHomePage> {
       // Use the dimensions here
       // Relies on AMPie being the default
       Diameter.instance.setPieDiameter(smallestDimension * .8);
-      aMPie = Pie();
-      pie = aMPie;
+
+      // Base the opening pie with whether it's in the afternoon
+      if (DateTime.now().hour >= 12) {
+        pMPie = Pie();
+        pie = pMPie;
+        isAfternoon = true;
+      } else {
+        aMPie = Pie();
+        pie = aMPie;
+      }
       painter = PiePainter(pie: pie);
+
       loadPie();
     });
     startTimer();

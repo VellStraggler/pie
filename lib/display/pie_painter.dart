@@ -9,6 +9,7 @@ import 'package:pie_agenda/screens/my_home_page.dart';
 const double line = 1 / 6;
 const int borderWidth = 12;
 const int dragButtonOffset = buttonRadius ~/ 2;
+const double textOffsetMult = 0.6;
 
 /// Creates the pie displayed on screen.
 class PiePainter extends CustomPainter {
@@ -39,7 +40,6 @@ class PiePainter extends CustomPainter {
         width: pie.width + 25,
         height: pie.width + 25);
     DateTime time = DateTime.now();
-    // time = DateTime(2025, 1, 30, 6, 0, 0, 0, 0); // for debugging
     int hour = time.hour;
     int minute = time.minute;
     int second = time.second;
@@ -124,14 +124,11 @@ class PiePainter extends CustomPainter {
       // Draw outline of slices
       canvas.drawArc(rectArea, start, duration, true, outliner);
 
-      // change text to be white if background is dark enough
-      bool blackText = hasBlackText(slice);
-
       final double textAngle = start + duration / 2;
       final double textX =
-          centerOffset.dx + pie.radius() * 0.6 * cos(textAngle);
+          centerOffset.dx + pie.radius() * textOffsetMult * cos(textAngle);
       final double textY =
-          centerOffset.dy + pie.radius() * 0.6 * sin(textAngle);
+          centerOffset.dy + pie.radius() * textOffsetMult * sin(textAngle);
       // FOR DEBUGGING:
       // if (pie.selectedSliceIndex != -1) {
       //   if (slice.equals(pie.getSelectedSlice())) {
@@ -139,7 +136,7 @@ class PiePainter extends CustomPainter {
       //   }
       // }
       _drawSliceText(canvas, slice.task.getTaskName(), textX, textY, textAngle,
-          slice.getDuration(), blackText);
+          slice.getDuration(), hasBlackText(slice));
       i++;
     }
 
@@ -157,9 +154,9 @@ class PiePainter extends CustomPainter {
       final double textAngle =
           start + currentSliceByTime.getDurationToRadians() / 2;
       final double textX =
-          centerOffset.dx + pie.radius() * 0.6 * cos(textAngle);
+          centerOffset.dx + pie.radius() * textOffsetMult * cos(textAngle);
       final double textY =
-          centerOffset.dy + pie.radius() * 0.6 * sin(textAngle);
+          centerOffset.dy + pie.radius() * textOffsetMult * sin(textAngle);
       _drawSliceText(
           canvas,
           currentSliceByTime.task.getTaskName(),
