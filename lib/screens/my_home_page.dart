@@ -507,7 +507,7 @@ class MyHomePageState extends State<MyHomePage> {
       return digs / 60;
       // minutes only
     }
-    final hours = digs ~/ 100;
+    final hours = (digs ~/ 100) % 12;
     final minutes = digs % 100 / 60;
     return hours + minutes;
   }
