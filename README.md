@@ -58,8 +58,9 @@ To recreate the development environment, you need the following software and/or 
 ## Future Work
 The following items we plan to fix, improve, and/or add to this project in the future:
 
+* [ ] Shadows! from hands and even text
 * [X] Allow user to tap anywhere to deselect slices
-* [ ] Stop tasks from overlapping
+* [ ] Stop tasks from overlapping (may not implement)
 * [ ] Increase performance: [X]saving after tapping, not while holding
 * [X] modify drawing to not overlap itself
 * [X] Limit to 2 drag buttons
@@ -72,10 +73,8 @@ The following items we plan to fix, improve, and/or add to this project in the f
 * [ ] have time follow held dragbutton
 * [ ] have a + and - button to change duration
 * [ ] undo button
-* [ ] future tasks brighter, old tasks duller/grayer, fading
+* [X] future tasks brighter, old tasks duller/grayer, fading
 * [ ] Allow transparency when editing tasks
-* [ ] task buttons: start task, finish task
-* [ ] lets you know how long it actually took
 * [X] improve base colors 
 widget homescreen (what does this mean)
 * [ ] fill space with details about current task

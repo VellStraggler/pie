@@ -213,11 +213,9 @@ class PiePainter extends CustomPainter {
       if (hasBlackText(rText.slice)) {
         color = Colors.black;
       }
-      // don't know why its .3 off
-      if (rText.slice.getEndTime() - .3 <
-          timeInRadians + midnightTimeInRadians) {
+      if (Slice.timeToRadians(rText.slice.getEndTime()) < timeInRadians) {
         print(
-            "${rText.slice.getEndTime()} < ${timeInRadians + midnightTimeInRadians}");
+            "${Slice.timeToRadians(rText.slice.getEndTime())} < ${timeInRadians - Slice.timeToRadians(3)}");
         color = averageColor(color, shadow);
       }
       _drawSliceText(canvas, rText.slice.task.getTaskName(), rText.textX,
