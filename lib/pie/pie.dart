@@ -31,6 +31,13 @@ class Pie {
 
   /// Sets the selected slice.
   void setSelectedSliceIndex(int i) {
+    // This may marginally decrease the time it takes for
+    // a dragbutton to despawn
+    if (selectedSliceIndex != -1) {
+      Slice oldSlice = slices[selectedSliceIndex];
+      oldSlice.dragButtonBefore.shown = false;
+      oldSlice.dragButtonAfter.shown = false;
+    }
     selectedSliceIndex = i;
   }
 

@@ -214,8 +214,6 @@ class PiePainter extends CustomPainter {
         color = Colors.black;
       }
       if (Slice.timeToRadians(rText.slice.getEndTime()) < timeInRadians) {
-        print(
-            "${Slice.timeToRadians(rText.slice.getEndTime())} < ${timeInRadians - Slice.timeToRadians(3)}");
         color = averageColor(color, shadow);
       }
       _drawSliceText(canvas, rText.slice.task.getTaskName(), rText.textX,

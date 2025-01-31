@@ -14,7 +14,7 @@ const double buttonDiameter = buttonRadius * 2;
 class DragButton extends StatefulWidget {
   Point point;
   double time;
-  final bool shown;
+  bool shown;
   late final Function(Point) onDragEnd; // callback for drag end
   late final Slice slice;
   late final Pie pie;

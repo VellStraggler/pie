@@ -22,6 +22,7 @@ Pie pMPie = Pie(pM: true);
 Pie pie = aMPie;
 bool isAfternoon = false;
 PiePainter painter = PiePainter(pie: pie);
+const double pieToWindowRatio = .8;
 final player = AudioPlayer();
 
 // this is a global var so we can update at any point from anywhere
@@ -85,13 +86,7 @@ class MyHomePageState extends State<MyHomePage> {
 
     // Get the dimensions of the app ASAP here
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _getWidgetSize();
-      // Find the smallest of the two dimensions
-      double smallestDimension = min(widgetHeight!, widgetWidth!);
-      // Use the dimensions here
-      // Relies on AMPie being the default
-      Diameter.instance.setPieDiameter(smallestDimension * .8);
-
+      updateSize();
       // Base the opening pie with whether it's in the afternoon
       if (DateTime.now().hour >= 12) {
         pMPie = Pie();
@@ -106,6 +101,24 @@ class MyHomePageState extends State<MyHomePage> {
       loadPie();
     });
     startTimer();
+  }
+
+  void updateSize() {
+    _getWidgetSize();
+    // Find the smallest of the two dimensions
+    double smallestDimension = min(widgetHeight!, widgetWidth!);
+    // Use the dimensions here
+    if (smallestDimension * pieToWindowRatio != pie.width) {
+      Diameter.instance.setPieDiameter(smallestDimension * pieToWindowRatio);
+      pie.width = Diameter.instance.pieDiameter;
+      // update all slice dragButtons as this wasn't automatic
+      for (Slice slice in pie.slices) {
+        slice.dragButtonBefore =
+            DragButton(time: slice.getStartTime(), shown: true);
+        slice.dragButtonAfter =
+            DragButton(time: slice.getEndTime(), shown: true);
+      }
+    }
   }
 
   /// Loads aMPie and pMPie from JSON file.
@@ -450,7 +463,6 @@ class MyHomePageState extends State<MyHomePage> {
 
   /// List the Tasks for the current Pie.
   void _listSlices() {
-    pie.setSelectedSliceIndex(-1);
     print(aMPie.toJson('AM'));
     print(pMPie.toJson('PM'));
     showDialog(
@@ -516,6 +528,7 @@ class MyHomePageState extends State<MyHomePage> {
     // update screen by literally remaking the painter
     // probably part of why app is so glitchy
     setState(() {
+      updateSize();
       painter = PiePainter(pie: pie);
       _buildPie();
     });
@@ -567,8 +580,10 @@ List<Widget> _buildPie() {
   ];
 
   if (isEditing()) {
-    pieAndDragButtons.add(pie.getSelectedSlice().dragButtonBefore);
-    pieAndDragButtons.add(pie.getSelectedSlice().dragButtonAfter);
+    // reinstantiate the current dragbuttons
+    Slice currentSlice = pie.getSelectedSlice();
+    pieAndDragButtons.add(currentSlice.dragButtonBefore);
+    pieAndDragButtons.add(currentSlice.dragButtonAfter);
   }
   return pieAndDragButtons;
 }
