@@ -39,6 +39,7 @@ class PiePainter extends CustomPainter {
         width: pie.width + 25,
         height: pie.width + 25);
     DateTime time = DateTime.now();
+    // time = DateTime(2025, 1, 30, 6, 0, 0, 0, 0); // for debugging
     int hour = time.hour;
     int minute = time.minute;
     int second = time.second;
@@ -58,17 +59,19 @@ class PiePainter extends CustomPainter {
         second = 59;
       }
     }
-    double radianTime = (hour + minute / 60 + second / 3600) * pi / 6;
+    double formattedTime = hour + ((minute * 60 + second) / 3600);
+    double timeInRadians = formattedTime * pi / 6;
     painter.color = buttonColor;
-    double midnight = (3 * pi / 2);
-    canvas.drawArc(timeArea, midnight + radianTime, (2 * pi) - (radianTime),
-        true, painter);
+    double midnightTimeInRadians = (3 * pi / 2);
+    canvas.drawArc(timeArea, midnightTimeInRadians + timeInRadians,
+        (2 * pi) - (timeInRadians), true, painter);
     painter.color = almostBlack;
-    canvas.drawArc(timeArea, midnight, radianTime, true, painter);
+    canvas.drawArc(
+        timeArea, midnightTimeInRadians, timeInRadians, true, painter);
     // End tick of the time
     painter.color = themeColor1;
-    canvas.drawArc(
-        timeArea, midnight + radianTime - (.01), (.02), true, painter);
+    canvas.drawArc(timeArea, midnightTimeInRadians + timeInRadians - (.01),
+        (.02), true, painter);
 
     // Create offset for pie and slices
     Offset centerOffset =
@@ -79,14 +82,29 @@ class PiePainter extends CustomPainter {
     canvas.drawCircle(centerOffset, pie.radius() - borderWidth, painter);
 
     // Draw the slices
+
+    // Define the radius and centerpoint for all slices
     Rect rectArea = Rect.fromCenter(
         center: centerOffset, width: pie.width, height: pie.width);
+    // Look for the slice that contains the current time
+    Slice? currentSliceByTime;
     int i = 0;
     for (Slice slice in pie.slices) {
       slice.setShownText(false);
       double start = slice.getStartTimeToRadians() - Slice.timeToRadians(3);
+      if (start < 0) {
+        start += (2 * pi);
+      }
       // This offset of 3 has never made sense, and it only applies to the start time
       double duration = slice.getDurationToRadians();
+
+      // check if the current time inhabits this slice's task
+      if (slice.getStartTime() < formattedTime &&
+          slice.getEndTime() > formattedTime) {
+        currentSliceByTime = slice;
+        // skip drawing this slice. We'll draw it later
+      }
+
       // painter.color = slice.color;
       var color1 = Slice.colorFromTime(slice.getStartTime(), isAfternoon);
       var color2 = Slice.colorFromTime(slice.getEndTime(), isAfternoon);
@@ -95,18 +113,19 @@ class PiePainter extends CustomPainter {
         slice.setShownText(true);
         avgColor = darkenColor(avgColor);
       }
+      // Save this color
+      slice.color = avgColor;
       painter.color = avgColor;
 
-      // change text to be white if background is dark enough
-      bool blackText = true;
-      if (avgColor.blue + avgColor.green + avgColor.red < (127 * 3)) {
-        blackText = false;
-      }
-
+      // Draw the given slice
       canvas.drawArc(
           rectArea, start, duration, true, painter); //Angles are in radians.
 
+      // Draw outline of slices
       canvas.drawArc(rectArea, start, duration, true, outliner);
+
+      // change text to be white if background is dark enough
+      bool blackText = hasBlackText(slice);
 
       final double textAngle = start + duration / 2;
       final double textX =
@@ -124,10 +143,37 @@ class PiePainter extends CustomPainter {
       i++;
     }
 
+    // grey out the time that has passed
+    painter.color = const Color.fromRGBO(35, 35, 144, 0.7);
+    canvas.drawArc(
+        rectArea, midnightTimeInRadians, timeInRadians, true, painter);
+    // redraw the text of the slice that the current time inhabits
+    if (currentSliceByTime != null) {
+      double start =
+          currentSliceByTime.getStartTimeToRadians() - Slice.timeToRadians(3);
+      if (start < 0) {
+        start += (2 * pi);
+      }
+      final double textAngle =
+          start + currentSliceByTime.getDurationToRadians() / 2;
+      final double textX =
+          centerOffset.dx + pie.radius() * 0.6 * cos(textAngle);
+      final double textY =
+          centerOffset.dy + pie.radius() * 0.6 * sin(textAngle);
+      _drawSliceText(
+          canvas,
+          currentSliceByTime.task.getTaskName(),
+          textX,
+          textY,
+          textAngle,
+          currentSliceByTime.getDuration(),
+          hasBlackText(currentSliceByTime));
+    }
+
     // Draw Tick marks
     final tickPaint = Paint()
       ..color = Colors.white
-      ..strokeWidth = 2.0;
+      ..strokeWidth = 3.0;
 
     const int numTickMarks = 12;
     const int tickLength = borderWidth;
@@ -184,6 +230,13 @@ class PiePainter extends CustomPainter {
     }
     _drawText(canvas, twelveText, twelve.x - (fontSize / 3),
         twelve.y - (fontSize / 3), 0, fontSize, Colors.grey);
+  }
+
+  bool hasBlackText(Slice slice) {
+    if (slice.color.blue + slice.color.green + slice.color.red < (127 * 3)) {
+      return false;
+    }
+    return true;
   }
 
   void _drawSliceText(Canvas canvas, String text, double x, double y,
@@ -262,5 +315,14 @@ class PiePainter extends CustomPainter {
     const int darken = 50;
     return Color.fromRGBO(max(color.red - darken, 0),
         max(0, color.green - darken), max(0, color.blue - darken), 1.0);
+  }
+
+  Color lightenColor(Color color) {
+    const int lighten = -50;
+    return Color.fromRGBO(
+        min(color.red - lighten, 255),
+        min(255, color.green - lighten),
+        min(255, color.blue - lighten),
+        color.opacity);
   }
 }
