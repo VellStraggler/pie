@@ -69,6 +69,12 @@ class MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  /// This initializes the following:
+  /// - the platform-specific pixel offset
+  /// - recording the app pixel dimensions
+  /// - the pie's pixel diameter
+  /// - which pie to start on
+  /// - the timer
   @override
   void initState() {
     super.initState();
@@ -215,6 +221,8 @@ class MyHomePageState extends State<MyHomePage> {
         pie.radius() + (buttonRadius + (padding * 100)));
   }
 
+  /// Checks for a dragbutton at the given location.
+  /// Includes some padding, shape is non-circular
   bool _tappedDragButton(tapTime) {
     Slice selectedSlice = pie.getSelectedSlice();
     return ((selectedSlice.getStartTime() - padding < tapTime &&
@@ -243,8 +251,8 @@ class MyHomePageState extends State<MyHomePage> {
             2));
   }
 
+  /// Produces vibrations and a click sound when called. Does not work on Windows.
   void vibrateWithAudio(int level) {
-    /// Produces vibrations and a click sound when called. Does not work on Windows.
     switch (level) {
       case (1):
         Vibration.vibrate(duration: 50);
@@ -477,8 +485,8 @@ class MyHomePageState extends State<MyHomePage> {
   /// Takes string inputs and returns their apparent time.
   /// Nothing entered defaults to 0.
   double parseTime(String timeString) {
-    // remove colon, we don't need it
-    timeString.replaceAll(RegExp(r'[^0-9]'), '');
+    // removes everything except digits
+    timeString = timeString.replaceAll(RegExp(r'[^0-9]'), '');
     double digs = 0;
     if (timeString.isEmpty) {
       return 0;
