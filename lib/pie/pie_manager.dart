@@ -6,10 +6,13 @@ import 'package:pie_agenda/pie/pie.dart';
 
 /// Handles file saving and reading.
 class PieManager {
-  final filePathPlain = 'assets/data/pie.json';
+  final String filePathPlain = 'assets/data/pie.json';
 
   Future<File> _getLocalFile() async {
     // return fileName;
+    if (Platform.isWindows) {
+      return File(filePathPlain);
+    }
     final directory = await getApplicationDocumentsDirectory();
     return File('${directory.path}/$filePathPlain');
   }
@@ -49,17 +52,9 @@ class PieManager {
     // Supposedly this method only creates the file if it doesn't exist
     // and will create all additional directories as needed
     await file.create(exclusive: false, recursive: true);
-    if (!await file.exists()) {
+    if (await file.exists()) {
       // Create default content
-      final defaultContent = jsonEncode({
-        "AM": [
-          {"taskName": "Example", "startTime": 1.0, "duration": 1.0}
-        ],
-        "PM": [
-          {"taskName": "Example", "startTime": 1.0, "duration": 1.0}
-        ]
-      });
-
+      final defaultContent = jsonEncode({"AM": [], "PM": []});
       // Write the default content to the file path
       await file.writeAsString(defaultContent);
     }

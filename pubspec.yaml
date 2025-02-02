@@ -32,6 +32,7 @@ dependencies:
     sdk: flutter
   path_provider: ^2.0.12
   window_manager: ^0.3.7
+  permission_handler: ^11.0.1
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -95,5 +96,4 @@ flutter:
   # see https://flutter.dev/to/font-from-package
 
   assets:
-    - assets/data/pie.json
     - assets/data/tap.wav

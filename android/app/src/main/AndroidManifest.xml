@@ -3,6 +3,9 @@
         android:label="Pie_Agenda"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <uses-permission
+            android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+            tools:ignore="ScopedStorage"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -44,4 +47,5 @@
     </queries>
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
 </manifest>
