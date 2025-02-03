@@ -196,7 +196,7 @@ class PiePainter extends CustomPainter {
 
     // Draw Guide buttons
     // only around the Drag Buttons
-    if (pie.selectedSliceIndex != -1) {
+    if (pie.getSelectedSliceIndex() != -1) {
       int circleSize = borderWidth;
       painter.color = const Color.fromRGBO(158, 158, 158, .8);
       Slice ss = pie.getSelectedSlice();

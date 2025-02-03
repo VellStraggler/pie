@@ -5,7 +5,6 @@ import 'package:pie_agenda/pie/diameter.dart';
 import 'package:pie_agenda/pie/pie.dart';
 import 'dart:async';
 import 'package:pie_agenda/display/point.dart';
-import 'package:pie_agenda/pie/slice.dart';
 
 const double buttonRadius = 20;
 const double buttonDiameter = buttonRadius * 2;
@@ -15,8 +14,7 @@ class DragButton extends StatefulWidget {
   Point point;
   double time;
   bool shown;
-  late final Function(Point) onDragEnd; // callback for drag end
-  late final Slice slice;
+  late Function(Point) onDragEnd; // callback for drag end
   late final Pie pie;
 
   DragButton({super.key, required this.time, required this.shown})
@@ -103,10 +101,7 @@ class _DragButtonState extends State<DragButton> {
   @override
   void initState() {
     super.initState();
-    Point newPoint = Point();
-    newPoint.x = widget.point.x;
-    newPoint.y = widget.point.y;
-    currentPosition = newPoint;
+    currentPosition = Point.parameterized(x: widget.point.x, y: widget.point.y);
   }
 
   void _notifyListeners() {
@@ -130,16 +125,16 @@ class _DragButtonState extends State<DragButton> {
           // Keep the Dragbutton stuck on the edge of the circle
           setState(() {
             currentPosition = getNearestSnapPoint(currentPosition, details);
+            widget.onDragEnd(currentPosition);
           });
-          widget.onDragEnd(currentPosition);
           _notifyListeners();
         },
         onPanEnd: (details) {
           // When the user lets go, snap the Dragbutton to the nearest 15-minute mark
           setState(() {
             currentPosition = getRoundedSnapPoint(currentPosition);
+            widget.onDragEnd(currentPosition);
           });
-          widget.onDragEnd(currentPosition);
           _notifyListeners();
         },
         child: widget.shown
@@ -180,7 +175,7 @@ class _DragButtonState extends State<DragButton> {
     return newPoint;
   }
 
-  /// Get
+  /// Get closest 15-min segment snap point
   static Point getRoundedSnapPoint(Point current) {
     double time = DragButton.getTimeFromPoint(current);
     time = (time * 4).round() / 4;

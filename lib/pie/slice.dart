@@ -1,7 +1,5 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:pie_agenda/display/point.dart';
-import '../display/drag_button.dart';
 import 'task.dart';
 
 final eveningColors = [
@@ -21,8 +19,6 @@ final morningColors = [
 
 class Slice {
   // This is the visuals of a single task. It shows up as a slice on the pie chart
-  DragButton dragButtonBefore;
-  DragButton dragButtonAfter;
   Task task; // Default Task
   bool showText = true; // Shown flag
   Color color;
@@ -30,34 +26,14 @@ class Slice {
   /// Default Constructor
   Slice()
       : task = Task(),
-        dragButtonBefore = DragButton(time: 0, shown: true),
-        dragButtonAfter = DragButton(time: 1, shown: true),
         color = Colors.white {
     showText = false;
-    dragButtonBefore.onDragEnd = updateToDragButtons;
-    dragButtonAfter.onDragEnd = updateToDragButtons;
-    // add pointers to this Slice in the dragbuttons
   }
 
   /// Parameterized Constructor
   Slice.parameterized({
     required this.task,
-  })  : color = Colors.white,
-        dragButtonAfter = DragButton(
-          time: task.getEndTime(),
-          shown: true,
-        ),
-        dragButtonBefore = DragButton(time: task.getStartTime(), shown: true) {
-    dragButtonBefore.onDragEnd = updateToDragButtons;
-    dragButtonAfter.onDragEnd = updateToDragButtons;
-  }
-
-  void reloadDragButtons() {
-    dragButtonBefore = DragButton(time: getStartTime(), shown: true);
-    dragButtonAfter = DragButton(time: getEndTime(), shown: true);
-    dragButtonBefore.onDragEnd = updateToDragButtons;
-    dragButtonAfter.onDragEnd = updateToDragButtons;
-  }
+  }) : color = Colors.white;
 
 // Getters and Setters
   bool getShownText() {
@@ -96,14 +72,19 @@ class Slice {
 
   /// Gets the task's startTime.
   double getStartTime() {
-    if (dragButtonBefore.time != task.getStartTime()) {
-      task.setStartTime(dragButtonBefore.time);
-    }
     return task.getStartTime();
+  }
+
+  void setStartTime(double newTime) {
+    return task.setStartTime(newTime);
   }
 
   double getEndTime() {
     return task.getEndTime();
+  }
+
+  void setEndTime(double newTime) {
+    return task.setEndTime(newTime);
   }
 
   /// Gets the task's endTime.
@@ -115,70 +96,8 @@ class Slice {
     return task.getTaskName();
   }
 
-  ///modifies startTime and duration
-  void _dragStartTime(double time) {
-    task.setStartTime(time);
-    dragButtonBefore.setTime(time);
-    double newDuration = task.getEndTime() - time;
-    task.setDuration(newDuration);
-  }
-
-  void _dragEndTime(double time) {
-    task.setEndTime(time);
-    dragButtonAfter.setTime(time);
-    double newDuration = time - task.getStartTime();
-    task.setDuration(newDuration);
-  }
-
-  /// take the dragbutton locations as reference
-  void updateToDragButtons(Point newPosition) {
-    double newTime = DragButton.getTimeFromPoint(newPosition);
-    // if its closer to endtime, it changes endtime
-    if ((getEndTime() - newTime).abs() < (getStartTime() - newTime).abs() ||
-        (getEndTime() - 12 - newTime).abs() <
-            (getStartTime() - newTime).abs()) {
-      dragButtonAfter.setPoint(newPosition);
-    } else {
-      dragButtonBefore.setPoint(newPosition);
-    }
-    // edge case: times are equal
-    if (dragButtonBefore.time > dragButtonAfter.time - .25 &&
-        dragButtonBefore.time < dragButtonAfter.time + .25) {
-      if (newTime == dragButtonAfter.time) {
-        dragButtonAfter.time += .25;
-      } else {
-        dragButtonBefore.time -= .25;
-      }
-    }
-    // edge case: 12 o'clock
-    if (dragButtonAfter.time > 12) {
-      dragButtonAfter.time = 12;
-    }
-    if (dragButtonBefore.time > 11.75) {
-      dragButtonBefore.time = 11.75;
-    }
-    // snaps to 12 if you try to go over
-    if (dragButtonAfter.time < dragButtonBefore.time ||
-        (dragButtonAfter.time == dragButtonBefore.time &&
-            dragButtonBefore.time == 0)) {
-      // snaps to 0 if you try to go under
-      if (dragButtonBefore.time > 6) {
-        dragButtonBefore.time = 0;
-      } else {
-        dragButtonAfter.time = 12;
-      }
-    }
-
-    _dragStartTime(dragButtonBefore.time);
-    _dragEndTime(dragButtonAfter.time);
-    task.setDuration(task.getEndTime() - task.getStartTime());
-  }
-
-// Methods
+  /// There are 4 colors assigned to each 3-hour segment on a clock
   static Color colorFromTime(double time, bool isAfternoon) {
-    /// There are 4 colors assigned to each 3-hour segment on a clock
-    ///
-    ///
     var colorSet = morningColors;
     if (isAfternoon) colorSet = eveningColors;
     // get nearest 3-hour segments from 0,3,6,9,12

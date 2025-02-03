@@ -113,10 +113,10 @@ class MyHomePageState extends State<MyHomePage> {
     if (smallestDimension * pieToWindowRatio != pie.width) {
       Diameter.instance.setPieDiameter(smallestDimension * pieToWindowRatio);
       pie.width = Diameter.instance.pieDiameter;
-      // update all slice dragButtons as this wasn't automatic
-      for (Slice slice in pie.slices) {
-        slice.reloadDragButtons();
-      }
+      // // update all slice dragButtons as this wasn't automatic
+      // for (Slice slice in pie.slices) {
+      //   slice.reloadDragButtons();
+      // }
     }
   }
 
@@ -595,17 +595,20 @@ List<Widget> _buildPie() {
         size: Size(pie.width + buttonDiameter, pie.width + buttonDiameter),
         painter: painter)
   ];
-
   if (isEditing()) {
-    // reinstantiate the current dragbuttons
-    Slice currentSlice = pie.getSelectedSlice();
-    pieAndDragButtons.add(currentSlice.dragButtonBefore);
-    pieAndDragButtons.add(currentSlice.dragButtonAfter);
+    pie.updateDragButtons();
+    pie.drag1.shown = true;
+    pie.drag2.shown = true;
+    pieAndDragButtons.add(pie.drag1);
+    pieAndDragButtons.add(pie.drag2);
+  } else {
+    pie.drag1.shown = false;
+    pie.drag2.shown = false;
   }
   return pieAndDragButtons;
 }
 
 bool isEditing() {
   /// checks if there is a current selected slice
-  return pie.selectedSliceIndex > -1;
+  return pie.getSelectedSliceIndex() != -1;
 }
