@@ -134,7 +134,9 @@ class Slice {
   void updateToDragButtons(Point newPosition) {
     double newTime = DragButton.getTimeFromPoint(newPosition);
     // if its closer to endtime, it changes endtime
-    if ((getEndTime() - newTime).abs() < (getStartTime() - newTime).abs()) {
+    if ((getEndTime() - newTime).abs() < (getStartTime() - newTime).abs() ||
+        (getEndTime() - 12 - newTime).abs() <
+            (getStartTime() - newTime).abs()) {
       dragButtonAfter.setPoint(newPosition);
     } else {
       dragButtonBefore.setPoint(newPosition);
@@ -149,11 +151,22 @@ class Slice {
       }
     }
     // edge case: 12 o'clock
-    if (dragButtonAfter.time >= 12) {
-      dragButtonAfter.time = 11.99;
+    if (dragButtonAfter.time > 12) {
+      dragButtonAfter.time = 12;
     }
     if (dragButtonBefore.time > 11.75) {
-      dragButtonBefore.time = 0.01;
+      dragButtonBefore.time = 11.75;
+    }
+    // snaps to 12 if you try to go over
+    if (dragButtonAfter.time < dragButtonBefore.time ||
+        (dragButtonAfter.time == dragButtonBefore.time &&
+            dragButtonBefore.time == 0)) {
+      // snaps to 0 if you try to go under
+      if (dragButtonBefore.time > 6) {
+        dragButtonBefore.time = 0;
+      } else {
+        dragButtonAfter.time = 12;
+      }
     }
 
     _dragStartTime(dragButtonBefore.time);

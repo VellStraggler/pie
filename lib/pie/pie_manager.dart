@@ -51,12 +51,14 @@ class PieManager {
 
     // Supposedly this method only creates the file if it doesn't exist
     // and will create all additional directories as needed
-    await file.create(exclusive: false, recursive: true);
-    if (await file.exists()) {
-      // Create default content
-      final defaultContent = jsonEncode({"AM": [], "PM": []});
-      // Write the default content to the file path
-      await file.writeAsString(defaultContent);
+    if (!await file.exists()) {
+      await file.create(exclusive: false, recursive: true);
+      if (await file.exists()) {
+        // Create default content
+        final defaultContent = jsonEncode({"AM": [], "PM": []});
+        // Write the default content to the file path
+        await file.writeAsString(defaultContent);
+      }
     }
   }
 

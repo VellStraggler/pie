@@ -24,6 +24,7 @@ bool isAfternoon = false;
 PiePainter painter = PiePainter(pie: pie);
 const double pieToWindowRatio = .8;
 final player = AudioPlayer();
+bool tappedButton = false;
 
 // this is a global var so we can update at any point from anywhere
 List<Widget> pieAndDragButtons = [];
@@ -150,6 +151,9 @@ class MyHomePageState extends State<MyHomePage> {
     return GestureDetector(
         key: _gestureKey,
         onTapDown: (details) {
+          if (tappedButton) {
+            return;
+          }
           // Update the widget size
           _getWidgetSize();
           // print("height: ${widgetHeight!}, width: ${widgetWidth!}");
@@ -197,6 +201,7 @@ class MyHomePageState extends State<MyHomePage> {
         },
         onTapUp: (details) {
           // savePie only when user lets go
+          updateScreen();
           savePie();
         },
         child: Scaffold(
@@ -208,7 +213,6 @@ class MyHomePageState extends State<MyHomePage> {
                 title: const PreferredSize(
                     preferredSize: Size.fromHeight(32.0),
                     child: Align(
-                        alignment: Alignment.center,
                         child: Padding(
                             padding: EdgeInsets.only(bottom: 4.0),
                             child: Clock())))),
@@ -235,6 +239,9 @@ class MyHomePageState extends State<MyHomePage> {
   /// Checks for a dragbutton at the given location.
   /// Includes some padding, shape is non-circular
   bool _tappedDragButton(tapTime) {
+    if (pie.getSelectedSliceIndex() == -1) {
+      return false;
+    }
     Slice selectedSlice = pie.getSelectedSlice();
     return ((selectedSlice.getStartTime() - padding < tapTime &&
             selectedSlice.getStartTime() + padding > tapTime) ||
@@ -264,6 +271,9 @@ class MyHomePageState extends State<MyHomePage> {
 
   /// Produces vibrations and a click sound when called. Does not work on Windows.
   void vibrateWithAudio(int level) {
+    if (Platform.isWindows) {
+      return;
+    }
     switch (level) {
       case (1):
         Vibration.vibrate(duration: 50);
@@ -307,7 +317,7 @@ class MyHomePageState extends State<MyHomePage> {
           ), //this ^ replaces that v
         if (!isEditing())
           FloatingActionButton(
-            onPressed: _showAddSliceDialog,
+            onPressed: _showAddSliceDialogue,
             backgroundColor: buttonColor,
             tooltip: 'Add Slice',
             child: const Icon(Icons.add),
@@ -358,6 +368,7 @@ class MyHomePageState extends State<MyHomePage> {
       child: TextFormField(
         controller: controller,
         decoration: InputDecoration(labelText: label, hintText: hintText),
+        autofocus: true,
         keyboardType: textInputType,
         validator: (value) {
           if (label != 'Task Description' &&
@@ -374,10 +385,13 @@ class MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _editSelectedSlice() {}
+  void _editSelectedSlice() {
+    tappedButton = true;
+    tappedButton = false;
+  }
 
   /// Creates form to add a new slice to the pie.
-  void _showAddSliceDialog() {
+  void _showAddSliceDialogue() {
     vibrateWithAudio(1);
     showDialog(
       context: context,
@@ -385,6 +399,7 @@ class MyHomePageState extends State<MyHomePage> {
         final startTimeController = TextEditingController();
         final durationController = TextEditingController();
         final taskController = TextEditingController();
+
         return AlertDialog(
           backgroundColor: themeColor1,
           title: const Text('Add New Slice'),
@@ -392,10 +407,10 @@ class MyHomePageState extends State<MyHomePage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _buildTextField(startTimeController, 'Start Time',
-                    'E.g. 6:30 or 10 (hours) or 1130'),
-                _buildTextField(durationController, 'Duration (HH:MM)',
-                    'E.g. 6:30 or 10 (hours) or 1130'),
+                _buildTextField(
+                    startTimeController, 'Start Time', 'E.g. 1:00 or 1 or 100'),
+                _buildTextField(
+                    durationController, 'Duration', 'E.g. 1:00 or 1 or 100'),
                 _buildTextField(taskController, 'Task Description'),
               ],
             ),
@@ -412,10 +427,10 @@ class MyHomePageState extends State<MyHomePage> {
                 double durationA =
                     max(0.25, parseTime(durationController.text));
                 var taskText = taskController.text.trim();
-                if (startTime + durationA == 12) {
-                  // 12:00 defaults to 0:00, so this avoids a full-day slice bug
-                  durationA -= .01;
-                }
+                // if (startTime + durationA == 12) {
+                //   // 12:00 defaults to 0:00, so this avoids a full-day slice bug
+                //   durationA -= .01;
+                // }
                 final duration = durationA;
 
                 // Create a default slice if the user has entered nothing in
@@ -432,7 +447,7 @@ class MyHomePageState extends State<MyHomePage> {
                         Task.parameterized(taskText, startTime, duration);
                     pie.addSlice(task);
                     vibrateWithAudio(3);
-                    pie.selectedSliceIndex = -1; //pie.slices.length - 1;
+                    pie.setSelectedSliceIndex(-1); //pie.slices.length - 1;
                     updateScreen();
                   });
                   savePie();
@@ -454,13 +469,16 @@ class MyHomePageState extends State<MyHomePage> {
 
   /// Removes the last slice selected from the pie.
   void _removeSelectedSlice() {
+    tappedButton = true;
     vibrateWithAudio(3);
     pie.removeSlice();
     savePie();
+    tappedButton = false;
   }
 
   /// List the Tasks for the current Pie.
   void _listSlices() {
+    tappedButton = true;
     print(aMPie.toJson('AM'));
     print(pMPie.toJson('PM'));
     showDialog(
@@ -490,6 +508,7 @@ class MyHomePageState extends State<MyHomePage> {
         );
       },
     );
+    tappedButton = false;
   }
 
   /// Takes string inputs and returns their apparent time.
@@ -535,7 +554,7 @@ class MyHomePageState extends State<MyHomePage> {
   void startTimer() {
     // 100 is too quick. Deletes the delete button before the delete button
     // deletes what it's deleting
-    _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
+    _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       updateScreen();
     });
   }

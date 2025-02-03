@@ -25,6 +25,7 @@ class Pie {
     return selectedSliceIndex;
   }
 
+  /// Will break if you ask for -1
   Slice getSelectedSlice() {
     return slices[selectedSliceIndex];
   }
@@ -33,17 +34,17 @@ class Pie {
   void setSelectedSliceIndex(int i) {
     // This may marginally decrease the time it takes for
     // a dragbutton to despawn
-    if (selectedSliceIndex != -1) {
-      Slice oldSlice = slices[selectedSliceIndex];
-      oldSlice.dragButtonBefore.shown = false;
-      oldSlice.dragButtonAfter.shown = false;
-    }
+    // if (selectedSliceIndex != -1) {
+    //   Slice oldSlice = slices[selectedSliceIndex];
+    //   oldSlice.dragButtonBefore.shown = false;
+    //   oldSlice.dragButtonAfter.shown = false;
+    // }
     selectedSliceIndex = i;
-    if (selectedSliceIndex != -1) {
-      Slice oldSlice = slices[selectedSliceIndex];
-      oldSlice.dragButtonBefore.shown = true;
-      oldSlice.dragButtonAfter.shown = true;
-    }
+    // if (selectedSliceIndex != -1) {
+    //   Slice oldSlice = slices[selectedSliceIndex];
+    //   oldSlice.dragButtonBefore.shown = true;
+    //   oldSlice.dragButtonAfter.shown = true;
+    // }
   }
 
   /// Parameterized Constructor
