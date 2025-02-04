@@ -215,6 +215,22 @@ class PiePainter extends CustomPainter {
         }
       }
     }
+
+    /// Draw DragButtons
+    // get the points where dragbuttons are drawn
+    if (isEditing()) {
+      Point startPoint = pie.drag1.point;
+      Point endPoint = pie.drag2.point;
+      for (Point point in [startPoint, endPoint]) {
+        painter.color = Colors.black;
+        canvas.drawCircle(Offset(point.x + getOffset(), point.y + getOffset()),
+            buttonRadius, painter);
+        painter.color = Colors.white;
+        canvas.drawCircle(Offset(point.x + getOffset(), point.y + getOffset()),
+            buttonRadius * .75, painter);
+      }
+    }
+
     // Write Time outside of pie
     int timeOffset = 28;
     double fontSize = 18;

@@ -2,35 +2,21 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:pie_agenda/pie/diameter.dart';
-import 'package:pie_agenda/pie/pie.dart';
-import 'dart:async';
 import 'package:pie_agenda/display/point.dart';
 
 const double buttonRadius = 20;
 const double buttonDiameter = buttonRadius * 2;
 
 // ignore: must_be_immutable
-class DragButton extends StatefulWidget {
+class DragButton {
   Point point;
   double time;
   bool shown;
-  late Function(Point) onDragEnd; // callback for drag end
-  late final Pie pie;
+  bool isStartButton;
 
-  DragButton({super.key, required this.time, required this.shown})
+  DragButton(
+      {required this.time, required this.shown, required this.isStartButton})
       : point = getPointFromTime(time);
-
-  @override
-  // ignore: library_private_types_in_public_api
-  _DragButtonState createState() => _DragButtonState();
-
-  void removeListener(void Function() onDragButtonChanged) {}
-
-  void addListener(void Function() onDragButtonChanged) {}
-
-  Point position() {
-    return point;
-  }
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
@@ -66,6 +52,23 @@ class DragButton extends StatefulWidget {
     return (Diameter.instance.getPieDiameter()) ~/ 2;
   }
 
+  /// Find closest snap point.
+  static Point getNearestSnapPoint(Point currentPosition, details) {
+    Point current = Point.parameterized(
+        x: (currentPosition.x + details.delta.dx),
+        y: (currentPosition.y + details.delta.dy));
+    Point newPoint =
+        DragButton.getPointFromTime(DragButton.getTimeFromPoint(current));
+    return newPoint;
+  }
+
+  /// Get closest 15-min segment snap point
+  static Point getRoundedSnapPoint(Point current) {
+    double time = DragButton.getTimeFromPoint(current);
+    time = (time * 4).round() / 4;
+    return DragButton.getPointFromTime(time);
+  }
+
   static double getTimeFromPoint(Point point) {
     // Calculate the center of the circle
     int centerX = _radius();
@@ -91,94 +94,5 @@ class DragButton extends StatefulWidget {
       time -= 12.0;
     }
     return time;
-  }
-}
-
-class _DragButtonState extends State<DragButton> {
-  late Point currentPosition;
-  final _dragController = StreamController<void>();
-
-  @override
-  void initState() {
-    super.initState();
-    currentPosition = Point.parameterized(x: widget.point.x, y: widget.point.y);
-  }
-
-  void _notifyListeners() {
-    _dragController.add(null);
-  }
-
-  @override
-  void dispose() {
-    _dragController.close();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    currentPosition = widget.point;
-    return Positioned(
-      left: currentPosition.x,
-      top: currentPosition.y,
-      child: GestureDetector(
-        onPanUpdate: (details) {
-          // Keep the Dragbutton stuck on the edge of the circle
-          setState(() {
-            currentPosition = getNearestSnapPoint(currentPosition, details);
-            widget.onDragEnd(currentPosition);
-          });
-          _notifyListeners();
-        },
-        onPanEnd: (details) {
-          // When the user lets go, snap the Dragbutton to the nearest 15-minute mark
-          setState(() {
-            currentPosition = getRoundedSnapPoint(currentPosition);
-            widget.onDragEnd(currentPosition);
-          });
-          _notifyListeners();
-        },
-        child: widget.shown
-            ? Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    width: buttonRadius * 2,
-                    height: buttonRadius * 2,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.black,
-                    ),
-                  ),
-                  Container(
-                    width: buttonRadius * 1.5,
-                    height: buttonRadius * 1.5,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              )
-            : Stack(),
-      ),
-    );
-  }
-
-  /// Find closest snap point.
-  static Point getNearestSnapPoint(
-      Point currentPosition, DragUpdateDetails details) {
-    Point current = Point.parameterized(
-        x: (currentPosition.x + details.delta.dx),
-        y: (currentPosition.y + details.delta.dy));
-    Point newPoint =
-        DragButton.getPointFromTime(DragButton.getTimeFromPoint(current));
-    return newPoint;
-  }
-
-  /// Get closest 15-min segment snap point
-  static Point getRoundedSnapPoint(Point current) {
-    double time = DragButton.getTimeFromPoint(current);
-    time = (time * 4).round() / 4;
-    return DragButton.getPointFromTime(time);
   }
 }
