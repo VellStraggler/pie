@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:pie_agenda/methods.dart';
 import 'package:vibration/vibration.dart';
 import 'package:pie_agenda/display/point.dart';
 import 'package:pie_agenda/pie/diameter.dart';
@@ -158,16 +159,12 @@ class MyHomePageState extends State<MyHomePage> {
           }
           // Update the widget size
           _getWidgetSize();
-          // print("height: ${widgetHeight!}, width: ${widgetWidth!}");
 
           Point tappedPoint = _getTappedPoint(details);
-          // print(tappedPoint.toString());
 
           double tappedDistToCenter = _getTappedDistToCenter(details);
-          // print("dist: $tappedDistToCenter");
 
-          double tapTime = DragButton.getTimeFromPoint(tappedPoint);
-          // print(tapTime.toString());
+          double tapTime = Methods.getTimeFromPoint(tappedPoint);
 
           // if you tap outside the pie chart, it deselects the selected slice
           // UNLESS you tapped close enough to a dragbutton
@@ -209,7 +206,7 @@ class MyHomePageState extends State<MyHomePage> {
         },
         onPanUpdate: (details) {
           Point newPoint = _getTappedPoint(details);
-          newPoint = DragButton.getNearestSnapPoint(
+          newPoint = Methods.getNearestSnapPoint(
               Point.parameterized(x: newPoint.x, y: newPoint.y), details);
           // DragButton? button;
           if (dragButtonIndex == 1) {
@@ -224,11 +221,19 @@ class MyHomePageState extends State<MyHomePage> {
             return;
           }
         },
+        onPanEnd: (details) {
+          // Point newPoint = _getTappedPoint(details);
+          // newPoint = DragButton.getNearestSnapPoint(
+          //     Point.parameterized(x: newPoint.x, y: newPoint.y), details);
+          pie.changeSelectedSliceStart(
+              Methods.getRoundedSnapPoint(pie.drag1.point));
+          pie.changeSelectedSliceEnd(
+              Methods.getRoundedSnapPoint(pie.drag2.point));
+          // savePie only when user lets goww
+          updateScreen();
+          savePie();
+        },
         onTapUp: (details) {
-          pie.changeSelectedSliceStart(
-              DragButton.getRoundedSnapPoint(pie.drag1.point));
-          pie.changeSelectedSliceStart(
-              DragButton.getRoundedSnapPoint(pie.drag1.point));
           // savePie only when user lets goww
           updateScreen();
           savePie();
@@ -592,9 +597,8 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   void startTimer() {
-    // 100 is too quick. Deletes the delete button before the delete button
-    // deletes what it's deleting
-    _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+    // 90 fps
+    _timer = Timer.periodic(const Duration(milliseconds: 12), (timer) {
       updateScreen();
     });
   }

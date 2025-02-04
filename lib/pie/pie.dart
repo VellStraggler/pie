@@ -1,6 +1,5 @@
-import 'dart:math';
-
 import 'package:pie_agenda/display/drag_button.dart';
+import 'package:pie_agenda/methods.dart';
 import 'package:pie_agenda/pie/diameter.dart';
 import 'slice.dart';
 import '../display/point.dart';
@@ -52,7 +51,7 @@ class Pie {
   void changeSelectedSliceStart(Point newPosition) {
     Slice slice = getSelectedSlice();
     double end = slice.getEndTime();
-    double newTime = DragButton.getTimeFromPoint(newPosition);
+    double newTime = Methods.getTimeFromPoint(newPosition);
     // start time must never be higher than end time
     if (newTime > drag2.time - 0.25) {
       // if startTime is attempting to be closer to midnight
@@ -73,7 +72,7 @@ class Pie {
   }
 
   void changeSelectedSliceEnd(Point newPosition) {
-    double newTime = DragButton.getTimeFromPoint(newPosition);
+    double newTime = Methods.getTimeFromPoint(newPosition);
     //
     if (newTime < drag1.time + 0.25) {
       // if startTime is attempting to be closer to midnight

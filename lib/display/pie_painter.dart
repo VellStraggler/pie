@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pie_agenda/display/drag_button.dart';
 import 'package:pie_agenda/display/rotated_text.dart';
+import 'package:pie_agenda/methods.dart';
 import 'package:pie_agenda/pie/pie.dart';
 import 'package:pie_agenda/pie/slice.dart';
 import 'dart:math';
@@ -101,10 +102,10 @@ class PiePainter extends CustomPainter {
       // painter.color = slice.color;
       var color1 = Slice.colorFromTime(slice.getStartTime(), isAfternoon);
       var color2 = Slice.colorFromTime(slice.getEndTime(), isAfternoon);
-      var avgColor = averageColor(color1, color2);
+      var avgColor = Methods.averageColor(color1, color2);
       if (i == pie.getSelectedSliceIndex()) {
         slice.setShownText(true);
-        avgColor = darkenColor(avgColor);
+        avgColor = Methods.darkenColor(avgColor);
       }
       // Save this color
       slice.color = avgColor;
@@ -187,8 +188,9 @@ class PiePainter extends CustomPainter {
       if (hasBlackText(rText.slice)) {
         color = Colors.black;
       }
-      if (Slice.timeToRadians(rText.slice.getEndTime()) < timeInRadians) {
-        color = averageColor(color, shadow);
+      double endTime = rText.slice.getEndTime();
+      if (Slice.timeToRadians(endTime) < timeInRadians && endTime != 12) {
+        color = Methods.averageColor(color, shadow);
       }
       _drawSliceText(canvas, rText.slice.task.getTaskName(), rText.textX,
           rText.textY, rText.textAngle, rText.slice.getDuration(), color);
@@ -206,7 +208,7 @@ class PiePainter extends CustomPainter {
         double time = i / 4;
         if ((time > start - 1 && time < start + 1) ||
             (time > end - 1 && time < end + 1)) {
-          Point position = DragButton.getPointFromTime(time);
+          Point position = Methods.getPointFromTime(time);
           // draw guidebutton at position
           canvas.drawCircle(
               Offset(position.x + getOffset(), position.y + getOffset()),
@@ -236,12 +238,12 @@ class PiePainter extends CustomPainter {
     double fontSize = 18;
     // include all but 12 o' clock
     for (int time = 1; time < 12; time++) {
-      Point position = DragButton.getPointFromTimeAndRadius(
+      Point position = Methods.getPointFromTimeAndRadius(
           time.toDouble(), (pie.radius() + timeOffset).toInt());
       _drawText(canvas, time.toString(), position.x - (fontSize / 3),
           position.y - (fontSize / 3), 0, fontSize, Colors.grey);
     }
-    Point twelve = DragButton.getPointFromTimeAndRadius(
+    Point twelve = Methods.getPointFromTimeAndRadius(
         0.0, (pie.radius() + timeOffset).toInt());
     String twelveText = "noon";
     if (pie.pM) {
@@ -324,24 +326,5 @@ class PiePainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
     // Return true if the painting should be updated, otherwise false
     return true;
-  }
-
-  static Color darkenColor(Color color) {
-    const int darken = 50;
-    return Color.fromRGBO(max(color.red - darken, 0),
-        max(0, color.green - darken), max(0, color.blue - darken), 1.0);
-  }
-
-  static Color lightenColor(Color color, {int amount = 50}) {
-    return Color.fromRGBO(
-        min(255, color.red + amount),
-        min(255, color.green + amount),
-        min(255, color.blue + amount),
-        color.opacity);
-  }
-
-  static Color averageColor(Color a, Color b) {
-    return Color.fromRGBO((a.red + b.red) ~/ 2, (a.green + b.green) ~/ 2,
-        (a.blue + b.blue) ~/ 2, .9);
   }
 }
