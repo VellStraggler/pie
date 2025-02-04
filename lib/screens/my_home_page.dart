@@ -546,7 +546,9 @@ class MyHomePageState extends State<MyHomePage> {
     // probably part of why app is so glitchy
     setState(() {
       updateSize();
-      painter = PiePainter(pie: pie);
+      // painter = PiePainter(pie: pie);
+      // we don't need to reinstantiate the painter every frame
+      // so I took it out
       _buildPie();
     });
   }
