@@ -236,11 +236,20 @@ class MyHomePageState extends State<MyHomePage> {
                         child: Padding(
                             padding: EdgeInsets.only(bottom: 4.0),
                             child: Clock())))),
-            body: Center(
-                child: CustomPaint(
-                    size: Size(
-                        pie.width + buttonDiameter, pie.width + buttonDiameter),
-                    painter: painter)),
+            body: Stack(children: [
+              Padding(
+                  padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                  child: Text(
+                    _getSliceInfoText(),
+                    style: const TextStyle(fontSize: 24, color: Colors.black),
+                    textAlign: TextAlign.center,
+                  )),
+              Center(
+                  child: CustomPaint(
+                      size: Size(pie.width + buttonDiameter,
+                          pie.width + buttonDiameter),
+                      painter: painter)),
+            ]),
             floatingActionButton: _buildFloatingActionButtons()));
   }
 
@@ -248,6 +257,24 @@ class MyHomePageState extends State<MyHomePage> {
   bool _tappedOutsideRadius(tappedDistToCenter) {
     return (tappedDistToCenter >
         pie.radius() - (buttonRadius + (padding * 100)));
+  }
+
+  String _getSliceInfoText() {
+    int sliceNowIndex = -1;
+    for (int i = 0; i < pie.slices.length; i++) {
+      Slice slice = pie.slices[i];
+      if (slice.getEndTime() > pie.currentTime) {
+        if (slice.getStartTime() < pie.currentTime) {
+          sliceNowIndex = i;
+        }
+      }
+    }
+    if (sliceNowIndex == -1) {
+      return "Nothing to do right now...";
+    }
+    Slice sliceNow = pie.slices[sliceNowIndex];
+    double minutesLeft = (sliceNow.getEndTime() - pie.currentTime) * 60;
+    return "Time left in ${sliceNow.task.taskName}: ${(minutesLeft).toStringAsFixed(0)} minutes.";
   }
 
   /// Similar to _updateDragButtons, only this changes both

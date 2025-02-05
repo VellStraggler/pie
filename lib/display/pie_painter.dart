@@ -89,6 +89,7 @@ class PiePainter extends CustomPainter {
       }
     }
     double timeFormatted = hour + ((minute * 60 + second) / 3600);
+    pie.currentTime = timeFormatted;
     double timeInRadians = timeFormatted * pi / 6;
     painter.color = themeColor2;
     double midnightTimeInRadians = (3 * pi / 2);

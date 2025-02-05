@@ -55,36 +55,40 @@ To recreate the development environment, you need the following software and/or 
 * [X] Save and Load Tasks
 * [ ] Edit Task Name
 
-## Future Work
+## Alpha Features
 The following items we plan to fix, improve, and/or add to this project in the future:
 
-* [ ] Shadows! from hands and even text
 * [X] Allow user to tap anywhere to deselect slices
-* [ ] Stop tasks from overlapping (may not implement)
-* [ ] Increase performance: [X]saving after tapping, not while holding
+* [ ] Increase performance: 
+        [X]saving after tapping, not while holding
+        [X]increase framerate
+        [ ]await save the file
 * [X] modify drawing to not overlap itself
 * [X] Limit to 2 drag buttons
-* [ ] Add animations such as for loading / pie-switching
-* [ ] Allow entire slice to be dragged
+* [X] Allow entire slice to be dragged
+    - Known bug: 15-minute segment doesn't like moving
 * [X] widen click area for drag buttons
 * [ ] allow double-tap editing
-* [ ] allow military time task adding
 * [X] add time to markers 
-* [ ] have time follow held dragbutton
+* [ ] have time follow held dragbutton (written directly under dragButton)
 * [ ] have a + and - button to change duration
 * [ ] undo button
 * [X] future tasks brighter, old tasks duller/grayer, fading
-* [ ] Allow transparency when editing tasks
+* [X] Allow transparency when editing tasks
 * [X] improve base colors 
 widget homescreen (what does this mean)
 * [ ] fill space with details about current task
-* [ ] import tasks from other calendar apps
-* [ ] Swipe top bar to change day 
-* [ ] Put AM/PM button in the center of the pie
+        - How much time is left on task
 * [X] Improve text sizing and centering
+
+## Potential Beta Features
+* [ ] Swipe top bar to change day 
+* [ ] Allow it to run in the background when minimized
+* [ ] Shadows! from hands and even text
+* [ ] import tasks from other calendar apps
+* [ ] Add animations such as for loading / pie-switching
 * [ ] Notifications
 * [ ] Theme changing
-* [ ] Allow it to run in the background when minimized
 
 ## Reflections
 ### What Went Well:

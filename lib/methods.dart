@@ -93,8 +93,11 @@ class Methods {
 
   static Color darkenColor(Color color) {
     const int darken = 50;
-    return Color.fromRGBO(max(color.red - darken, 0),
-        max(0, color.green - darken), max(0, color.blue - darken), 1.0);
+    return Color.fromRGBO(
+        max(color.red - darken, 0),
+        max(0, color.green - darken),
+        max(0, color.blue - darken),
+        color.opacity);
   }
 
   static Color lightenColor(Color color, {int amount = 50}) {

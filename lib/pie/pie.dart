@@ -14,6 +14,7 @@ class Pie {
   int _selectedSliceIndex; // The current selected slice's index.
   bool isHovering = false;
   bool pM;
+  double currentTime = 0;
 
   /// Initializes with a single slice covering the whole circle.
   Pie({this.pM = false})
