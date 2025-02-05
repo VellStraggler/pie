@@ -178,7 +178,7 @@ class MyHomePageState extends State<MyHomePage> {
 
           var holdingDragButton = false;
           dragButtonIndex = getDragbuttonIndex(tappedPoint);
-          if (dragButtonIndex != -1) {
+          if (dragButtonIndex != -1 && !pie.isHovering) {
             holdingDragButton = true;
           }
           if (_tappedOutsideRadius(tappedDistToCenter)) {
@@ -212,9 +212,10 @@ class MyHomePageState extends State<MyHomePage> {
           updateScreen();
         },
         onScaleUpdate: (details) {
-          _updateDragButtons(details);
           if (pie.isHovering) {
             _updateSelectedSlice(details);
+          } else {
+            _updateDragButtons(details);
           }
         },
         onScaleEnd: (details) {
