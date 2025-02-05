@@ -44,6 +44,7 @@ class PiePainter extends CustomPainter {
         width: pie.width + 25,
         height: pie.width + 25);
     DateTime time = DateTime.now();
+    // time = DateTime.parse("2025-02-04T15:14:15");
     int hour = time.hour;
     int minute = time.minute;
     int second = time.second;
@@ -268,9 +269,10 @@ class PiePainter extends CustomPainter {
       maxWidth += (pow(duration - 3, 1.5) * 5);
     }
 
-    // max fontSize of 36
+    // max fontSize of 42
     // should be changed to accounts for length of text
-    double fontSize = min(duration / .25 * 12, 36);
+    double fontSize = min(duration / .25 * 12, 62);
+    // double fontSize = duration / .25 * 12;
     double estTextWidth = fontSize * text.length * 0.6;
 
     if (estTextWidth > maxWidth) {

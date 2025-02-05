@@ -49,6 +49,9 @@ class Pie {
   }
 
   void changeSelectedSliceStart(Point newPosition) {
+    if (_selectedSliceIndex == -1) {
+      return;
+    }
     Slice slice = getSelectedSlice();
     double end = slice.getEndTime();
     double newTime = Methods.getTimeFromPoint(newPosition);
@@ -72,6 +75,9 @@ class Pie {
   }
 
   void changeSelectedSliceEnd(Point newPosition) {
+    if (_selectedSliceIndex == -1) {
+      return;
+    }
     double newTime = Methods.getTimeFromPoint(newPosition);
     //
     if (newTime < drag1.time + 0.25) {

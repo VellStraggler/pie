@@ -87,7 +87,6 @@ class MyHomePageState extends State<MyHomePage> {
     if (Platform.isWindows) {
       unknownOffset = 26; //otherwise, treats it as Android
     }
-    player.setSource(AssetSource('data/tap.wav'));
 
     // Get the dimensions of the app ASAP here
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -153,7 +152,7 @@ class MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return GestureDetector(
         key: _gestureKey,
-        onTapDown: (details) {
+        onScaleStart: (details) {
           if (tappedFloatingButton) {
             return;
           }
@@ -204,36 +203,11 @@ class MyHomePageState extends State<MyHomePage> {
           }
           updateScreen();
         },
-        onPanUpdate: (details) {
-          Point newPoint = _getTappedPoint(details);
-          newPoint = Methods.getNearestSnapPoint(
-              Point.parameterized(x: newPoint.x, y: newPoint.y), details);
-          // DragButton? button;
-          if (dragButtonIndex == 1) {
-            // button = pie.drag1;
-            pie.changeSelectedSliceStart(newPoint);
-            // button.setPoint(newPoint);
-          } else if (dragButtonIndex == 2) {
-            // button = pie.drag2;
-            pie.changeSelectedSliceEnd(newPoint);
-            // button.setPoint(newPoint);
-          } else {
-            return;
-          }
+        onScaleUpdate: (details) {
+          _updateDragButtons(details);
         },
-        onPanEnd: (details) {
-          // Point newPoint = _getTappedPoint(details);
-          // newPoint = DragButton.getNearestSnapPoint(
-          //     Point.parameterized(x: newPoint.x, y: newPoint.y), details);
-          pie.changeSelectedSliceStart(
-              Methods.getRoundedSnapPoint(pie.drag1.point));
-          pie.changeSelectedSliceEnd(
-              Methods.getRoundedSnapPoint(pie.drag2.point));
-          // savePie only when user lets goww
-          updateScreen();
-          savePie();
-        },
-        onTapUp: (details) {
+        onScaleEnd: (details) {
+          _finalizeDragButtons(details);
           // savePie only when user lets goww
           updateScreen();
           savePie();
@@ -262,6 +236,33 @@ class MyHomePageState extends State<MyHomePage> {
   bool _tappedOutsideRadius(tappedDistToCenter) {
     return (tappedDistToCenter >
         pie.radius() - (buttonRadius + (padding * 100)));
+  }
+
+  void _updateDragButtons(details) {
+    Point newPoint = _getTappedPoint(details);
+    newPoint = Methods.getNearestSnapPoint(
+        Point.parameterized(x: newPoint.x, y: newPoint.y), details);
+    // DragButton? button;
+    if (dragButtonIndex == 1) {
+      // button = pie.drag1;
+      pie.changeSelectedSliceStart(newPoint);
+      // button.setPoint(newPoint);
+    } else if (dragButtonIndex == 2) {
+      // button = pie.drag2;
+      pie.changeSelectedSliceEnd(newPoint);
+      // button.setPoint(newPoint);
+    } else {
+      return;
+    }
+  }
+
+  void _finalizeDragButtons(details) {
+    pie.changeSelectedSliceStart(Methods.getRoundedSnapPoint(pie.drag1.point));
+    pie.changeSelectedSliceEnd(Methods.getRoundedSnapPoint(pie.drag2.point));
+    dragButtonIndex = -1;
+    // savePie only when user lets goww
+    updateScreen();
+    savePie();
   }
 
   int getDragbuttonIndex(Point tappedPoint) {
@@ -300,8 +301,8 @@ class MyHomePageState extends State<MyHomePage> {
   /// pie-related calculations
   Point _getTappedPoint(details) {
     return Point.parameterized(
-        x: details.localPosition.dx - (widgetWidth! / 2) + (pie.width / 2),
-        y: details.localPosition.dy -
+        x: details.localFocalPoint.dx - (widgetWidth! / 2) + (pie.width / 2),
+        y: details.localFocalPoint.dy -
             (widgetHeight! / 2 + unknownOffset) +
             (pie.width / 2));
   }
@@ -309,9 +310,9 @@ class MyHomePageState extends State<MyHomePage> {
   /// Calculate the distance tapped from the center.
   /// Assumes the pie is centered.
   /// sqrt((x1-x2)^2 + (y1-y2)^2)
-  double _getTappedDistToCenter(TapDownDetails details) {
-    return sqrt(pow(details.localPosition.dx - (widgetWidth! / 2), 2) +
-        pow(details.localPosition.dy - ((widgetHeight! / 2 + unknownOffset)),
+  double _getTappedDistToCenter(details) {
+    return sqrt(pow(details.localFocalPoint.dx - (widgetWidth! / 2), 2) +
+        pow(details.localFocalPoint.dy - ((widgetHeight! / 2 + unknownOffset)),
             2));
   }
 
@@ -328,12 +329,13 @@ class MyHomePageState extends State<MyHomePage> {
         Vibration.vibrate(duration: 100);
         break;
       case (3):
+        // Reserved for adding and removing slices
+        playPopSound();
         Vibration.vibrate(duration: 150);
         break;
       default:
         Vibration.vibrate(duration: 50);
     }
-    // playPopSound();
     print("sound and haptics happened here! Level: $level");
   }
 

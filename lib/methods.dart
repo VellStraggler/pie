@@ -23,9 +23,8 @@ class Methods {
 
   /// Find closest snap point.
   static Point getNearestSnapPoint(Point currentPosition, details) {
-    Point current = Point.parameterized(
-        x: (currentPosition.x + details.delta.dx),
-        y: (currentPosition.y + details.delta.dy));
+    Point current =
+        Point.parameterized(x: (currentPosition.x), y: (currentPosition.y));
     Point newPoint = getPointFromTime(getTimeFromPoint(current));
     return newPoint;
   }
