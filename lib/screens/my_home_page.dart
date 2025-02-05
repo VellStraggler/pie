@@ -115,6 +115,7 @@ class MyHomePageState extends State<MyHomePage> {
     if (smallestDimension * pieToWindowRatio != pie.width) {
       Diameter.instance.setPieDiameter(smallestDimension * pieToWindowRatio);
       pie.width = Diameter.instance.pieDiameter;
+      pie.updateDragButtons();
       // // update all slice dragButtons as this wasn't automatic
       // for (Slice slice in pie.slices) {
       //   slice.reloadDragButtons();
