@@ -14,12 +14,36 @@ const int dragButtonOffset = buttonRadius ~/ 2;
 const double textOffsetMult = 0.6;
 const double centerDiam = 24;
 const Color shadow = Color.fromRGBO(35, 35, 144, 0.7);
+const int hoverDist = 24;
 
 /// Creates the pie displayed on screen.
 class PiePainter extends CustomPainter {
   final Pie pie;
+  // Create offset for pie and slices
+  Offset centerOffset;
+  // Define the radius and centerpoint for all slices
+  Rect rectArea;
+  Rect tinyRectArea;
 
-  PiePainter({super.repaint, required this.pie});
+  PiePainter({super.repaint, required this.pie})
+      : centerOffset = const Offset(0, 0),
+        rectArea =
+            Rect.fromCenter(center: const Offset(0, 0), width: 0, height: 0),
+        tinyRectArea =
+            Rect.fromCenter(center: const Offset(0, 0), width: 0, height: 0) {
+    updateWithNewDimensions();
+  }
+
+  void updateWithNewDimensions() {
+    // Create offset for pie and slices
+    centerOffset =
+        Offset(pie.radius() + getOffset(), pie.radius() + getOffset());
+    // Define the radius and centerpoint for all slices
+    rectArea = Rect.fromCenter(
+        center: centerOffset, width: pie.width, height: pie.width);
+    tinyRectArea = Rect.fromCenter(
+        center: centerOffset, width: centerDiam + 6, height: centerDiam + 6);
+  }
 
   int getOffset() {
     return buttonRadius.toInt();
@@ -74,33 +98,18 @@ class PiePainter extends CustomPainter {
     canvas.drawArc(
         timeArea, midnightTimeInRadians, timeInRadians, true, painter);
 
-    // Create offset for pie and slices
-    Offset centerOffset =
-        Offset(pie.radius() + getOffset(), pie.radius() + getOffset());
-
     // Draw the pie chart.
     painter.color = offWhite;
     canvas.drawCircle(centerOffset, pie.radius() - borderWidth, painter);
 
     // Draw the slices
 
-    // Define the radius and centerpoint for all slices
-    Rect rectArea = Rect.fromCenter(
-        center: centerOffset, width: pie.width, height: pie.width);
-    Rect tinyRectArea = Rect.fromCenter(
-        center: centerOffset, width: centerDiam + 6, height: centerDiam + 6);
     // Keep a list of the rotated text for printing later
     List<RotatedText> rTextList = [];
-    int i = 0;
-    for (Slice slice in pie.slices) {
+    for (int i = 0; i < pie.slices.length; i++) {
+      Slice slice = pie.slices[i];
+      // We'll draw the selected slice later if it's hovering rn
       slice.setShownText(false);
-      double start = slice.getStartTimeToRadians() - Slice.timeToRadians(3);
-      if (start < 0) {
-        start += (2 * pi);
-      }
-      // This offset of 3 has never made sense, and it only applies to the start time
-      double duration = slice.getDurationToRadians();
-      // painter.color = slice.color;
       var color1 = Slice.colorFromTime(slice.getStartTime(), isAfternoon);
       var color2 = Slice.colorFromTime(slice.getEndTime(), isAfternoon);
       var avgColor = Methods.averageColor(color1, color2);
@@ -112,24 +121,34 @@ class PiePainter extends CustomPainter {
       slice.color = avgColor;
       painter.color = avgColor;
 
-      // Draw the given slice
-      canvas.drawArc(
-          rectArea, start, duration, true, painter); //Angles are in radians.
-      // Draw an outline that goes around the small circle of the clock hands
-      painter.color = themeColor2;
-      canvas.drawArc(tinyRectArea, start, duration, true, painter);
-
-      // Draw outline of slices
+      // Prepare outline for slice
       if (slice.getEndTime() < timeFormatted) {
         outliner.color = almostBlack;
       } else {
         outliner.color = themeColor2;
       }
+
+      // Draw the given slice
+      // This offset of 3 is due to 0 radians equalling 3 o'clock
+      double start = slice.getStartTimeToRadians() - Slice.timeToRadians(3);
+      if (start < 0) {
+        start += (2 * pi);
+      }
+      double duration = slice.getDurationToRadians();
+      // UPDATE: slice must be drawn AFTER most everything else
+      if (i == pie.getSelectedSliceIndex() && pie.isHovering) {
+        continue;
+      }
+      canvas.drawArc(
+          rectArea, start, duration, true, painter); //Angles are in radians.
+      // Draw an outline that goes around the small circle of the clock hands
+      painter.color = themeColor2;
+      canvas.drawArc(tinyRectArea, start, duration, true, painter);
+      // Draw outline of slices
       canvas.drawArc(rectArea, start, duration, true, outliner);
 
       RotatedText rText = RotatedText(slice, centerOffset);
       rTextList.add(rText);
-      i++;
     }
 
     // grey out the time that has passed
@@ -185,18 +204,66 @@ class PiePainter extends CustomPainter {
 
     // Draw all text over the time
     for (RotatedText rText in rTextList) {
-      Color color = Colors.white;
-      if (hasBlackText(rText.slice)) {
-        color = Colors.black;
-      }
-      double endTime = rText.slice.getEndTime();
-      if (Slice.timeToRadians(endTime) < timeInRadians && endTime != 12) {
-        color = Methods.averageColor(color, shadow);
-      }
+      Color color =
+          Methods.getTextColorFromSliceAndTime(rText.slice, timeInRadians);
       _drawSliceText(canvas, rText.slice.task.getTaskName(), rText.textX,
           rText.textY, rText.textAngle, rText.slice.getDuration(), color);
     }
+    // Write Time outside of pie
+    int timeOffset = 28;
+    double fontSize = 18;
+    // include all but 12 o' clock
+    for (int time = 1; time < 12; time++) {
+      Point position = Methods.getPointFromTimeAndRadius(
+          time.toDouble(), (pie.radius() + timeOffset).toInt());
+      _drawText(canvas, time.toString(), position.x - (fontSize / 3),
+          position.y - (fontSize / 3), 0, fontSize, Colors.grey);
+    }
+    Point twelve = Methods.getPointFromTimeAndRadius(
+        0.0, (pie.radius() + timeOffset).toInt());
+    String twelveText = "noon";
+    if (pie.pM) {
+      twelveText = "midnight";
+    }
+    _drawText(canvas, twelveText, twelve.x - (fontSize / 3),
+        twelve.y - (fontSize / 3), 0, fontSize, Colors.grey);
 
+    if (pie.isHovering) {
+      Slice slice = pie.getSelectedSlice();
+      double start = slice.getStartTimeToRadians() - Slice.timeToRadians(3);
+      if (start < 0) {
+        start += (2 * pi);
+      }
+      double duration = slice.getDurationToRadians();
+      double offsetAngle = start + (duration / 2);
+      Offset sliceOffset = Offset(
+        centerOffset.dx + (hoverDist) * cos(offsetAngle),
+        centerOffset.dy + (hoverDist) * sin(offsetAngle),
+      );
+      Rect hoverRectArea = Rect.fromCenter(
+          center: sliceOffset,
+          width: pie.width + hoverDist,
+          height: pie.width + hoverDist);
+      // Draw shadow
+      painter.color = shadow;
+      canvas.drawArc(rectArea, start, duration, true, painter);
+      // Draw raised arc
+      painter.color = slice.color;
+      canvas.drawArc(hoverRectArea, start, duration, true, painter);
+      // Draw outline of slices
+      canvas.drawArc(hoverRectArea, start, duration, true, outliner);
+
+      // draw the text
+      RotatedText rText = RotatedText(slice, sliceOffset);
+      Color color = Colors.white;
+      if (Methods.hasBlackText(slice)) {
+        color = Colors.black;
+      }
+      _drawSliceText(canvas, slice.task.getTaskName(), rText.textX, rText.textY,
+          rText.textAngle, slice.getDuration(), color);
+
+      return;
+    }
     // Draw Guide buttons
     // only around the Drag Buttons
     if (pie.getSelectedSliceIndex() != -1) {
@@ -233,32 +300,6 @@ class PiePainter extends CustomPainter {
             buttonRadius * .75, painter);
       }
     }
-
-    // Write Time outside of pie
-    int timeOffset = 28;
-    double fontSize = 18;
-    // include all but 12 o' clock
-    for (int time = 1; time < 12; time++) {
-      Point position = Methods.getPointFromTimeAndRadius(
-          time.toDouble(), (pie.radius() + timeOffset).toInt());
-      _drawText(canvas, time.toString(), position.x - (fontSize / 3),
-          position.y - (fontSize / 3), 0, fontSize, Colors.grey);
-    }
-    Point twelve = Methods.getPointFromTimeAndRadius(
-        0.0, (pie.radius() + timeOffset).toInt());
-    String twelveText = "noon";
-    if (pie.pM) {
-      twelveText = "midnight";
-    }
-    _drawText(canvas, twelveText, twelve.x - (fontSize / 3),
-        twelve.y - (fontSize / 3), 0, fontSize, Colors.grey);
-  }
-
-  bool hasBlackText(Slice slice) {
-    if (slice.color.blue + slice.color.green + slice.color.red < (127 * 3)) {
-      return false;
-    }
-    return true;
   }
 
   void _drawSliceText(Canvas canvas, String text, double x, double y,
@@ -279,21 +320,9 @@ class PiePainter extends CustomPainter {
       fontSize = maxWidth / (text.length * 0.6);
     }
 
-    // angle ranges from -pi/2 to 3pi/2
+    // Angle ranges from -pi/2 to 3pi/2
     // at a certain duration, we don't need to angle the text
-    if (duration < 2 && duration > 1.5) {
-      if (angle < 0 || (angle > (pi / 2) && angle < pi)) {
-        angle += ((duration - 1.5));
-        if (angle > (pi / 2) && angle < pi) {
-          angle = max(angle, 0);
-        } else {
-          angle = min(angle, 0);
-        }
-      } else {
-        angle -= ((duration - 1.5));
-        angle = max(angle, 0);
-      }
-    }
+    angle = angle % (2 * pi);
     if (duration >= 2) {
       angle = 0;
     }

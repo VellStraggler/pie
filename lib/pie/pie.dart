@@ -12,6 +12,7 @@ class Pie {
   Point center; // Center point of the pie chart
   double width; // Pie chart radius
   int _selectedSliceIndex; // The current selected slice's index.
+  bool isHovering = false;
   bool pM;
 
   /// Initializes with a single slice covering the whole circle.
@@ -27,6 +28,11 @@ class Pie {
   /// Returns the current slice index
   int getSelectedSliceIndex() {
     return _selectedSliceIndex;
+  }
+
+  void resetSelectedSlice() {
+    _selectedSliceIndex = -1;
+    isHovering = false;
   }
 
   /// Will break if you ask for -1
@@ -48,7 +54,7 @@ class Pie {
     }
   }
 
-  void changeSelectedSliceStart(Point newPosition) {
+  void changeSelectedSliceStart(Point newPosition, {bool withEnd = false}) {
     if (_selectedSliceIndex == -1) {
       return;
     }
@@ -71,6 +77,13 @@ class Pie {
     }
     drag1.setTime(newTime);
     slice.setStartTime(newTime); // this changes end
+    if (withEnd) {
+      end = newTime + slice.getDuration();
+      if (end > 12) {
+        print("End will be clipped");
+      }
+      drag2.setTime(end);
+    }
     slice.setEndTime(end); // this only changes end
   }
 

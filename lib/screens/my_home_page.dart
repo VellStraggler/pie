@@ -27,7 +27,6 @@ const double pieToWindowRatio = .8;
 final player = AudioPlayer();
 bool tappedFloatingButton = false;
 int dragButtonIndex = -1;
-// Point tapStartPoint
 
 // this is a global var so we can update at any point from anywhere
 List<Widget> pieAndDragButtons = [];
@@ -44,8 +43,8 @@ const Color almostBlack = Color.fromRGBO(19, 26, 155, 1); // dark blue
 const Color themeColor2 = Color.fromRGBO(54, 124, 255, 1); // cerulean
 const Color otherColor = Color.fromRGBO(104, 174, 255, 1); // blue
 const Color offWhite = Color.fromRGBO(185, 215, 255, 1);
-const Color themeColor1 = Color.fromRGBO(249, 248, 255, 1); // white
 const Color buttonColor = offWhite;
+const Color themeColor1 = Color.fromRGBO(249, 248, 255, 1); // white
 
 /// Home Page Widget
 class MyHomePage extends StatefulWidget {
@@ -59,6 +58,7 @@ class MyHomePage extends StatefulWidget {
 /// App Home Page
 class MyHomePageState extends State<MyHomePage> {
   Timer? _timer;
+  int lastTapTimeMS = DateTime.now().millisecondsSinceEpoch;
   final GlobalKey _gestureKey = GlobalKey();
   double? widgetHeight;
   double? widgetWidth;
@@ -116,10 +116,7 @@ class MyHomePageState extends State<MyHomePage> {
       Diameter.instance.setPieDiameter(smallestDimension * pieToWindowRatio);
       pie.width = Diameter.instance.pieDiameter;
       pie.updateDragButtons();
-      // // update all slice dragButtons as this wasn't automatic
-      // for (Slice slice in pie.slices) {
-      //   slice.reloadDragButtons();
-      // }
+      painter.updateWithNewDimensions();
     }
   }
 
@@ -160,6 +157,16 @@ class MyHomePageState extends State<MyHomePage> {
           // Update the widget size
           _getWidgetSize();
 
+          // check for this being a DOUBLE TAP
+          int tapTimeMS = DateTime.now().millisecondsSinceEpoch;
+          if (tapTimeMS < lastTapTimeMS + 300) {
+            if (isEditing()) {
+              pie.isHovering = !pie.isHovering;
+            }
+          } else {
+            lastTapTimeMS = tapTimeMS;
+          }
+
           Point tappedPoint = _getTappedPoint(details);
 
           double tappedDistToCenter = _getTappedDistToCenter(details);
@@ -178,7 +185,7 @@ class MyHomePageState extends State<MyHomePage> {
             if (_tappedInsideLargerRadius(tappedDistToCenter)) {
               // make sure you aren't trying to interact with a dragButton
               if (!holdingDragButton) {
-                pie.setSelectedSliceIndex(-1);
+                pie.resetSelectedSlice();
               }
             }
             // else you've pressed in the dragbutton ring. Don't deselect or change your slice
@@ -198,7 +205,7 @@ class MyHomePageState extends State<MyHomePage> {
               i++;
             }
             if (!found) {
-              pie.setSelectedSliceIndex(-1);
+              pie.resetSelectedSlice();
               // if one was not selected, deselect what we do have
             }
           }
@@ -206,6 +213,9 @@ class MyHomePageState extends State<MyHomePage> {
         },
         onScaleUpdate: (details) {
           _updateDragButtons(details);
+          if (pie.isHovering) {
+            _updateSelectedSlice(details);
+          }
         },
         onScaleEnd: (details) {
           _finalizeDragButtons(details);
@@ -239,21 +249,26 @@ class MyHomePageState extends State<MyHomePage> {
         pie.radius() - (buttonRadius + (padding * 100)));
   }
 
+  /// Similar to _updateDragButtons, only this changes both
+  void _updateSelectedSlice(details) {
+    Point newPoint = _getTappedPoint(details);
+    double timeFromPoint = Methods.getTimeFromPoint(newPoint);
+    double halfDuration = (pie.drag2.time - pie.drag1.time) / 2;
+    double newStartTime = timeFromPoint - halfDuration;
+
+    newPoint =
+        Methods.getNearestSnapPoint(Methods.getPointFromTime(newStartTime));
+    pie.changeSelectedSliceStart(newPoint, withEnd: true);
+  }
+
   void _updateDragButtons(details) {
     Point newPoint = _getTappedPoint(details);
     newPoint = Methods.getNearestSnapPoint(
-        Point.parameterized(x: newPoint.x, y: newPoint.y), details);
-    // DragButton? button;
+        Point.parameterized(x: newPoint.x, y: newPoint.y));
     if (dragButtonIndex == 1) {
-      // button = pie.drag1;
       pie.changeSelectedSliceStart(newPoint);
-      // button.setPoint(newPoint);
     } else if (dragButtonIndex == 2) {
-      // button = pie.drag2;
       pie.changeSelectedSliceEnd(newPoint);
-      // button.setPoint(newPoint);
-    } else {
-      return;
     }
   }
 
@@ -496,7 +511,7 @@ class MyHomePageState extends State<MyHomePage> {
                         Task.parameterized(taskText, startTime, duration);
                     pie.addSlice(task);
                     vibrateWithAudio(3);
-                    pie.setSelectedSliceIndex(-1); //pie.slices.length - 1;
+                    pie.resetSelectedSlice();
                     updateScreen();
                   });
                   savePie();

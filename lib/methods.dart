@@ -1,9 +1,37 @@
 import 'dart:math';
-import 'dart:ui';
+import 'package:flutter/material.dart';
+import 'package:pie_agenda/display/pie_painter.dart';
 import 'package:pie_agenda/display/point.dart';
 import 'package:pie_agenda/pie/diameter.dart';
+import 'package:pie_agenda/pie/slice.dart';
 
 class Methods {
+  static dynamic abs(number) {
+    if (number < 0) {
+      return number * -1;
+    }
+    return number;
+  }
+
+  static dynamic getType(number) {
+    if (number < 0) {
+      return -1;
+    }
+    return 1;
+  }
+
+  static Point getLocalPointFromGestureDetails(details) {
+    Point localPoint = Point();
+    if (details is TapDownDetails) {
+      localPoint.x = details.localPosition.dx;
+      localPoint.y = details.localPosition.dy;
+    } else {
+      localPoint.x = details.localFocalPoint.dx;
+      localPoint.y = details.localFocalPoint.dy;
+    }
+    return localPoint;
+  }
+
   static int _radius() {
     return (Diameter.instance.getPieDiameter()) ~/ 2;
   }
@@ -22,7 +50,7 @@ class Methods {
   }
 
   /// Find closest snap point.
-  static Point getNearestSnapPoint(Point currentPosition, details) {
+  static Point getNearestSnapPoint(Point currentPosition) {
     Point current =
         Point.parameterized(x: (currentPosition.x), y: (currentPosition.y));
     Point newPoint = getPointFromTime(getTimeFromPoint(current));
@@ -80,5 +108,24 @@ class Methods {
   static Color averageColor(Color a, Color b) {
     return Color.fromRGBO((a.red + b.red) ~/ 2, (a.green + b.green) ~/ 2,
         (a.blue + b.blue) ~/ 2, .9);
+  }
+
+  static Color getTextColorFromSliceAndTime(Slice slice, timeInRadians) {
+    Color color = Colors.white;
+    if (hasBlackText(slice)) {
+      color = Colors.black;
+    }
+    double endTime = slice.getEndTime();
+    if (Slice.timeToRadians(endTime) < timeInRadians && endTime != 12) {
+      color = Methods.averageColor(color, shadow);
+    }
+    return color;
+  }
+
+  static bool hasBlackText(Slice slice) {
+    if (slice.color.blue + slice.color.green + slice.color.red < (127 * 3)) {
+      return false;
+    }
+    return true;
   }
 }
