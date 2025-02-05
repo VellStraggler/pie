@@ -14,7 +14,14 @@ const int dragButtonOffset = buttonRadius ~/ 2;
 const double textOffsetMult = 0.6;
 const double centerDiam = 24;
 const Color shadow = Color.fromRGBO(35, 35, 144, 0.7);
+
+// For hover movement animation
 const int hoverDist = 24;
+int currentTime = 0;
+int lastFrameTime = 0;
+int animProgression = 0;
+int lastSelectedSlice = -1;
+const int hoverAnimationSlowMult = 4;
 
 /// Creates the pie displayed on screen.
 class PiePainter extends CustomPainter {
@@ -52,6 +59,11 @@ class PiePainter extends CustomPainter {
   // This is called EVERY time the setState trigger goes off.
   @override
   void paint(Canvas canvas, Size size) {
+    // use the lastSelectedSlice for animations
+    if (pie.getSelectedSliceIndex() != -1) {
+      lastSelectedSlice = pie.getSelectedSliceIndex();
+    }
+
     // Create the paint object (the previous is assumedly destroyed)
     Paint painter = Paint()
       ..color = almostBlack
@@ -60,6 +72,20 @@ class PiePainter extends CustomPainter {
     Paint outliner = Paint()
       ..style = PaintingStyle.stroke //no fill
       ..color = almostBlack
+      ..strokeWidth = 3.0;
+
+    // only paints the shadow around the object.
+    // should be called before every draw call for objects with shadows
+    // set to outer to save drawing time (this is explicitly changed when drawing
+    // the actual time shadow)
+    Paint shadowPainter = Paint()
+      ..color = shadow
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5)
+      ..strokeWidth = 3.0;
+
+    Paint shadowOutliner = Paint()
+      ..color = shadow
+      ..maskFilter = const MaskFilter.blur(BlurStyle.outer, 5)
       ..strokeWidth = 3.0;
 
     // Draw time
@@ -114,20 +140,25 @@ class PiePainter extends CustomPainter {
       var color1 = Slice.colorFromTime(slice.getStartTime(), isAfternoon);
       var color2 = Slice.colorFromTime(slice.getEndTime(), isAfternoon);
       var avgColor = Methods.averageColor(color1, color2);
-      if (i == pie.getSelectedSliceIndex()) {
+      if (i == lastSelectedSlice) {
         slice.setShownText(true);
-        avgColor = Methods.darkenColor(avgColor);
+        if (i == pie.getSelectedSliceIndex()) {
+          avgColor = Methods.darkenColor(avgColor);
+        }
       }
       // Save this color
       slice.color = avgColor;
       painter.color = avgColor;
+      if (i == lastSelectedSlice) {
+        // normally would check if this is !0, but this ensures
+        // there isn't a single frame where this slice is skipped entirely
+        if (animProgression > hoverAnimationSlowMult * 3) {
+          continue;
+        }
+      }
 
       // Prepare outline for slice
-      if (slice.getEndTime() < timeFormatted) {
-        outliner.color = almostBlack;
-      } else {
-        outliner.color = themeColor2;
-      }
+      _setOutlineColor(slice, outliner, timeFormatted);
 
       // Draw the given slice
       // This offset of 3 is due to 0 radians equalling 3 o'clock
@@ -137,11 +168,13 @@ class PiePainter extends CustomPainter {
       }
       double duration = slice.getDurationToRadians();
       // UPDATE: slice must be drawn AFTER most everything else
-      if (i == pie.getSelectedSliceIndex() && pie.isHovering) {
+      if (i == lastSelectedSlice && pie.isHovering) {
         continue;
       }
-      canvas.drawArc(
-          rectArea, start, duration, true, painter); //Angles are in radians.
+
+      canvas.drawArc(rectArea, start, duration, true, shadowOutliner);
+      canvas.drawArc(rectArea, start, duration, true, painter);
+
       // Draw an outline that goes around the small circle of the clock hands
       painter.color = themeColor2;
       canvas.drawArc(tinyRectArea, start, duration, true, painter);
@@ -153,9 +186,8 @@ class PiePainter extends CustomPainter {
     }
 
     // grey out the time that has passed
-    painter.color = shadow;
     canvas.drawArc(
-        rectArea, midnightTimeInRadians, timeInRadians, true, painter);
+        rectArea, midnightTimeInRadians, timeInRadians, true, shadowPainter);
 
     // Draw Tick marks
     final tickPaint = Paint()
@@ -196,12 +228,13 @@ class PiePainter extends CustomPainter {
         centerOffset.dx + (length + tickLength) * cos(angle),
         centerOffset.dy + (length + tickLength) * sin(angle),
       );
-      tickPaint.strokeWidth = 8;
-      canvas.drawLine(start, end, tickPaint);
       tickPaint.strokeWidth = 2;
+      canvas.drawLine(centerOffset, end, shadowOutliner);
       canvas.drawLine(centerOffset, end, tickPaint);
+      tickPaint.strokeWidth = 8;
+      canvas.drawLine(start, end, shadowOutliner);
+      canvas.drawLine(start, end, tickPaint);
     }
-    canvas.drawCircle(centerOffset, centerDiam / 2, tickPaint);
 
     // Draw all text over the time
     for (RotatedText rText in rTextList) {
@@ -229,8 +262,30 @@ class PiePainter extends CustomPainter {
     _drawText(canvas, twelveText, twelve.x - (fontSize / 3),
         twelve.y - (fontSize / 3), 0, fontSize, Colors.grey);
 
+    if (currentTime == 0) {
+      currentTime = DateTime.now().millisecondsSinceEpoch;
+    }
+    lastFrameTime = currentTime;
+    currentTime = DateTime.now().millisecondsSinceEpoch;
+    int msPassed = currentTime - lastFrameTime;
     if (pie.isHovering) {
-      Slice slice = pie.getSelectedSlice();
+      // add the number of milliseconds that have passed in this frame
+      animProgression += msPassed;
+      // limited to hoverDist
+      animProgression =
+          min(hoverDist * hoverAnimationSlowMult, animProgression);
+    } else {
+      animProgression -= msPassed;
+      if (animProgression <= 0) {
+        animProgression = 0;
+        if (pie.getSelectedSliceIndex() == -1) {
+          lastSelectedSlice = -1;
+        }
+      }
+    }
+    // Draw Hovering Slice
+    if (lastSelectedSlice != -1) {
+      Slice slice = pie.slices[lastSelectedSlice];
       double start = slice.getStartTimeToRadians() - Slice.timeToRadians(3);
       if (start < 0) {
         start += (2 * pi);
@@ -238,20 +293,21 @@ class PiePainter extends CustomPainter {
       double duration = slice.getDurationToRadians();
       double offsetAngle = start + (duration / 2);
       Offset sliceOffset = Offset(
-        centerOffset.dx + (hoverDist) * cos(offsetAngle),
-        centerOffset.dy + (hoverDist) * sin(offsetAngle),
+        centerOffset.dx +
+            (animProgression / hoverAnimationSlowMult) * cos(offsetAngle),
+        centerOffset.dy +
+            (animProgression / hoverAnimationSlowMult) * sin(offsetAngle),
       );
       Rect hoverRectArea = Rect.fromCenter(
-          center: sliceOffset,
-          width: pie.width + hoverDist,
-          height: pie.width + hoverDist);
+          center: sliceOffset, width: pie.width, height: pie.width);
       // Draw shadow
-      painter.color = shadow;
-      canvas.drawArc(rectArea, start, duration, true, painter);
+      canvas.drawArc(rectArea, start, duration, true, shadowPainter);
       // Draw raised arc
       painter.color = slice.color;
+      painter.maskFilter = null;
       canvas.drawArc(hoverRectArea, start, duration, true, painter);
       // Draw outline of slices
+      _setOutlineColor(slice, outliner, timeFormatted);
       canvas.drawArc(hoverRectArea, start, duration, true, outliner);
 
       // draw the text
@@ -262,44 +318,60 @@ class PiePainter extends CustomPainter {
       }
       _drawSliceText(canvas, slice.task.getTaskName(), rText.textX, rText.textY,
           rText.textAngle, slice.getDuration(), color);
-
-      return;
     }
-    // Draw Guide buttons
-    // only around the Drag Buttons
-    if (pie.getSelectedSliceIndex() != -1) {
-      int circleSize = borderWidth;
-      painter.color = const Color.fromRGBO(158, 158, 158, .8);
-      Slice ss = pie.getSelectedSlice();
-      double start = ss.getStartTime();
-      double end = ss.getEndTime();
-      for (int i = 0; i < 48; i++) {
-        double time = i / 4;
-        if ((time > start - 1 && time < start + 1) ||
-            (time > end - 1 && time < end + 1)) {
-          Point position = Methods.getPointFromTime(time);
-          // draw guidebutton at position
+    if (animProgression == 0) {
+      // Draw Guide buttons
+      // only around the Drag Buttons
+      if (lastSelectedSlice != -1) {
+        int circleSize = borderWidth;
+        painter.color = const Color.fromRGBO(158, 158, 158, .8);
+        Slice ss = pie.getSelectedSlice();
+        double start = ss.getStartTime();
+        double end = ss.getEndTime();
+        for (int i = 0; i < 48; i++) {
+          double time = i / 4;
+          if ((time > start - 1 && time < start + 1) ||
+              (time > end - 1 && time < end + 1)) {
+            Point position = Methods.getPointFromTime(time);
+            // draw guidebutton at position
+            canvas.drawCircle(
+                Offset(position.x + getOffset(), position.y + getOffset()),
+                circleSize / 2,
+                painter);
+          }
+        }
+      }
+
+      /// Draw DragButtons
+      // get the points where dragbuttons are drawn
+      if (isEditing()) {
+        Point startPoint = pie.drag1.point;
+        Point endPoint = pie.drag2.point;
+        for (Point point in [startPoint, endPoint]) {
+          painter.color = Colors.black;
           canvas.drawCircle(
-              Offset(position.x + getOffset(), position.y + getOffset()),
-              circleSize / 2,
+              Offset(point.x + getOffset(), point.y + getOffset()),
+              buttonRadius,
+              painter);
+          painter.color = Colors.white;
+          canvas.drawCircle(
+              Offset(point.x + getOffset(), point.y + getOffset()),
+              buttonRadius * .75,
               painter);
         }
       }
     }
+    // Draw the circular cap on the center of the clock
+    painter.color = Colors.white;
+    canvas.drawCircle(centerOffset, centerDiam / 2, shadowOutliner);
+    canvas.drawCircle(centerOffset, centerDiam / 2, painter);
+  }
 
-    /// Draw DragButtons
-    // get the points where dragbuttons are drawn
-    if (isEditing()) {
-      Point startPoint = pie.drag1.point;
-      Point endPoint = pie.drag2.point;
-      for (Point point in [startPoint, endPoint]) {
-        painter.color = Colors.black;
-        canvas.drawCircle(Offset(point.x + getOffset(), point.y + getOffset()),
-            buttonRadius, painter);
-        painter.color = Colors.white;
-        canvas.drawCircle(Offset(point.x + getOffset(), point.y + getOffset()),
-            buttonRadius * .75, painter);
-      }
+  void _setOutlineColor(Slice slice, Paint outliner, double currentTime) {
+    if (slice.getEndTime() < currentTime) {
+      outliner.color = almostBlack;
+    } else {
+      outliner.color = themeColor2;
     }
   }
 

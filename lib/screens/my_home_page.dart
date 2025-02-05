@@ -238,12 +238,15 @@ class MyHomePageState extends State<MyHomePage> {
                             child: Clock())))),
             body: Stack(children: [
               Padding(
-                  padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                  child: Text(
-                    _getSliceInfoText(),
-                    style: const TextStyle(fontSize: 24, color: Colors.black),
-                    textAlign: TextAlign.center,
-                  )),
+                  padding: const EdgeInsets.only(top: 20.0),
+                  child: Align(
+                      alignment: Alignment.topCenter,
+                      child: Text(
+                        _getSliceInfoText(),
+                        style:
+                            const TextStyle(fontSize: 24, color: Colors.black),
+                        textAlign: TextAlign.center,
+                      ))),
               Center(
                   child: CustomPaint(
                       size: Size(pie.width + buttonDiameter,
