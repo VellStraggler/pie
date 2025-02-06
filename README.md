@@ -53,7 +53,7 @@ To recreate the development environment, you need the following software and/or 
 * [x] Date is shown in the corner
 * [x] See a list of the tasks with their start and end time
 * [X] Save and Load Tasks
-* [ ] Edit Task Name
+* [X] Edit Task Name
 
 ## Alpha Features
 The following items we plan to fix, improve, and/or add to this project in the future:
@@ -68,20 +68,19 @@ The following items we plan to fix, improve, and/or add to this project in the f
 * [X] Allow entire slice to be dragged
     - Known bug: 15-minute segment doesn't like moving
 * [X] widen click area for drag buttons
-* [ ] allow double-tap editing
+* [X] allow double-tap editing
 * [X] add time to markers 
 * [ ] have time follow held dragbutton (written directly under dragButton)
-* [ ] have a + and - button to change duration
-* [ ] undo button
 * [X] future tasks brighter, old tasks duller/grayer, fading
 * [X] Allow transparency when editing tasks
 * [X] improve base colors 
 widget homescreen (what does this mean)
-* [ ] fill space with details about current task
+* [X] fill space with details about current task
         - How much time is left on task
 * [X] Improve text sizing and centering
 
 ## Potential Beta Features
+* [ ] undo button
 * [ ] Swipe top bar to change day 
 * [ ] Allow it to run in the background when minimized
 * [ ] Shadows! from hands and even text

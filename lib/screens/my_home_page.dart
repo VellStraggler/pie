@@ -220,8 +220,8 @@ class MyHomePageState extends State<MyHomePage> {
         },
         onScaleEnd: (details) {
           _finalizeDragButtons(details);
-          // savePie only when user lets goww
           updateScreen();
+          // savePie only when user lets go
           savePie();
         },
         child: Scaffold(
@@ -276,8 +276,14 @@ class MyHomePageState extends State<MyHomePage> {
       return "Nothing to do right now...";
     }
     Slice sliceNow = pie.slices[sliceNowIndex];
-    double minutesLeft = (sliceNow.getEndTime() - pie.currentTime) * 60;
-    return "Time left in ${sliceNow.task.taskName}: ${(minutesLeft).toStringAsFixed(0)} minutes.";
+    double minutesLeft =
+        (max(0, sliceNow.getEndTime() - pie.currentTime - 1)) * (60);
+    int secondsLeft = (minutesLeft % 1 * (60)).toInt();
+    String between = "";
+    if (secondsLeft < 10) {
+      between = "0";
+    }
+    return "Time left in ${sliceNow.task.taskName}:\n ${(minutesLeft).toStringAsFixed(0)}:$between${(secondsLeft).toStringAsFixed(0)}";
   }
 
   /// Similar to _updateDragButtons, only this changes both
@@ -304,8 +310,12 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   void _finalizeDragButtons(details) {
-    pie.changeSelectedSliceStart(Methods.getRoundedSnapPoint(pie.drag1.point));
-    pie.changeSelectedSliceEnd(Methods.getRoundedSnapPoint(pie.drag2.point));
+    if (isEditing()) {
+      pie.changeSelectedSliceStart(
+          Methods.getRoundedSnapPoint(pie.drag1.point));
+      pie.changeSelectedSliceEnd(Methods.getRoundedSnapPoint(pie.drag2.point));
+      pie.getSelectedSlice().task.roundTimes();
+    }
     dragButtonIndex = -1;
     // savePie only when user lets goww
     updateScreen();
@@ -453,7 +463,7 @@ class MyHomePageState extends State<MyHomePage> {
   /// assumes TextInputType by the hint (0:00 includes a ":" and therefore
   /// accepts numbers with ":" as an option)
   Widget _buildTextField(TextEditingController controller, String label,
-      [String hintText = ""]) {
+      [String hintText = "", String defaultText = ""]) {
     TextInputType textInputType = TextInputType.text;
     if (hintText.contains(":")) {
       textInputType = TextInputType.number; //  (decimal: false, signed: true);
@@ -482,6 +492,56 @@ class MyHomePageState extends State<MyHomePage> {
 
   void _editSelectedSlice() {
     tappedFloatingButton = true;
+    vibrateWithAudio(1);
+    Slice slice = pie.getSelectedSlice();
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        final taskController = TextEditingController(text: slice.task.taskName);
+        taskController.selection = TextSelection(
+            baseOffset: 0, extentOffset: slice.task.taskName.length);
+
+        return AlertDialog(
+          backgroundColor: themeColor1,
+          title: const Text('Edit Task Description'),
+          content: Form(
+            child: _buildTextField(taskController, 'Task Description'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                var taskText = taskController.text.trim();
+
+                // Create a default slice if the user has entered nothing in
+                if (taskText.isEmpty) {
+                  taskText = "Default Task";
+                }
+                if (taskText.isNotEmpty) {
+                  setState(() {
+                    slice.task.taskName = taskText;
+                    vibrateWithAudio(1);
+                    pie.resetSelectedSlice();
+                    updateScreen();
+                  });
+                  savePie();
+                  Navigator.of(context).pop();
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('Invalid input. Please try again.')),
+                  );
+                }
+              },
+              child: const Text('Add Slice'),
+            ),
+          ],
+        );
+      },
+    );
     tappedFloatingButton = false;
   }
 
@@ -522,10 +582,6 @@ class MyHomePageState extends State<MyHomePage> {
                 double durationA =
                     max(0.25, parseTime(durationController.text));
                 var taskText = taskController.text.trim();
-                // if (startTime + durationA == 12) {
-                //   // 12:00 defaults to 0:00, so this avoids a full-day slice bug
-                //   durationA -= .01;
-                // }
                 final duration = durationA;
 
                 // Create a default slice if the user has entered nothing in
