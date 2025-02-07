@@ -1,6 +1,7 @@
 import 'package:pie_agenda/display/drag_button.dart';
 import 'package:pie_agenda/methods.dart';
 import 'package:pie_agenda/pie/diameter.dart';
+import 'package:pie_agenda/pie/pie_time.dart';
 import 'slice.dart';
 import '../display/point.dart';
 import 'task.dart';
@@ -14,7 +15,7 @@ class Pie {
   int _selectedSliceIndex; // The current selected slice's index.
   bool isHovering = false;
   bool pM;
-  double currentTime = 0;
+  PieTime currentTime = PieTime(0);
 
   /// Initializes with a single slice covering the whole circle.
   Pie({this.pM = false})

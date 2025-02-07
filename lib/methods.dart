@@ -126,7 +126,9 @@ class Methods {
   }
 
   static bool hasBlackText(Slice slice) {
-    if (slice.color.blue + slice.color.green + slice.color.red < (127 * 3)) {
+    // includes the -50 to account for when the slice is in the dark.
+    if (slice.color.blue + slice.color.green + slice.color.red + (-50 * 3) <
+        (127 * 3)) {
       return false;
     }
     return true;

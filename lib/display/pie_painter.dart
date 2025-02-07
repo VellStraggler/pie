@@ -3,6 +3,7 @@ import 'package:pie_agenda/display/drag_button.dart';
 import 'package:pie_agenda/display/rotated_text.dart';
 import 'package:pie_agenda/methods.dart';
 import 'package:pie_agenda/pie/pie.dart';
+import 'package:pie_agenda/pie/pie_time.dart';
 import 'package:pie_agenda/pie/slice.dart';
 import 'dart:math';
 import 'package:pie_agenda/display/point.dart';
@@ -115,7 +116,7 @@ class PiePainter extends CustomPainter {
       }
     }
     double timeFormatted = hour + ((minute * 60 + second) / 3600);
-    pie.currentTime = timeFormatted;
+    pie.currentTime.time = timeFormatted;
     double timeInRadians = timeFormatted * pi / 6;
     painter.color = themeColor2;
     double midnightTimeInRadians = (3 * pi / 2);
@@ -185,7 +186,7 @@ class PiePainter extends CustomPainter {
       rTextList.add(rText);
     }
 
-    // grey out the time that has passed
+    // draw shadow to grey out the time that has passed
     canvas.drawArc(
         rectArea, midnightTimeInRadians, timeInRadians, true, shadowPainter);
 
@@ -345,20 +346,35 @@ class PiePainter extends CustomPainter {
       /// Draw DragButtons
       // get the points where dragbuttons are drawn
       if (isEditing()) {
-        Point startPoint = pie.drag1.point;
-        Point endPoint = pie.drag2.point;
-        for (Point point in [startPoint, endPoint]) {
+        shadowPainter.color = Colors.white;
+        for (DragButton drag in [pie.drag1, pie.drag2]) {
+          int addedY = 30;
+          if (drag.time >= 9 || drag.time <= 3) {
+            addedY = -30;
+          }
+          Point point = drag.point;
+          Offset dragOffset =
+              Offset(point.x + getOffset(), point.y + getOffset());
+          Offset dragTextOffset = Offset(dragOffset.dx, dragOffset.dy + addedY);
+
+          // Draw the time of the Dragbutton
+          String dragTime = PieTime(drag.time).toString();
+          canvas.drawRect(
+              Rect.fromCenter(
+                  center: dragTextOffset,
+                  width: buttonDiameter + 20,
+                  height: buttonRadius + 5),
+              shadowPainter);
+          _drawText(canvas, dragTime, dragTextOffset.dx, dragTextOffset.dy, 0,
+              24, Colors.black);
+
+          // Draw the Dragbutton
           painter.color = Colors.black;
-          canvas.drawCircle(
-              Offset(point.x + getOffset(), point.y + getOffset()),
-              buttonRadius,
-              painter);
+          canvas.drawCircle(dragOffset, buttonRadius, painter);
           painter.color = Colors.white;
-          canvas.drawCircle(
-              Offset(point.x + getOffset(), point.y + getOffset()),
-              buttonRadius * .75,
-              painter);
+          canvas.drawCircle(dragOffset, buttonRadius * .75, painter);
         }
+        shadowPainter.color = shadow;
       }
     }
     // Draw the circular cap on the center of the clock
@@ -380,13 +396,12 @@ class PiePainter extends CustomPainter {
     // Reference the pie's diameter to know the maximum font size this text can be.
     double maxWidth = pie.radius() - 40;
     if (duration > 3) {
-      maxWidth += (pow(duration - 3, 1.5) * 5);
+      maxWidth += (pow(duration - 3, 1.3) * 5);
     }
 
-    // max fontSize of 42
     // should be changed to accounts for length of text
-    double fontSize = min(duration / .25 * 12, 62);
-    // double fontSize = duration / .25 * 12;
+    double fontSize = min(duration / .25 * 9, 90);
+    // double fontSize = duration / .25 * 9;
     double estTextWidth = fontSize * text.length * 0.6;
 
     if (estTextWidth > maxWidth) {
@@ -396,7 +411,7 @@ class PiePainter extends CustomPainter {
     // Angle ranges from -pi/2 to 3pi/2
     // at a certain duration, we don't need to angle the text
     angle = angle % (2 * pi);
-    if (duration >= 2) {
+    if (duration >= 2.5) {
       angle = 0;
     }
 
@@ -421,8 +436,11 @@ class PiePainter extends CustomPainter {
       canvas.rotate(angle);
     }
     canvas.translate(-x, -y);
-    textPainter.paint(canvas,
-        Offset(x, y) - Offset(textPainter.width / 2, textPainter.height / 2));
+    Offset textOffset = Offset(textPainter.width / 2, textPainter.height / 2);
+    if (x < pie.radius() + widgetWidth!) {
+      textOffset = Offset(textPainter.width / 2, textPainter.height / 2);
+    }
+    textPainter.paint(canvas, Offset(x, y) - textOffset);
     canvas.restore();
   }
 

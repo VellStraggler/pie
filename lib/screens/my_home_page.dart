@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:pie_agenda/methods.dart';
+import 'package:pie_agenda/pie/pie_time.dart';
 import 'package:vibration/vibration.dart';
 import 'package:pie_agenda/display/point.dart';
 import 'package:pie_agenda/pie/diameter.dart';
@@ -27,6 +28,9 @@ const double pieToWindowRatio = .8;
 final player = AudioPlayer();
 bool tappedFloatingButton = false;
 int dragButtonIndex = -1;
+double? widgetHeight;
+double? widgetWidth;
+List<String> msgs = ["", ""];
 
 // this is a global var so we can update at any point from anywhere
 List<Widget> pieAndDragButtons = [];
@@ -60,8 +64,6 @@ class MyHomePageState extends State<MyHomePage> {
   Timer? _timer;
   int lastTapTimeMS = DateTime.now().millisecondsSinceEpoch;
   final GlobalKey _gestureKey = GlobalKey();
-  double? widgetHeight;
-  double? widgetWidth;
 
   /// Used to reference the true width and height of the application,
   /// which is added after the application and its modules are
@@ -238,15 +240,24 @@ class MyHomePageState extends State<MyHomePage> {
                             child: Clock())))),
             body: Stack(children: [
               Padding(
-                  padding: const EdgeInsets.only(top: 20.0),
+                  padding: const EdgeInsets.only(
+                      top: 20.0, left: 20.0, right: 20.0, bottom: 20.0),
                   child: Align(
                       alignment: Alignment.topCenter,
-                      child: Text(
-                        _getSliceInfoText(),
-                        style:
-                            const TextStyle(fontSize: 24, color: Colors.black),
-                        textAlign: TextAlign.center,
-                      ))),
+                      child: Column(children: [
+                        Text(
+                          msgs[0],
+                          style: const TextStyle(
+                              fontSize: 24, color: Colors.black),
+                          textAlign: TextAlign.center,
+                        ),
+                        Text(
+                          msgs[1],
+                          style: const TextStyle(
+                              fontSize: 36, color: Colors.black),
+                          textAlign: TextAlign.center,
+                        )
+                      ]))),
               Center(
                   child: CustomPaint(
                       size: Size(pie.width + buttonDiameter,
@@ -262,28 +273,40 @@ class MyHomePageState extends State<MyHomePage> {
         pie.radius() - (buttonRadius + (padding * 100)));
   }
 
-  String _getSliceInfoText() {
+  List<String> _getSliceInfoText() {
+    if (!isAfternoon && pie.currentTime.time >= 11.98) {
+      return ["The morning as concluded...", ""];
+    }
     int sliceNowIndex = -1;
+    StringBuffer msgBuff = StringBuffer();
     for (int i = 0; i < pie.slices.length; i++) {
       Slice slice = pie.slices[i];
-      if (slice.getEndTime() > pie.currentTime) {
-        if (slice.getStartTime() < pie.currentTime) {
+      if (slice.getEndTime() > pie.currentTime.time) {
+        if (slice.getStartTime() < pie.currentTime.time) {
           sliceNowIndex = i;
         }
       }
     }
-    if (sliceNowIndex == -1) {
-      return "Nothing to do right now...";
+    if (sliceNowIndex == -1 && pie.getSelectedSliceIndex() == -1) {
+      msgBuff.write("Nothing to do right now...\n ");
+    } else if (pie.getSelectedSliceIndex() == -1 ||
+        pie.getSelectedSliceIndex() == sliceNowIndex) {
+      Slice sliceNow = pie.slices[sliceNowIndex];
+      PieTime timeLeft = PieTime(sliceNow.getEndTime() - pie.currentTime.time);
+      msgBuff.write("Time left in ${sliceNow.task.taskName}:\n");
+      if (timeLeft.hr() != 0) {
+        msgBuff.write("${timeLeft.hr()}:");
+      }
+      msgBuff.write("${timeLeft.minString()}:");
+      msgBuff.write(timeLeft.secString());
+    } else {
+      Slice slice = pie.getSelectedSlice();
+      PieTime startTime = PieTime(slice.getStartTime());
+      PieTime endTime = PieTime(slice.getEndTime());
+      msgBuff.write("Selected Task: ${slice.task.taskName}");
+      msgBuff.write("\n${startTime.toString()} to ${endTime.toString()}");
     }
-    Slice sliceNow = pie.slices[sliceNowIndex];
-    double minutesLeft =
-        (max(0, sliceNow.getEndTime() - pie.currentTime - 1)) * (60);
-    int secondsLeft = (minutesLeft % 1 * (60)).toInt();
-    String between = "";
-    if (secondsLeft < 10) {
-      between = "0";
-    }
-    return "Time left in ${sliceNow.task.taskName}:\n ${(minutesLeft).toStringAsFixed(0)}:$between${(secondsLeft).toStringAsFixed(0)}";
+    return msgBuff.toString().split("\n");
   }
 
   /// Similar to _updateDragButtons, only this changes both
@@ -463,7 +486,7 @@ class MyHomePageState extends State<MyHomePage> {
   /// assumes TextInputType by the hint (0:00 includes a ":" and therefore
   /// accepts numbers with ":" as an option)
   Widget _buildTextField(TextEditingController controller, String label,
-      [String hintText = "", String defaultText = ""]) {
+      [String hintText = ""]) {
     TextInputType textInputType = TextInputType.text;
     if (hintText.contains(":")) {
       textInputType = TextInputType.number; //  (decimal: false, signed: true);
@@ -536,7 +559,7 @@ class MyHomePageState extends State<MyHomePage> {
                   );
                 }
               },
-              child: const Text('Add Slice'),
+              child: const Text('Rename Slice'),
             ),
           ],
         );
@@ -632,12 +655,16 @@ class MyHomePageState extends State<MyHomePage> {
     tappedFloatingButton = true;
     print(aMPie.toJson('AM'));
     print(pMPie.toJson('PM'));
+    String ampm = "Morning";
+    if (isAfternoon) {
+      ampm = "Evening";
+    }
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: themeColor1,
-          title: const Text('Tasks Today'),
+          title: Text('$ampm Tasks Today:'),
           // scrollable when there are enough tasks
           content: SingleChildScrollView(
             child: ListBody(
@@ -705,6 +732,7 @@ class MyHomePageState extends State<MyHomePage> {
     // 90 fps
     _timer = Timer.periodic(const Duration(milliseconds: 12), (timer) {
       updateScreen();
+      msgs = _getSliceInfoText();
     });
   }
 
@@ -727,6 +755,9 @@ String _formatTime(double time) {
   // Ensure hours wrap around if exceeding 24
   hours = hours % 24;
   String timeOfDay = "$hours:$minutes";
+  if (minutes < 10) {
+    timeOfDay = "${timeOfDay}0";
+  }
   return timeOfDay;
 }
 

@@ -59,10 +59,9 @@ To recreate the development environment, you need the following software and/or 
 The following items we plan to fix, improve, and/or add to this project in the future:
 
 * [X] Allow user to tap anywhere to deselect slices
-* [ ] Increase performance: 
+* [X] Increase performance: 
         [X]saving after tapping, not while holding
         [X]increase framerate
-        [ ]await save the file
 * [X] modify drawing to not overlap itself
 * [X] Limit to 2 drag buttons
 * [X] Allow entire slice to be dragged
@@ -70,7 +69,7 @@ The following items we plan to fix, improve, and/or add to this project in the f
 * [X] widen click area for drag buttons
 * [X] allow double-tap editing
 * [X] add time to markers 
-* [ ] have time follow held dragbutton (written directly under dragButton)
+* [X] have time follow held dragbutton (written directly under dragButton)
 * [X] future tasks brighter, old tasks duller/grayer, fading
 * [X] Allow transparency when editing tasks
 * [X] improve base colors 
