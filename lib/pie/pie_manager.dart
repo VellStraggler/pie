@@ -116,7 +116,7 @@ class PieManager {
         );
         //
       }
-      print("Pie data loaded successfully from $filePathPlain.");
+      print("$time Pie data loaded successfully from $filePathPlain.");
       return pie;
     } catch (e, stackTrace) {
       // Enhanced error logging with stack trace
