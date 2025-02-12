@@ -3,9 +3,9 @@
         android:label="Pie_Agenda"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
-        <!-- <uses-permission
+        <uses-permission
             android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
-            tools:ignore="ScopedStorage"/> -->
+            tools:ignore="ScopedStorage"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

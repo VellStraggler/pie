@@ -2,8 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:pie_agenda/methods.dart';
-import 'package:pie_agenda/pie/pie_time.dart';
 import 'package:vibration/vibration.dart';
 import 'package:pie_agenda/display/point.dart';
 import 'package:pie_agenda/pie/diameter.dart';
@@ -26,11 +24,7 @@ bool isAfternoon = false;
 PiePainter painter = PiePainter(pie: pie);
 const double pieToWindowRatio = .8;
 final player = AudioPlayer();
-bool tappedFloatingButton = false;
-int dragButtonIndex = -1;
-double? widgetHeight;
-double? widgetWidth;
-List<String> msgs = ["", ""];
+bool tappedButton = false;
 
 // this is a global var so we can update at any point from anywhere
 List<Widget> pieAndDragButtons = [];
@@ -47,8 +41,8 @@ const Color almostBlack = Color.fromRGBO(19, 26, 155, 1); // dark blue
 const Color themeColor2 = Color.fromRGBO(54, 124, 255, 1); // cerulean
 const Color otherColor = Color.fromRGBO(104, 174, 255, 1); // blue
 const Color offWhite = Color.fromRGBO(185, 215, 255, 1);
-const Color buttonColor = offWhite;
 const Color themeColor1 = Color.fromRGBO(249, 248, 255, 1); // white
+const Color buttonColor = offWhite;
 
 /// Home Page Widget
 class MyHomePage extends StatefulWidget {
@@ -62,8 +56,9 @@ class MyHomePage extends StatefulWidget {
 /// App Home Page
 class MyHomePageState extends State<MyHomePage> {
   Timer? _timer;
-  int lastTapTimeMS = DateTime.now().millisecondsSinceEpoch;
   final GlobalKey _gestureKey = GlobalKey();
+  double? widgetHeight;
+  double? widgetWidth;
 
   /// Used to reference the true width and height of the application,
   /// which is added after the application and its modules are
@@ -89,6 +84,7 @@ class MyHomePageState extends State<MyHomePage> {
     if (Platform.isWindows) {
       unknownOffset = 26; //otherwise, treats it as Android
     }
+    player.setSource(AssetSource('data/tap.wav'));
 
     // Get the dimensions of the app ASAP here
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -117,8 +113,10 @@ class MyHomePageState extends State<MyHomePage> {
     if (smallestDimension * pieToWindowRatio != pie.width) {
       Diameter.instance.setPieDiameter(smallestDimension * pieToWindowRatio);
       pie.width = Diameter.instance.pieDiameter;
-      pie.updateDragButtons();
-      painter.updateWithNewDimensions();
+      // // update all slice dragButtons as this wasn't automatic
+      // for (Slice slice in pie.slices) {
+      //   slice.reloadDragButtons();
+      // }
     }
   }
 
@@ -152,42 +150,30 @@ class MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return GestureDetector(
         key: _gestureKey,
-        onScaleStart: (details) {
-          if (tappedFloatingButton) {
+        onTapDown: (details) {
+          if (tappedButton) {
             return;
           }
           // Update the widget size
           _getWidgetSize();
-
-          // check for this being a DOUBLE TAP
-          int tapTimeMS = DateTime.now().millisecondsSinceEpoch;
-          if (tapTimeMS < lastTapTimeMS + 300) {
-            if (isEditing()) {
-              pie.isHovering = !pie.isHovering;
-            }
-          } else {
-            lastTapTimeMS = tapTimeMS;
-          }
+          // print("height: ${widgetHeight!}, width: ${widgetWidth!}");
 
           Point tappedPoint = _getTappedPoint(details);
+          // print(tappedPoint.toString());
 
           double tappedDistToCenter = _getTappedDistToCenter(details);
+          // print("dist: $tappedDistToCenter");
 
-          double tapTime = Methods.getTimeFromPoint(tappedPoint);
+          double tapTime = DragButton.getTimeFromPoint(tappedPoint);
+          // print(tapTime.toString());
 
           // if you tap outside the pie chart, it deselects the selected slice
           // UNLESS you tapped close enough to a dragbutton
-
-          var holdingDragButton = false;
-          dragButtonIndex = getDragbuttonIndex(tappedPoint);
-          if (dragButtonIndex != -1 && !pie.isHovering) {
-            holdingDragButton = true;
-          }
           if (_tappedOutsideRadius(tappedDistToCenter)) {
             if (_tappedInsideLargerRadius(tappedDistToCenter)) {
               // make sure you aren't trying to interact with a dragButton
-              if (!holdingDragButton) {
-                pie.resetSelectedSlice();
+              if (!_tappedDragButton(tapTime)) {
+                pie.setSelectedSliceIndex(-1);
               }
             }
             // else you've pressed in the dragbutton ring. Don't deselect or change your slice
@@ -207,23 +193,15 @@ class MyHomePageState extends State<MyHomePage> {
               i++;
             }
             if (!found) {
-              pie.resetSelectedSlice();
+              pie.setSelectedSliceIndex(-1);
               // if one was not selected, deselect what we do have
             }
           }
           updateScreen();
         },
-        onScaleUpdate: (details) {
-          if (pie.isHovering) {
-            _updateSelectedSlice(details);
-          } else {
-            _updateDragButtons(details);
-          }
-        },
-        onScaleEnd: (details) {
-          _finalizeDragButtons(details);
-          updateScreen();
+        onTapUp: (details) {
           // savePie only when user lets go
+          updateScreen();
           savePie();
         },
         child: Scaffold(
@@ -238,32 +216,11 @@ class MyHomePageState extends State<MyHomePage> {
                         child: Padding(
                             padding: EdgeInsets.only(bottom: 4.0),
                             child: Clock())))),
-            body: Stack(children: [
-              Padding(
-                  padding: const EdgeInsets.only(
-                      top: 20.0, left: 20.0, right: 20.0, bottom: 20.0),
-                  child: Align(
-                      alignment: Alignment.topCenter,
-                      child: Column(children: [
-                        Text(
-                          msgs[0],
-                          style: const TextStyle(
-                              fontSize: 24, color: Colors.black),
-                          textAlign: TextAlign.center,
-                        ),
-                        Text(
-                          msgs[1],
-                          style: const TextStyle(
-                              fontSize: 36, color: Colors.black),
-                          textAlign: TextAlign.center,
-                        )
-                      ]))),
-              Center(
-                  child: CustomPaint(
-                      size: Size(pie.width + buttonDiameter,
-                          pie.width + buttonDiameter),
-                      painter: painter)),
-            ]),
+            body: Center(
+                child: Stack(
+              alignment: Alignment.center,
+              children: _getPieAndDragButtons(),
+            )),
             floatingActionButton: _buildFloatingActionButtons()));
   }
 
@@ -273,116 +230,32 @@ class MyHomePageState extends State<MyHomePage> {
         pie.radius() - (buttonRadius + (padding * 100)));
   }
 
-  List<String> _getSliceInfoText() {
-    if (!isAfternoon && pie.currentTime.time >= 11.98) {
-      return ["The morning as concluded...", ""];
-    }
-    int sliceNowIndex = -1;
-    StringBuffer msgBuff = StringBuffer();
-    for (int i = 0; i < pie.slices.length; i++) {
-      Slice slice = pie.slices[i];
-      if (slice.getEndTime() > pie.currentTime.time) {
-        if (slice.getStartTime() < pie.currentTime.time) {
-          sliceNowIndex = i;
-        }
-      }
-    }
-    if (sliceNowIndex == -1 && pie.getSelectedSliceIndex() == -1) {
-      msgBuff.write("Nothing to do right now...\n ");
-    } else if (pie.getSelectedSliceIndex() == -1 ||
-        pie.getSelectedSliceIndex() == sliceNowIndex) {
-      Slice sliceNow = pie.slices[sliceNowIndex];
-      PieTime timeLeft = PieTime(sliceNow.getEndTime() - pie.currentTime.time);
-      msgBuff.write("Time left in ${sliceNow.task.taskName}:\n");
-      if (timeLeft.hr() != 0) {
-        msgBuff.write("${timeLeft.hr()}:");
-      }
-      msgBuff.write("${timeLeft.minString()}:");
-      msgBuff.write(timeLeft.secString());
-    } else {
-      Slice slice = pie.getSelectedSlice();
-      PieTime startTime = PieTime(slice.getStartTime());
-      PieTime endTime = PieTime(slice.getEndTime());
-      msgBuff.write("Selected Task: ${slice.task.taskName}");
-      msgBuff.write("\n${startTime.toString()} to ${endTime.toString()}");
-    }
-    return msgBuff.toString().split("\n");
-  }
-
-  /// Similar to _updateDragButtons, only this changes both
-  void _updateSelectedSlice(details) {
-    Point newPoint = _getTappedPoint(details);
-    double timeFromPoint = Methods.getTimeFromPoint(newPoint);
-    double halfDuration = (pie.drag2.time - pie.drag1.time) / 2;
-    double newStartTime = timeFromPoint - halfDuration;
-
-    newPoint =
-        Methods.getNearestSnapPoint(Methods.getPointFromTime(newStartTime));
-    pie.changeSelectedSliceStart(newPoint, withEnd: true);
-  }
-
-  void _updateDragButtons(details) {
-    Point newPoint = _getTappedPoint(details);
-    newPoint = Methods.getNearestSnapPoint(
-        Point.parameterized(x: newPoint.x, y: newPoint.y));
-    if (dragButtonIndex == 1) {
-      pie.changeSelectedSliceStart(newPoint);
-    } else if (dragButtonIndex == 2) {
-      pie.changeSelectedSliceEnd(newPoint);
-    }
-  }
-
-  void _finalizeDragButtons(details) {
-    if (isEditing()) {
-      pie.changeSelectedSliceStart(
-          Methods.getRoundedSnapPoint(pie.drag1.point));
-      pie.changeSelectedSliceEnd(Methods.getRoundedSnapPoint(pie.drag2.point));
-      pie.getSelectedSlice().task.roundTimes();
-    }
-    dragButtonIndex = -1;
-    // savePie only when user lets goww
-    updateScreen();
-    savePie();
-  }
-
-  int getDragbuttonIndex(Point tappedPoint) {
-    if (pie.getSelectedSliceIndex() == -1) {
-      return -1;
-    } else {
-      // if the distance from the center of the given dragbutton to the
-      // tapped point is less than the radius of the dragbutton, return
-      // this dragButton
-      double distToDrag1 = distance(tappedPoint, pie.drag1.point);
-      double distToDrag2 = distance(tappedPoint, pie.drag2.point);
-      if (distToDrag1 <= buttonDiameter) {
-        if (distToDrag2 < distToDrag1) {
-          return 2;
-        }
-        return 1;
-      } else if (distToDrag2 <= buttonDiameter) {
-        return 2;
-      }
-      return -1;
-    }
-  }
-
-  double distance(Point a, Point b) {
-    return sqrt(pow((a.x - b.x), 2) + pow((a.y - b.y), 2));
-  }
-
   /// This includes the ring that DragButtons appear on
   bool _tappedInsideLargerRadius(tappedDistToCenter) {
     return (tappedDistToCenter >
         pie.radius() + (buttonRadius + (padding * 100)));
   }
 
+  /// Checks for a dragbutton at the given location.
+  /// Includes some padding, shape is non-circular
+  bool _tappedDragButton(tapTime) {
+    if (pie.getSelectedSliceIndex() == -1) {
+      return false;
+    }
+    Slice selectedSlice = pie.getSelectedSlice();
+    return ((selectedSlice.getStartTime() - padding < tapTime &&
+            selectedSlice.getStartTime() + padding > tapTime) ||
+        (selectedSlice.getEndTime() - padding < tapTime &&
+            selectedSlice.getEndTime() + padding > tapTime));
+  }
+
   /// Takes the literal tapped position and subtracts the area
   /// around the pie chart to get a position that's usable for
   /// pie-related calculations
-  Point _getTappedPoint(details) {
+  Point _getTappedPoint(TapDownDetails details) {
     return Point.parameterized(
-        x: details.localFocalPoint.dx - (widgetWidth! / 2) + (pie.width / 2),
-        y: details.localFocalPoint.dy -
+        x: details.localPosition.dx - (widgetWidth! / 2) + (pie.width / 2),
+        y: details.localPosition.dy -
             (widgetHeight! / 2 + unknownOffset) +
             (pie.width / 2));
   }
@@ -390,9 +263,9 @@ class MyHomePageState extends State<MyHomePage> {
   /// Calculate the distance tapped from the center.
   /// Assumes the pie is centered.
   /// sqrt((x1-x2)^2 + (y1-y2)^2)
-  double _getTappedDistToCenter(details) {
-    return sqrt(pow(details.localFocalPoint.dx - (widgetWidth! / 2), 2) +
-        pow(details.localFocalPoint.dy - ((widgetHeight! / 2 + unknownOffset)),
+  double _getTappedDistToCenter(TapDownDetails details) {
+    return sqrt(pow(details.localPosition.dx - (widgetWidth! / 2), 2) +
+        pow(details.localPosition.dy - ((widgetHeight! / 2 + unknownOffset)),
             2));
   }
 
@@ -409,13 +282,12 @@ class MyHomePageState extends State<MyHomePage> {
         Vibration.vibrate(duration: 100);
         break;
       case (3):
-        // Reserved for adding and removing slices
-        playPopSound();
         Vibration.vibrate(duration: 150);
         break;
       default:
         Vibration.vibrate(duration: 50);
     }
+    // playPopSound();
     print("sound and haptics happened here! Level: $level");
   }
 
@@ -514,58 +386,8 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   void _editSelectedSlice() {
-    tappedFloatingButton = true;
-    vibrateWithAudio(1);
-    Slice slice = pie.getSelectedSlice();
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        final taskController = TextEditingController(text: slice.task.taskName);
-        taskController.selection = TextSelection(
-            baseOffset: 0, extentOffset: slice.task.taskName.length);
-
-        return AlertDialog(
-          backgroundColor: themeColor1,
-          title: const Text('Edit Task Description'),
-          content: Form(
-            child: _buildTextField(taskController, 'Task Description'),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                var taskText = taskController.text.trim();
-
-                // Create a default slice if the user has entered nothing in
-                if (taskText.isEmpty) {
-                  taskText = "Default Task";
-                }
-                if (taskText.isNotEmpty) {
-                  setState(() {
-                    slice.task.taskName = taskText;
-                    vibrateWithAudio(1);
-                    pie.resetSelectedSlice();
-                    updateScreen();
-                  });
-                  savePie();
-                  Navigator.of(context).pop();
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Invalid input. Please try again.')),
-                  );
-                }
-              },
-              child: const Text('Rename Slice'),
-            ),
-          ],
-        );
-      },
-    );
-    tappedFloatingButton = false;
+    tappedButton = true;
+    tappedButton = false;
   }
 
   /// Creates form to add a new slice to the pie.
@@ -605,6 +427,10 @@ class MyHomePageState extends State<MyHomePage> {
                 double durationA =
                     max(0.25, parseTime(durationController.text));
                 var taskText = taskController.text.trim();
+                // if (startTime + durationA == 12) {
+                //   // 12:00 defaults to 0:00, so this avoids a full-day slice bug
+                //   durationA -= .01;
+                // }
                 final duration = durationA;
 
                 // Create a default slice if the user has entered nothing in
@@ -621,7 +447,7 @@ class MyHomePageState extends State<MyHomePage> {
                         Task.parameterized(taskText, startTime, duration);
                     pie.addSlice(task);
                     vibrateWithAudio(3);
-                    pie.resetSelectedSlice();
+                    pie.setSelectedSliceIndex(-1); //pie.slices.length - 1;
                     updateScreen();
                   });
                   savePie();
@@ -643,28 +469,24 @@ class MyHomePageState extends State<MyHomePage> {
 
   /// Removes the last slice selected from the pie.
   void _removeSelectedSlice() {
-    tappedFloatingButton = true;
+    tappedButton = true;
     vibrateWithAudio(3);
     pie.removeSlice();
     savePie();
-    tappedFloatingButton = false;
+    tappedButton = false;
   }
 
   /// List the Tasks for the current Pie.
   void _listSlices() {
-    tappedFloatingButton = true;
+    tappedButton = true;
     print(aMPie.toJson('AM'));
     print(pMPie.toJson('PM'));
-    String ampm = "Morning";
-    if (isAfternoon) {
-      ampm = "Evening";
-    }
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: themeColor1,
-          title: Text('$ampm Tasks Today:'),
+          title: const Text('Tasks Today'),
           // scrollable when there are enough tasks
           content: SingleChildScrollView(
             child: ListBody(
@@ -686,7 +508,7 @@ class MyHomePageState extends State<MyHomePage> {
         );
       },
     );
-    tappedFloatingButton = false;
+    tappedButton = false;
   }
 
   /// Takes string inputs and returns their apparent time.
@@ -724,15 +546,18 @@ class MyHomePageState extends State<MyHomePage> {
     // probably part of why app is so glitchy
     setState(() {
       updateSize();
-      painter = PiePainter(pie: pie);
+      // painter = PiePainter(pie: pie);
+      // we don't need to reinstantiate the painter every frame
+      // so I took it out
+      _buildPie();
     });
   }
 
   void startTimer() {
-    // 90 fps
-    _timer = Timer.periodic(const Duration(milliseconds: 12), (timer) {
+    // 100 is too quick. Deletes the delete button before the delete button
+    // deletes what it's deleting
+    _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       updateScreen();
-      msgs = _getSliceInfoText();
     });
   }
 
@@ -755,10 +580,34 @@ String _formatTime(double time) {
   // Ensure hours wrap around if exceeding 24
   hours = hours % 24;
   String timeOfDay = "$hours:$minutes";
-  if (minutes < 10) {
-    timeOfDay = "${timeOfDay}0";
-  }
   return timeOfDay;
+}
+
+List<Widget> _getPieAndDragButtons() {
+  _buildPie();
+  return pieAndDragButtons;
+}
+
+/// Build the PiePainter and the DragButtons being used in the program.
+List<Widget> _buildPie() {
+  // First item is the pie painter, the rest are dragbuttons
+  // (and eventually guidebuttons too)
+  pieAndDragButtons = [
+    CustomPaint(
+        size: Size(pie.width + buttonDiameter, pie.width + buttonDiameter),
+        painter: painter)
+  ];
+  if (isEditing()) {
+    pie.updateDragButtons();
+    pie.drag1.shown = true;
+    pie.drag2.shown = true;
+    pieAndDragButtons.add(pie.drag1);
+    pieAndDragButtons.add(pie.drag2);
+  } else {
+    pie.drag1.shown = false;
+    pie.drag2.shown = false;
+  }
+  return pieAndDragButtons;
 }
 
 bool isEditing() {

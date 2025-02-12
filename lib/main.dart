@@ -11,10 +11,7 @@ void main() async {
     WidgetsFlutterBinding.ensureInitialized();
     await windowManager.ensureInitialized();
     WindowOptions windowOptions = const WindowOptions(
-        size: Size(400, 800),
-        minimumSize: Size(400, 650),
-        title: "Pie Agenda",
-        maximumSize: Size(600, 800));
+        size: Size(400, 800), minimumSize: Size(400, 650), title: "Pie Agenda");
 
     windowManager.waitUntilReadyToShow(windowOptions, () async {
       await windowManager.show();

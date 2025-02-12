@@ -1,21 +1,19 @@
+import 'dart:math';
+
 import 'package:pie_agenda/display/drag_button.dart';
-import 'package:pie_agenda/methods.dart';
 import 'package:pie_agenda/pie/diameter.dart';
-import 'package:pie_agenda/pie/pie_time.dart';
 import 'slice.dart';
 import '../display/point.dart';
 import 'task.dart';
 
 class Pie {
   List<Slice> slices; // A list of slices in the pie chart
-  DragButton drag1 = DragButton(time: 3, shown: true, isStartButton: true);
-  DragButton drag2 = DragButton(time: 6, shown: true, isStartButton: false);
+  DragButton drag1 = DragButton(time: 3, shown: true);
+  DragButton drag2 = DragButton(time: 6, shown: true);
   Point center; // Center point of the pie chart
   double width; // Pie chart radius
   int _selectedSliceIndex; // The current selected slice's index.
-  bool isHovering = false;
   bool pM;
-  PieTime currentTime = PieTime(0);
 
   /// Initializes with a single slice covering the whole circle.
   Pie({this.pM = false})
@@ -25,16 +23,18 @@ class Pie {
 
         // Initialize with one full-circle slice
         slices = [],
-        _selectedSliceIndex = -1;
+        _selectedSliceIndex = -1 {
+    initDragButtons();
+  }
+
+  void initDragButtons() {
+    drag1.onDragEnd = changeSelectedSliceStart;
+    drag2.onDragEnd = changeSelectedSliceEnd;
+  }
 
   /// Returns the current slice index
   int getSelectedSliceIndex() {
     return _selectedSliceIndex;
-  }
-
-  void resetSelectedSlice() {
-    _selectedSliceIndex = -1;
-    isHovering = false;
   }
 
   /// Will break if you ask for -1
@@ -56,58 +56,25 @@ class Pie {
     }
   }
 
-  void changeSelectedSliceStart(Point newPosition, {bool withEnd = false}) {
-    if (_selectedSliceIndex == -1) {
-      return;
-    }
+  void changeSelectedSliceStart(Point newPosition) {
     Slice slice = getSelectedSlice();
     double end = slice.getEndTime();
-    double newTime = Methods.getTimeFromPoint(newPosition);
-    // start time must never be higher than end time
-    if (newTime > drag2.time - 0.25) {
-      // if startTime is attempting to be closer to midnight
-      // than to the endTime, snap to 0
-      if (newTime - drag2.time - 0.25 > 12 - newTime) {
-        newTime = 0;
-      } else {
-        newTime = drag2.time - 0.25;
-      }
+    double newTime = DragButton.getTimeFromPoint(newPosition);
+    if (newTime > drag2.time) {
+      newTime = 0;
     }
-    // starting time can never be more than 11.75 or (end time - .25)
-    if (newTime > 11.75) {
-      newTime = 11.75;
-    }
+    newTime = min(newTime, drag2.time - 0.25);
     drag1.setTime(newTime);
     slice.setStartTime(newTime); // this changes end
-    if (withEnd) {
-      end = newTime + slice.getDuration();
-      if (end > 12) {
-        print("End will be clipped");
-      }
-      drag2.setTime(end);
-    }
     slice.setEndTime(end); // this only changes end
   }
 
   void changeSelectedSliceEnd(Point newPosition) {
-    if (_selectedSliceIndex == -1) {
-      return;
+    double newTime = DragButton.getTimeFromPoint(newPosition);
+    if (newTime < drag1.time) {
+      newTime = 12;
     }
-    double newTime = Methods.getTimeFromPoint(newPosition);
-    //
-    if (newTime < drag1.time + 0.25) {
-      // if startTime is attempting to be closer to midnight
-      // than to the endTime, snap to 0
-      if (drag1.time + 0.25 - newTime > newTime - 0) {
-        newTime = 12;
-      } else {
-        newTime = drag1.time + 0.25;
-      }
-    }
-    // ending time can never be less than 0.25
-    if (newTime < .25) {
-      newTime = .25;
-    }
+    newTime = max(newTime, drag1.time + 0.25);
     drag2.setTime(newTime);
     getSelectedSlice().setEndTime(newTime);
   }
@@ -116,7 +83,9 @@ class Pie {
   Pie.parameterized(this.slices, {this.pM = false})
       : center = Point(),
         width = Diameter.instance.getPieDiameter(),
-        _selectedSliceIndex = -1;
+        _selectedSliceIndex = -1 {
+    initDragButtons();
+  }
 
 // Getters/Setters
   List<Slice> getSlices() {

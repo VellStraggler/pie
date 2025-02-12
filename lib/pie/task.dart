@@ -6,30 +6,23 @@
 class Task {
   // This is the data of a task/slice. This must be able to be stored in .json
   String taskName;
-  double _duration;
-  double _startTime;
+  double duration;
+  double startTime;
   double endTime;
 
   /// Default Constructor for a Task object.
   Task()
       : taskName = "NewTask",
-        _startTime = 0,
+        startTime = 0,
         endTime = 1,
-        _duration = 1;
+        duration = 1;
 
   /// Parameterized Task Constructor.
   /// Time Syntax is as such:
   /// * 1.25 = 1:30
   /// * 0.5 = 12:30
-  Task.parameterized(this.taskName, startTime, duration)
-      : _startTime = startTime,
-        endTime = duration + startTime,
-        _duration = duration {
-    // normalization required so decimal value stays in hundredths place
-    setStartTime(startTime);
-    setDuration(duration);
-    endTime = _duration + _startTime;
-  }
+  Task.parameterized(this.taskName, this.startTime, this.duration)
+      : endTime = duration + startTime;
 
 // Getters and Setters
   /// Returns the task's name.
@@ -39,17 +32,17 @@ class Task {
 
   /// Returns the task's duration
   double getDuration() {
-    return _duration;
+    return duration;
   }
 
   /// Returns the task's startTime
   double getStartTime() {
-    return _startTime;
+    return startTime;
   }
 
   /// Returns the task's endTime.
   double getEndTime() {
-    return _startTime + _duration;
+    return startTime + duration;
   }
 
   /// Set the task's taskName.
@@ -59,28 +52,20 @@ class Task {
 
   /// Set the tasks's duration.
   void setDuration(double duration) {
-    _duration = (duration * 100).round() / 100.00;
-    // _duration = double.parse(duration.toStringAsFixed(2));
+    this.duration = double.parse(duration.toStringAsFixed(2));
   }
 
   /// Set the task's startTime.
   void setStartTime(double startTime) {
     assert(startTime < endTime, "startTime must be before endTime.");
-    _startTime = (startTime * 100).round() / 100.00;
-    // this.startTime = double.parse(startTime.toStringAsFixed(2));
-  }
-
-  void roundTimes() {
-    _startTime = (_startTime * 4).round() / 4.00;
-    _duration = (_duration * 4).round() / 4.00;
-    endTime = _startTime + _duration;
+    this.startTime = double.parse(startTime.toStringAsFixed(2));
   }
 
   /// Set the task's endTime.
   void setEndTime(double endTime) {
-    assert(endTime > _startTime, "endTime must be after startTime.");
+    assert(endTime > startTime, "endTime must be after startTime.");
     this.endTime = endTime;
-    setDuration(endTime - _startTime);
+    duration = endTime - startTime;
   }
 
 // Save Data Conversion
@@ -89,8 +74,8 @@ class Task {
   Map<String, dynamic> toJson() {
     return {
       'taskName': taskName,
-      'startTime': _startTime,
-      'duration': _duration,
+      'startTime': startTime,
+      'duration': duration,
     };
   }
 
@@ -102,6 +87,6 @@ class Task {
   }
   @override
   String toString() {
-    return "$taskName, $_duration, $_startTime, $endTime";
+    return "$taskName, $duration, $startTime, $endTime";
   }
 }

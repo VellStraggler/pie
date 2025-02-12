@@ -53,40 +53,38 @@ To recreate the development environment, you need the following software and/or 
 * [x] Date is shown in the corner
 * [x] See a list of the tasks with their start and end time
 * [X] Save and Load Tasks
-* [X] Edit Task Name
+* [ ] Edit Task Name
 
-## Alpha Features
+## Future Work
 The following items we plan to fix, improve, and/or add to this project in the future:
 
+* [ ] Shadows! from hands and even text
 * [X] Allow user to tap anywhere to deselect slices
-* [X] Increase performance: 
-        [X]saving after tapping, not while holding
-        [X]increase framerate
+* [ ] Stop tasks from overlapping (may not implement)
+* [ ] Increase performance: [X]saving after tapping, not while holding
 * [X] modify drawing to not overlap itself
 * [X] Limit to 2 drag buttons
-* [X] Allow entire slice to be dragged
-    - Known bug: 15-minute segment doesn't like moving
+* [ ] Add animations such as for loading / pie-switching
+* [ ] Allow entire slice to be dragged
 * [X] widen click area for drag buttons
-* [X] allow double-tap editing
+* [ ] allow double-tap editing
+* [ ] allow military time task adding
 * [X] add time to markers 
-* [X] have time follow held dragbutton (written directly under dragButton)
+* [ ] have time follow held dragbutton
+* [ ] have a + and - button to change duration
+* [ ] undo button
 * [X] future tasks brighter, old tasks duller/grayer, fading
-* [X] Allow transparency when editing tasks
+* [ ] Allow transparency when editing tasks
 * [X] improve base colors 
 widget homescreen (what does this mean)
-* [X] fill space with details about current task
-        - How much time is left on task
-* [X] Improve text sizing and centering
-
-## Potential Beta Features
-* [ ] undo button
-* [ ] Swipe top bar to change day 
-* [ ] Allow it to run in the background when minimized
-* [ ] Shadows! from hands and even text
+* [ ] fill space with details about current task
 * [ ] import tasks from other calendar apps
-* [ ] Add animations such as for loading / pie-switching
+* [ ] Swipe top bar to change day 
+* [ ] Put AM/PM button in the center of the pie
+* [X] Improve text sizing and centering
 * [ ] Notifications
 * [ ] Theme changing
+* [ ] Allow it to run in the background when minimized
 
 ## Reflections
 ### What Went Well:
